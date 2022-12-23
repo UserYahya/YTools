@@ -27,7 +27,7 @@ export default {
 				skipWaiting: true,
 				runtimeCaching: [
 					{
-						urlPattern: isProd ? /https:\/\/qrcodescan.in\// : /http:\/\/localhost:5000\//,
+						urlPattern: isProd ? /https:\/\/tools.yahyabd.xyz\/qr\// : /http:\/\/localhost:5000\//,
 						handler: 'CacheFirst',
 						options: {
 							cacheName: 'pages',
