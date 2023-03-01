@@ -1,0 +1,111 @@
+/* Reset default margin and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Set default font */
+body {
+    font-family: sans-serif;
+}
+
+/* Header styles */
+header {
+    background-image: linear-gradient(to bottom right, #0074D9, #3D9970);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 40px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+header h2 {
+    font-size: 20px;
+    font-weight: normal;
+    color: #ccc;
+    font-family: 'Open Sans', sans-serif;
+}
+
+/* Container styles */
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Tool styles */
+.tool {
+    background-color: #f7f7f7;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    width: 300px;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.tool h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.tool p {
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.tool a {
+    background-color: #0074D9;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.tool a:hover {
+    background-color: #3D9970;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 600px) {
+    header h1 {
+        font-size: 32px;
+    }
+
+    header h2 {
+        font-size: 16px;
+    }
+
+    .tool {
+        width: 90%;
+        height: 200px;
+    }
+
+    .tool h2 {
+        font-size: 20px;
+    }
+
+    .tool p {
+        font-size: 14px;
+    }
+}
