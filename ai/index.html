@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Image Generator</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri&display=swap');
+
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: 'Hind Siliguri', sans-serif;
+			background-color: #f9f9f9;
+			text-align: center;
+		}
+		
+		h1 {
+			margin-top: 50px;
+			font-size: 30px;
+			color: #333;
+		}
+		
+		form {
+			margin-top: 30px;
+		}
+		
+		input[type="text"] {
+			padding: 10px;
+			border: 2px solid #ccc;
+			border-radius: 5px;
+			width: 80%;
+			max-width: 400px;
+			margin-bottom: 20px;
+			font-size: 16px;
+			outline: none;
+		}
+		
+		input[type="submit"] {
+			background-color: #008CBA;
+			color: #fff;
+			border: none;
+			border-radius: 5px;
+			padding: 10px 20px;
+			font-size: 16px;
+			cursor: pointer;
+			transition: background-color 0.3s ease;
+		}
+		
+		input[type="submit"]:hover {
+			background-color: #005f75;
+		}
+		
+		img {
+			max-width: 100%;
+			height: auto;
+			margin-top: 20px;
+		}
+		
+		#output {
+			margin-top: 20px;
+		}
+		
+		#output p {
+			font-size: 16px;
+			color: #555;
+		}
+	</style>
+</head>
+<body>
+	<h1>এআই ইমেজ জেনারেটর</h1>
+	<form>
+		<label for="description">বিবরণ লিখুন (ইংরেজিতে):</label>
+		<br>
+		<input type="text" id="description" name="description" placeholder="এখানে আপনার বিবরণ লিখুন...">
+		<br>
+		<input type="submit" value="চিত্র জেনারেট করুন">
+	</form>
+	<div id="output"></div>
+	<script>
+		const form = document.querySelector('form');
+		const output = document.getElementById('output');
+		form.addEventListener('submit', event => {
+			event.preventDefault();
+			const description = document.getElementById('description').value;
+			const url = `https://image.pollinations.ai/prompt/${description.replace(/\s/g, '%20')}`;
+			output.innerHTML = '<p>চিত্র জেনারেট করা হচ্ছে...</p>';
+			const img = new Image();
+			img.onload = () => {
+				output.innerHTML = `<img src="${url}" alt="${description}">`;
+				form.reset();
+			};
+			img.onerror = () => {
+				output.innerHTML = `<p>Failed to generate image for '${description}'. Please try again later.</p>`;
+				form.reset();
+			};
+			img.src = url;
+		});
+	</script>
+</body>
+</html>
