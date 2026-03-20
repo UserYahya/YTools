@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WikiHarmony — YTools</title>
+    <style>
+        :root {
+            --bg-color: #050508;
+            --text-color: #e0e0e0;
+            --accent-green: #00ff9d;
+            --accent-red: #ff4757;
+            --accent-purple: #a55eea;
+            --glass-bg: rgba(20, 20, 25, 0.7);
+            --font-mono: 'Courier New', Courier, monospace;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-sans);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Canvas Background */
+        #visualizer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* UI Overlay */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            pointer-events: auto;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        h1 span {
+            color: var(--accent-green);
+            font-weight: 700;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        button.icon-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        button.icon-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Stats Sidebar */
+        #feed {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 300px;
+            max-height: 400px;
+            overflow-y: hidden;
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column-reverse; /* Newest at bottom visually */
+        }
+
+        .feed-item {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-left: 3px solid #555;
+            padding: 10px;
+            margin-top: 8px;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.85rem;
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: slideIn 0.4s forwards;
+            transition: opacity 0.5s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .feed-item.add { border-color: var(--accent-green); }
+        .feed-item.sub { border-color: var(--accent-red); }
+        .feed-item.newuser { border-color: var(--accent-purple); }
+
+        .feed-title {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .feed-meta {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            opacity: 0.7;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Start Overlay */
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 5, 8, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            pointer-events: auto;
+            transition: opacity 0.5s;
+        }
+
+        #start-btn {
+            background: transparent;
+            color: var(--accent-green);
+            border: 2px solid var(--accent-green);
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: 0.3s;
+            box-shadow: 0 0 15px rgba(0, 255, 157, 0.2);
+        }
+
+        #start-btn:hover {
+            background: var(--accent-green);
+            color: #000;
+            box-shadow: 0 0 30px rgba(0, 255, 157, 0.6);
+        }
+
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: var(--glass-bg);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            pointer-events: auto;
+            backdrop-filter: blur(5px);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        #connection-status {
+            font-size: 0.7rem;
+            opacity: 0.5;
+            margin-right: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="visualizer"></canvas>
+
+    <div id="ui-layer">
+        <header>
+            <h1>Wiki<span>Harmony</span></h1>
+            <div class="controls">
+                <div id="connection-status">Disconnected</div>
+                <button class="icon-btn" id="mute-btn">Mute</button>
+            </div>
+        </header>
+
+        <div id="feed">
+            <!-- Feed items injected here -->
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="dot" style="background: var(--accent-green)"></div>Content Added</div>
+            <div class="legend-item"><div class="dot" style="background: var(--accent-red)"></div>Content Removed</div>
+            <div class="legend-item"><div class="dot" style="background: var(--accent-purple)"></div>New User</div>
+            <div class="legend-item" style="opacity: 0.6; margin-top:5px;">Pitch = Edit Size</div>
+        </div>
+    </div>
+
+    <div id="overlay">
+        <h2 style="margin-bottom: 20px; font-weight: 300; text-align: center;">Experience the sound of human knowledge<!--<br><span style="font-size:0.8rem; opacity:0.7;">(Bots filtered out)</span>--></h2>
+        <button id="start-btn">Initialize System</button>
+    </div>
+
+    <script>
+        /**
+         * WIKIHARMONY
+         * A live visualization of Wikipedia edits using the EventStreams API.
+         */
+
+        // --- Configuration ---
+        const CONFIG = {
+            maxParticles: 50,
+            maxFeedItems: 8,
+            streamUrl: 'https://stream.wikimedia.org/v2/stream/recentchange',
+            colors: {
+                add: '#00ff9d',
+                sub: '#ff4757',
+                newuser: '#a55eea',
+                neutral: '#74b9ff'
+            }
+        };
+
+        // --- Global State ---
+        let audioCtx;
+        let isMuted = false;
+        let particles = [];
+        let eventSource;
+        const canvas = document.getElementById('visualizer');
+        const ctx = canvas.getContext('2d');
+        const feedContainer = document.getElementById('feed');
+        const statusEl = document.getElementById('connection-status');
+
+        // Extended E Major Pentatonic Scale (Dreamy/Hopeful)
+        // Spread across octaves for range
+        const SCALE = [
+            164.81, 196.00, 246.94, 293.66, 329.63, // E3, G3, B3, D4, E4
+            392.00, 493.88, 587.33, 659.25, 783.99, // G4, B4, D5, E5, G5
+            987.77, 1174.66, 1318.51               // B5, D6, E6
+        ];
+
+        // --- Audio Engine ---
+        class AudioEngine {
+            constructor() {
+                this.masterGain = null;
+                this.reverbNode = null;
+            }
+
+            init() {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+
+                // 1. Master Output
+                this.masterGain = audioCtx.createGain();
+                this.masterGain.gain.value = 0.4; // Initial Volume
+
+                // 2. Reverb (Convolver) - Creates the "Space"
+                this.reverbNode = audioCtx.createConvolver();
+                this.reverbNode.buffer = this.createReverbBuffer(audioCtx);
+                
+                // 3. Dry/Wet Mix
+                const dryGain = audioCtx.createGain();
+                const wetGain = audioCtx.createGain();
+                dryGain.gain.value = 0.7;
+                wetGain.gain.value = 0.4; // How much reverb
+
+                // Routing: Source -> Dry -> Master
+                // Routing: Source -> Wet -> Reverb -> Master
+                this.inputNode = audioCtx.createGain(); // All sounds connect here
+                this.inputNode.connect(dryGain);
+                this.inputNode.connect(wetGain);
+                
+                dryGain.connect(this.masterGain);
+                wetGain.connect(this.reverbNode);
+                this.reverbNode.connect(this.masterGain);
+
+                this.masterGain.connect(audioCtx.destination);
+            }
+
+            // Generate a synthetic impulse response for reverb
+            createReverbBuffer(ctx) {
+                const duration = 2.5; // Seconds of reverb tail
+                const decay = 2.0;
+                const sampleRate = ctx.sampleRate;
+                const length = sampleRate * duration;
+                const impulse = ctx.createBuffer(2, length, sampleRate);
+                const left = impulse.getChannelData(0);
+                const right = impulse.getChannelData(1);
+
+                for (let i = 0; i < length; i++) {
+                    const n = i / length;
+                    // White noise with exponential decay
+                    const val = (Math.random() * 2 - 1) * Math.pow(1 - n, decay);
+                    left[i] = val;
+                    right[i] = val;
+                }
+                return impulse;
+            }
+
+            playTone(size, type) {
+                if (!audioCtx || isMuted) return;
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                const now = audioCtx.currentTime;
+                
+                // Map size to pitch. Smaller edit = higher pitch.
+                const cleanSize = Math.min(Math.abs(size), 4000);
+                // Inverse mapping
+                const scaleIndex = Math.floor((1 - (cleanSize / 4000)) * (SCALE.length - 1));
+                // Clamp to array bounds
+                const freq = SCALE[Math.max(0, Math.min(scaleIndex, SCALE.length - 1))];
+
+                const gainNode = audioCtx.createGain();
+                gainNode.connect(this.inputNode);
+
+                if (type === 'add') {
+                    // "Bells" - Sine waves with slight harmonics
+                    const osc = audioCtx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    
+                    // Add a subtle second harmonic for "glassy" texture
+                    const osc2 = audioCtx.createOscillator();
+                    osc2.type = 'sine';
+                    osc2.frequency.value = freq * 2; // Octave up
+                    
+                    const gain2 = audioCtx.createGain();
+                    gain2.gain.value = 0.1; // Quieter harmonic
+
+                    osc.connect(gainNode);
+                    osc2.connect(gain2);
+                    gain2.connect(gainNode);
+
+                    // Envelope: Sharp attack, long release
+                    gainNode.gain.setValueAtTime(0, now);
+                    gainNode.gain.linearRampToValueAtTime(0.4, now + 0.02);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
+
+                    osc.start(now);
+                    osc2.start(now);
+                    osc.stop(now + 2.0);
+                    osc2.stop(now + 2.0);
+
+                } else if (type === 'sub') {
+                    // "Plucks" - Filtered triangle wave
+                    const osc = audioCtx.createOscillator();
+                    osc.type = 'triangle';
+                    osc.frequency.value = freq;
+
+                    // Envelope: Quick pluck
+                    gainNode.gain.setValueAtTime(0, now);
+                    gainNode.gain.linearRampToValueAtTime(0.25, now + 0.01);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+
+                    osc.connect(gainNode);
+                    osc.start(now);
+                    osc.stop(now + 0.6);
+
+                } else if (type === 'newuser') {
+                    // "Swell" - Slow attack string sound
+                    const osc = audioCtx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = 220; // A3 root
+                    
+                    // Detune slightly for warmth
+                    const osc2 = audioCtx.createOscillator();
+                    osc2.type = 'sine';
+                    osc2.frequency.value = 221; 
+
+                    osc.connect(gainNode);
+                    osc2.connect(gainNode);
+
+                    // Envelope: Slow swell in and out
+                    gainNode.gain.setValueAtTime(0, now);
+                    gainNode.gain.linearRampToValueAtTime(0.3, now + 0.5); // Attack
+                    gainNode.gain.linearRampToValueAtTime(0, now + 2.0);   // Release
+
+                    osc.start(now);
+                    osc2.start(now);
+                    osc.stop(now + 2.0);
+                    osc2.stop(now + 2.0);
+                }
+            }
+        }
+
+        const audio = new AudioEngine();
+
+        // --- Visual Engine ---
+        class Particle {
+            constructor(x, y, size, color, type) {
+                this.x = x;
+                this.y = y;
+                this.targetRadius = Math.max(5, Math.log(Math.abs(size) + 1) * 3); 
+                this.radius = 0;
+                this.color = color;
+                this.life = 1.0;
+                this.decay = 0.005 + (Math.random() * 0.005);
+                this.type = type;
+            }
+
+            update() {
+                if (this.radius < this.targetRadius) {
+                    this.radius += 0.5;
+                }
+                this.life -= this.decay;
+            }
+
+            draw(ctx) {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = Math.max(0, this.life);
+                ctx.fill();
+                
+                // Glow
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = this.color;
+                
+                ctx.shadowBlur = 0;
+                ctx.globalAlpha = 1;
+
+                if (this.type === 'newuser') {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius + (1 - this.life) * 80, 0, Math.PI * 2);
+                    ctx.strokeStyle = this.color;
+                    ctx.globalAlpha = Math.max(0, this.life - 0.2);
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
+                }
+            }
+        }
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function loop() {
+            ctx.fillStyle = 'rgba(5, 5, 8, 0.2)'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.update();
+                p.draw(ctx);
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+            requestAnimationFrame(loop);
+        }
+
+        // --- Data Stream Logic ---
+        function startStream() {
+            statusEl.textContent = "Connecting...";
+            statusEl.style.color = "#ebd534";
+
+            eventSource = new EventSource(CONFIG.streamUrl);
+
+            eventSource.onopen = () => {
+                statusEl.textContent = "Listening to Live Edits";
+                statusEl.style.color = CONFIG.colors.add;
+            };
+
+            eventSource.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                
+                if (data.type === 'edit' || data.type === 'log') {
+                    handleEvent(data);
+                }
+            };
+            
+            eventSource.onerror = () => {
+                statusEl.textContent = "Reconnecting...";
+                statusEl.style.color = CONFIG.colors.sub;
+            }
+        }
+
+        function handleEvent(data) {
+            // --- BOT FILTER ---
+            // If the username contains 'bot' (case-insensitive), ignore it.
+            if (data.user && /bot/i.test(data.user)) {
+                return;
+            }
+
+            let sizeChange = 0;
+            let type = 'neutral';
+            let color = CONFIG.colors.neutral;
+
+            if (data.type === 'log' && data.log_action === 'create') {
+                type = 'newuser';
+                color = CONFIG.colors.newuser;
+                sizeChange = 1000;
+            } else {
+                sizeChange = (data.length && data.length.new && data.length.old) 
+                    ? data.length.new - data.length.old 
+                    : 0;
+
+                if (sizeChange > 0) {
+                    type = 'add';
+                    color = CONFIG.colors.add;
+                } else if (sizeChange < 0) {
+                    type = 'sub';
+                    color = CONFIG.colors.sub;
+                }
+            }
+
+            // Noise filter: ignore very small edits unless it's a new user
+            if (Math.abs(sizeChange) < 15 && type !== 'newuser') return;
+
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            particles.push(new Particle(x, y, sizeChange, color, type));
+            if (particles.length > CONFIG.maxParticles) particles.shift();
+
+            audio.playTone(sizeChange, type);
+            addToFeed(data.title, sizeChange, type, data.user);
+        }
+
+        function addToFeed(title, size, type, user) {
+            const item = document.createElement('div');
+            item.className = `feed-item ${type}`;
+            const sizeStr = size > 0 ? `+${size}` : `${size}`;
+            
+            item.innerHTML = `
+                <span class="feed-title">${title}</span>
+                <div class="feed-meta">
+                    <span>${user}</span>
+                    <span>${type === 'newuser' ? 'New User' : sizeStr}</span>
+                </div>
+            `;
+
+            feedContainer.prepend(item); 
+            if (feedContainer.children.length > CONFIG.maxFeedItems) {
+                feedContainer.lastElementChild.remove();
+            }
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            document.getElementById('overlay').style.opacity = 0;
+            setTimeout(() => document.getElementById('overlay').remove(), 500);
+            
+            audio.init();
+            startStream();
+            loop();
+        });
+
+        document.getElementById('mute-btn').addEventListener('click', (e) => {
+            isMuted = !isMuted;
+            e.target.textContent = isMuted ? "Unmute" : "Mute";
+            e.target.style.background = isMuted ? "rgba(255, 71, 87, 0.4)" : "";
+        });
+
+    </script>
+
+  <!-- YTools shell + similar tools -->
+  <div style="max-width:900px;margin:0 auto;padding:0 24px 48px">
+    <link rel="stylesheet" href="../common.css">
+    <div class="similar-tools">
+      <h3>Related tools</h3>
+      <ul class="similar-tools__list">
+        <li><a href="../pulse/">📡 Edit Pulse</a></li>
+        <li><a href="../onthisday/">📆 On This Day</a></li>
+        <li><a href="../wc/">📝 Word Counter</a></li>
+        <li><a href="../">← All YTools</a></li>
+      </ul>
+    </div>
+  </div>
+  <script src="../yt-shell.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IP Information Viewer — YTools</title>
+  <link rel="stylesheet" href="../common.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    .status-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+
+    .ip-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    @media (max-width: 600px) { .ip-grid { grid-template-columns: 1fr; } }
+
+    .ip-grid .info-table th { width: 140px; }
+
+    .result-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .result-header h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--wmf-gray-90);
+    }
+
+    .result-header .ip-addr {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      color: var(--wmf-blue);
+    }
+
+    .copy-btn {
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 14px;
+      color: var(--wmf-gray-50);
+      padding: 0 4px;
+    }
+
+    .copy-btn:hover { color: var(--wmf-blue); }
+
+    .action-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--wmf-gray-20);
+    }
+
+    .action-links a {
+      font-size: .875rem;
+      padding: 5px 12px;
+      border: 1px solid var(--wmf-gray-30);
+      border-radius: var(--radius-sm);
+      color: var(--wmf-blue);
+      text-decoration: none;
+      background: var(--wmf-gray-10);
+      transition: background .15s;
+    }
+
+    .action-links a:hover { background: var(--wmf-blue-light); }
+
+    .tabs { margin-bottom: 0; }
+
+    #ipResult { margin-top: 24px; }
+  </style>
+</head>
+<body>
+  <div class="page-content page-content--narrow">
+    <div class="breadcrumb">
+      <a href="../">YTools</a><span>›</span> IP Information Viewer
+    </div>
+
+    <div class="tool-page-header">
+      <h1>🌐 IP Information Viewer</h1>
+      <p>Lookup proxy/VPN status, geolocation, ASN, and Wikimedia global-block status for any IP address.</p>
+    </div>
+
+    <div class="card">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="single">Single IP</button>
+        <button class="tab-btn" data-tab="myip">My IP</button>
+      </div>
+
+      <div class="tab-panel active" id="tab-single">
+        <div class="form-group">
+          <label class="wm-label" for="ipInput">IP address (IPv4 or IPv6)</label>
+          <div class="input-row">
+            <input class="wm-input" type="text" id="ipInput" placeholder="e.g. 1.1.1.1 or 2001:db8::1" autocomplete="off" spellcheck="false">
+            <button class="wm-btn wm-btn--primary" id="checkBtn" onclick="doCheck()">🔍 Check</button>
+          </div>
+        </div>
+        <div class="notice">
+          Tip: You can also link directly to a result with <code>?ip=1.2.3.4</code> in the URL.
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tab-myip">
+        <p style="color:var(--wmf-gray-50);font-size:.9375rem;margin-bottom:12px;">Detect and check your own public IP address.</p>
+        <button class="wm-btn wm-btn--primary" onclick="checkMyIp()">📡 Detect my IP &amp; check</button>
+      </div>
+    </div>
+
+    <div id="ipResult"></div>
+
+    <div class="similar-tools">
+      <h3>Related tools</h3>
+      <ul class="similar-tools__list">
+        <li><a href="../ipmulti/">📋 Multi-IP Checker</a></li>
+        <li><a href="../ip-calc/">🔢 IP Range Calculator</a></li>
+        <li><a href="../ip-whois/">🔍 IP WHOIS Lookup</a></li>
+        <li><a href="../ip-cidr/">🗂️ CIDR Subnet Tool</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="../yt-shell.js"></script>
+  <script>
+    /* ── Tab switching ─────────────────────────────────────── */
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    /* ── Enter key ─────────────────────────────────────────── */
+    document.getElementById('ipInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doCheck();
+    });
+
+    /* ── Map ───────────────────────────────────────────────── */
+    let map = null;
+
+    function setMap(lat, lng, city, country) {
+      const el = document.getElementById('map');
+      if (!el) return;
+      if (map) { map.remove(); map = null; }
+      map = L.map('map').setView([lat, lng], 10);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }).addTo(map);
+      L.marker([lat, lng]).addTo(map).bindPopup(`${city}, ${country}`).openPopup();
+    }
+
+    /* ── My IP ─────────────────────────────────────────────── */
+    function checkMyIp() {
+      const res = document.getElementById('ipResult');
+      res.innerHTML = `<div class="loading-row"><span class="spinner"></span> Detecting your IP…</div>`;
+      fetch('https://api.ipify.org?format=json')
+        .then(r => r.json())
+        .then(d => { fetchAndDisplay(d.ip); })
+        .catch(() => {
+          res.innerHTML = `<div class="error-msg">Could not detect your IP address.</div>`;
+        });
+    }
+
+    /* ── Main check ────────────────────────────────────────── */
+    function doCheck() {
+      const ip = document.getElementById('ipInput').value.trim();
+      if (!ip) return;
+      fetchAndDisplay(ip);
+    }
+
+    function fetchAndDisplay(ip) {
+      const res = document.getElementById('ipResult');
+      res.innerHTML = `<div class="loading-row"><span class="spinner"></span> Looking up <strong>${ip}</strong>…</div>`;
+
+      Promise.all([
+        fetch('get_ip_info.php?ip=' + encodeURIComponent(ip)).then(r => r.json()),
+        fetch('https://meta.wikimedia.org/w/api.php?action=query&format=json&list=globalblocks&bgip=' + encodeURIComponent(ip) + '&origin=*').then(r => r.json())
+      ])
+      .then(([info, wiki]) => {
+        if (info.error) {
+          res.innerHTML = `<div class="error-msg">⚠ ${info.error}</div>`;
+          return;
+        }
+        const globalBlocks = wiki.query?.globalblocks || [];
+        renderResult(res, ip, info, globalBlocks);
+      })
+      .catch(() => {
+        res.innerHTML = `<div class="error-msg">⚠ An error occurred while fetching data. Please try again.</div>`;
+      });
+    }
+
+    function renderResult(container, ip, info, globalBlocks) {
+      const isProxy   = (info.proxy  || '').toLowerCase() === 'yes';
+      const isVpn     = (info.vpn    || '').toLowerCase() === 'yes';
+      const isBlocked = globalBlocks.length > 0;
+
+      /* Status badges */
+      let badges = '';
+      if (isProxy)   badges += `<span class="badge badge--proxy">🕵️ Proxy</span>`;
+      if (isVpn)     badges += `<span class="badge badge--vpn">🔒 VPN</span>`;
+      if (isBlocked) badges += `<span class="badge badge--blocked">🚫 Globally Blocked</span>`;
+      if (!isProxy && !isVpn && !isBlocked) badges += `<span class="badge badge--clean">✅ Clean</span>`;
+
+      /* Block info rows */
+      let blockRows = '';
+      if (isBlocked) {
+        globalBlocks.slice(0, 3).forEach(b => {
+          blockRows += `<tr>
+            <th>Block target</th>
+            <td>${b.target} — ${b.reason} (by ${b.by}, expires ${b.expiry})</td>
+          </tr>`;
+        });
+      }
+
+      /* Currency */
+      const cur = info.currency ? `${info.currency.code} — ${info.currency.name}` : 'N/A';
+
+      /* Wikimedia action links */
+      const range = info.range || ip;
+      const actionLinks = `
+        <div class="action-links">
+          <a href="https://meta.wikimedia.org/wiki/Special:GlobalBlock?wpAddress=${encodeURIComponent(range)}&wpExpiry=indefinite" target="_blank" rel="noopener">🚫 Global block this range</a>
+          <a href="https://en.wikipedia.org/wiki/Special:Block/${encodeURIComponent(ip)}" target="_blank" rel="noopener">🔒 Block on enwiki</a>
+          <a href="https://meta.wikimedia.org/wiki/Special:GlobalContributions/${encodeURIComponent(ip)}" target="_blank" rel="noopener">📝 Global contributions</a>
+          <a href="https://en.wikipedia.org/wiki/Special:Contributions/${encodeURIComponent(ip)}" target="_blank" rel="noopener">📝 enwiki contributions</a>
+          <a href="https://login.wikimedia.org/wiki/Special:CheckUser/${encodeURIComponent(ip)}" target="_blank" rel="noopener">🔎 Login Wiki CU</a>
+        </div>`;
+
+      container.innerHTML = `
+        <div class="card">
+          <div class="result-header">
+            <div>
+              <div style="font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--wmf-gray-50);margin-bottom:4px">Result</div>
+              <div class="ip-addr">${ip} <button class="copy-btn" title="Copy IP" onclick="navigator.clipboard.writeText('${ip}')">📋</button></div>
+            </div>
+            <div class="status-bar">${badges}</div>
+          </div>
+
+          <table class="info-table">
+            <tr><th>Proxy</th><td>${info.proxy || 'N/A'}</td></tr>
+            <tr><th>Type</th><td>${info.type || 'N/A'}</td></tr>
+            <tr><th>Continent</th><td>${info.continent || 'N/A'}</td></tr>
+            <tr><th>Country</th><td>${info.country || 'N/A'}</td></tr>
+            <tr><th>Region</th><td>${info.region || 'N/A'}</td></tr>
+            <tr><th>City</th><td>${info.city || 'N/A'}</td></tr>
+            <tr><th>Latitude / Longitude</th><td>${info.latitude || 'N/A'} / ${info.longitude || 'N/A'}</td></tr>
+            <tr><th>Timezone</th><td>${info.timezone || 'N/A'}</td></tr>
+            <tr><th>ASN</th><td>${info.asn || 'N/A'}</td></tr>
+            <tr><th>Range (CIDR)</th><td>
+              ${info.range || 'N/A'}
+              ${info.range ? `<a href="https://meta.wikimedia.org/wiki/Special:GlobalBlock?wpAddress=${encodeURIComponent(info.range)}" target="_blank" rel="noopener" style="margin-left:8px;font-size:.8125rem">[Global block]</a>` : ''}
+            </td></tr>
+            <tr><th>Provider / ISP</th><td>${info.provider || 'N/A'}</td></tr>
+            <tr><th>Organisation</th><td>${info.organisation || 'N/A'}</td></tr>
+            <tr><th>Currency</th><td>${cur}</td></tr>
+            <tr><th>Globally Blocked</th><td>${isBlocked ? `<strong style="color:var(--wmf-red)">Yes — ${globalBlocks.length} active block(s)</strong>` : 'No'}</td></tr>
+            ${blockRows}
+          </table>
+
+          ${actionLinks}
+
+          <div id="map" style="margin-top:20px"></div>
+        </div>`;
+
+      if (info.latitude && info.longitude) {
+        setTimeout(() => setMap(info.latitude, info.longitude, info.city || '', info.country || ''), 50);
+      }
+    }
+
+    /* ── URL param ─────────────────────────────────────────── */
+    window.addEventListener('load', () => {
+      const params = new URLSearchParams(location.search);
+      const ip = params.get('ip');
+      if (ip) {
+        document.getElementById('ipInput').value = ip;
+        fetchAndDisplay(ip);
+      }
+    });
+  </script>
+</body>
+</html>

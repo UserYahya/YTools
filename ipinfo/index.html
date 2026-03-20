@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple IP Tool — YTools</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/0/09/IP_address_icon.png" sizes="32x32">
+  <link rel="stylesheet" href="../common.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+  <div class="page-content page-content--narrow">
+    <div class="breadcrumb"><a href="../">YTools</a><span>›</span> Simple IP Tool</div>
+    <div class="tool-page-header">
+      <h1>🌐 Simple IP Tool</h1>
+      <p>Basic IP information and location map using the ipinfo.io API (free tier, 50k lookups/month).</p>
+    </div>
+    <div class="card">
+      <div class="form-group">
+        <label class="wm-label" for="ipInput">IP address</label>
+        <div class="input-row">
+          <input class="wm-input" type="text" id="ipInput" placeholder="Auto-filled with your IP" autocomplete="off" spellcheck="false">
+          <button class="wm-btn wm-btn--primary" onclick="doLookup()">🔍 Lookup</button>
+        </div>
+      </div>
+      <div class="notice">Auto-filled with your own public IP. Change it and click Lookup.</div>
+    </div>
+    <div id="result"></div>
+    <div id="map" style="display:none"></div>
+    <div class="similar-tools">
+      <h3>Related tools</h3>
+      <ul class="similar-tools__list">
+        <li><a href="../ip/">🌐 Full IP Information Viewer</a></li>
+        <li><a href="../ipmulti/">📋 Multi-IP Checker</a></li>
+        <li><a href="../ip-whois/">🔍 IP WHOIS Lookup</a></li>
+        <li><a href="../ip-cidr/">🗂️ CIDR Subnet Tool</a></li>
+      </ul>
+    </div>
+  </div>
+  <script src="../yt-shell.js"></script>
+  <script>
+    let map = null;
+
+    fetch('https://api.ipify.org?format=json')
+      .then(r=>r.json())
+      .then(d=>{ document.getElementById('ipInput').value=d.ip; })
+      .catch(()=>{});
+
+    document.getElementById('ipInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doLookup(); });
+
+    function doLookup() {
+      const ip = document.getElementById('ipInput').value.trim();
+      if (!ip) return;
+      const res = document.getElementById('result');
+      res.innerHTML = `<div class="loading-row"><span class="spinner"></span> Looking up…</div>`;
+      fetch(`get_ip_info.php?ip=${encodeURIComponent(ip)}`)
+        .then(r=>r.json())
+        .then(data => {
+          if (!data || data.error) { res.innerHTML='<div class="error-msg">Lookup failed.</div>'; return; }
+          res.innerHTML = `<div class="card">
+            <table class="info-table">
+              <tr><th>IP</th><td style="font-family:var(--font-mono)">${data.ip||ip}</td></tr>
+              <tr><th>Hostname</th><td>${data.hostname||'N/A'}</td></tr>
+              <tr><th>City</th><td>${data.city||'N/A'}</td></tr>
+              <tr><th>Region</th><td>${data.region||'N/A'}</td></tr>
+              <tr><th>Country</th><td>${data.country||'N/A'}</td></tr>
+              <tr><th>Location</th><td>${data.loc||'N/A'}</td></tr>
+              <tr><th>Organisation</th><td>${data.org||'N/A'}</td></tr>
+              <tr><th>Postal</th><td>${data.postal||'N/A'}</td></tr>
+              <tr><th>Timezone</th><td>${data.timezone||'N/A'}</td></tr>
+            </table>
+          </div>`;
+          if (data.loc) {
+            const [lat,lng] = data.loc.split(',').map(Number);
+            const mapEl = document.getElementById('map');
+            mapEl.style.display='block';
+            if (map) { map.remove(); }
+            map = L.map('map').setView([lat,lng],10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+            L.marker([lat,lng]).addTo(map).bindPopup(`${data.city||''}, ${data.country||''}`).openPopup();
+          }
+        })
+        .catch(()=>{ res.innerHTML='<div class="error-msg">Lookup failed.</div>'; });
+    }
+  </script>
+</body>
+</html>

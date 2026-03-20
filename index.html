@@ -1,46 +1,351 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Unnecessarily_complicated_gears_a.gif/288px-Unnecessarily_complicated_gears_a.gif" />
-    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/6/60/Nuvola_web_tool.svg" sizes="192x192" />
-    <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/6/60/Nuvola_web_tool.svg" />
-    <title>Web Tools Directory</title>
-    <link rel="stylesheet" href="index.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YTools — Wikimedia Helper Tools</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* ── HERO ──────────────────────────────────────────────── */
+    .hero {
+      background: var(--wmf-base);
+      border-bottom: 1px solid var(--wmf-gray-20);
+      padding: 40px 24px 32px;
+      text-align: center;
+    }
+
+    .hero__logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--wmf-blue);
+      color: #fff;
+      font-size: 28px;
+      font-weight: 700;
+      font-family: var(--font-sans);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      box-shadow: 0 2px 8px rgba(51,102,204,.3);
+    }
+
+    .hero h1 {
+      font-family: var(--font-sans);
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--wmf-gray-90);
+    }
+
+    .hero p {
+      color: var(--wmf-gray-50);
+      margin: 8px 0 24px;
+      font-size: 1.0625rem;
+    }
+
+    .hero__search {
+      max-width: 520px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .hero__search input {
+      width: 100%;
+      height: 44px;
+      padding: 0 16px 0 44px;
+      font-size: 1rem;
+      border: 1px solid var(--wmf-gray-30);
+      border-radius: var(--radius-sm);
+      background: var(--wmf-gray-10);
+      transition: border-color .15s, background .15s;
+    }
+
+    .hero__search input:focus {
+      outline: none;
+      border-color: var(--wmf-blue);
+      background: #fff;
+      box-shadow: 0 0 0 2px rgba(51,102,204,.15);
+    }
+
+    .hero__search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--wmf-gray-50);
+      font-size: 18px;
+      pointer-events: none;
+    }
+
+    /* ── CATEGORY FILTERS ─────────────────────────────────── */
+    .category-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      align-items: center;
+    }
+
+    .cat-btn {
+      padding: 4px 14px;
+      border: 1px solid var(--wmf-gray-30);
+      border-radius: 2px;
+      background: var(--wmf-base);
+      font-size: .875rem;
+      cursor: pointer;
+      transition: background .15s, border-color .15s, color .15s;
+      color: var(--wmf-gray-70);
+      font-family: var(--font-ui);
+    }
+
+    .cat-btn.active, .cat-btn:hover {
+      background: var(--wmf-blue);
+      border-color: var(--wmf-blue-dark);
+      color: #fff;
+    }
+
+    /* ── TOOLS GRID ───────────────────────────────────────── */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .tool-card {
+      background: var(--wmf-base);
+      border: 1px solid var(--wmf-gray-20);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      transition: border-color .15s, box-shadow .15s;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .tool-card:hover {
+      border-color: var(--wmf-blue);
+      box-shadow: 0 2px 12px rgba(51,102,204,.12);
+    }
+
+    .tool-card__icon {
+      font-size: 1.75rem;
+      margin-bottom: 12px;
+      line-height: 1;
+    }
+
+    .tool-card__cat {
+      font-size: .7rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-weight: 700;
+      color: var(--wmf-gray-50);
+      margin-bottom: 4px;
+    }
+
+    .tool-card__title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--wmf-gray-90);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .tool-card__desc {
+      font-size: .875rem;
+      color: var(--wmf-gray-50);
+      flex: 1;
+      line-height: 1.5;
+    }
+
+    .tool-card__action {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: .875rem;
+      font-weight: 600;
+      color: var(--wmf-blue);
+    }
+
+    .tool-card__action::after { content: ' →'; }
+
+    .tool-card--new .tool-card__cat::after {
+      content: ' NEW';
+      color: var(--wmf-green);
+      margin-left: 6px;
+    }
+
+    #no-results {
+      display: none;
+      text-align: center;
+      color: var(--wmf-gray-50);
+      padding: 48px 0;
+      grid-column: 1 / -1;
+      font-size: .9375rem;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>YTools Tools Directory</h1>
-        <h2>A collection of simple web tools. No tracking, no advertisements!</h2>
-    </header>
-    <div class="container">
-        <div class="tool">
-            <h2>Date Calculator</h2>
-            <p>A tool to calculate the duration between two dates or add/subtract days, weeks, months or years to a date.</p>
-            <p><a href="https://useryahya.github.io/YTools/date-calculator">Try the tool</a></p>
-        </div>
-        <div class="tool">
-            <h2>QR Code Generator</h2>
-            <p>A tool to generate QR codes for URLs, text, phone numbers, email addresses, and more.</p>
-            <p><a href="https://useryahya.github.io/YTools/qr">Try the tool</a></p>
-        </div>
-        <div class="tool">
-            <h2>URL Decoder</h2>
-            <p>Do you have to deal with URL-encoded format? Then this site is perfect for you! Use my super simple online tool to encode or decode your data.<!-- A tool to decode URL-encoded strings, such as those produced by the JavaScript encodeURIComponent function.--></p>
-            <p><a href="https://useryahya.github.io/YTools/urldecoder/">Try the tool</a></p>
-                </div>
-    <div class="tool">
-        <h2>Wikipedia Page View Comparison</h2>
-        <p>A tool to compare the pageviews of Wikipedia pages.</p>
-        <p><a href="https://useryahya.github.io/YTools/wpviews/">Try the tool</a></p>
+  <!-- Header injected by shell -->
+
+  <div class="hero">
+    <div class="hero__logo">Y</div>
+    <h1>YTools — Wikimedia Helpers</h1>
+    <p>Simple, focused tools for Wikimedia contributors</p>
+    <div class="hero__search">
+      <span class="hero__search-icon">🔍</span>
+      <input type="text" id="search" placeholder="Search tools…" autocomplete="off" aria-label="Search tools">
     </div>
-    <div class="tool">
-        <h2>AI Image Generator</h2>
-        <p>Based on your prompts, this tool will generate artwork using artificial intelligence.</p>
-        <p><a href="https://useryahya.github.io/YTools/ai/">Try the tool</a></p>
+  </div>
+
+  <div class="page-content">
+    <div class="category-bar">
+      <button class="cat-btn active" data-cat="all">All tools</button>
+      <button class="cat-btn" data-cat="ip">IP &amp; Network</button>
+      <button class="cat-btn" data-cat="wiki">Wikipedia</button>
+      <button class="cat-btn" data-cat="date">Date &amp; Calendar</button>
     </div>
-    <div><footer><center><strong><a href="https://useryahya.github.io/YTools/">←Return to the yahyabd.xyz</a></strong></center></footer></div>
-</div>
+
+    <div class="tools-grid" id="toolsGrid">
+
+      <!-- IP Tools -->
+      <a class="tool-card" href="ip/" data-cat="ip" data-name="ip information viewer proxy vpn detection">
+        <div class="tool-card__icon">🌐</div>
+        <div class="tool-card__cat">IP &amp; Network</div>
+        <div class="tool-card__title">IP Information Viewer</div>
+        <div class="tool-card__desc">Detect VPNs &amp; proxies for global blocks. Shows ASN, location, range, provider, and Wikimedia block status.</div>
+        <div class="tool-card__action">Open tool</div>
+      </a>
+
+      <a class="tool-card" href="ipmulti/" data-cat="ip" data-name="multi ip checker batch vpn proxy">
+        <div class="tool-card__icon">📋</div>
+        <div class="tool-card__cat">IP &amp; Network</div>
+        <div class="tool-card__title">Multi-IP Checker</div>
+        <div class="tool-card__desc">Paste a list of IPs to check proxy/VPN status and metadata for all of them at once.</div>
+        <div class="tool-card__action">Open tool</div>
+      </a>
+
+      <a class="tool-card" href="ip-calc/" data-cat="ip" data-name="ip range calculator cidr subnet">
+        <div class="tool-card__icon">🔢</div>
+        <div class="tool-card__cat">IP &amp; Network</div>
+        <div class="tool-card__title">IP Range Calculator</div>
+        <div class="tool-card__desc">Calculate the CIDR range from two IP addresses. Supports IPv4 and IPv6.</div>
+        <div class="tool-card__action">Open tool</div>
+      </a>
+
+      <a class="tool-card tool-card--new" href="ip-whois/" data-cat="ip" data-name="ip whois lookup arin ripe registration">
+        <div class="tool-card__icon">🔍</div>
+        <div class="tool-card__cat">IP &amp; Network</div>
+        <div class="tool-card__title">IP WHOIS Lookup</div>
+        <div class="tool-card__desc">Query WHOIS registration data for any IP address — registrar, allocated range, contact info, and more.</div>
+        <div class="tool-card__action">Open tool</div>
+      </a>
+
+      <a class="tool-card tool-card--new" href="ip-cidr/" data-cat="ip" data-name="cidr subnet calculator hosts mask network">
+        <div class="tool-card__icon">🗂️</div>
+        <div class="tool-card__cat">IP &amp; Network</div>
+        <div class="tool-card__title">CIDR Subnet Calculator</div>
+        <div class="tool-card__desc">Expand any CIDR notation into its full subnet details — network address, broadcast, host range, and count.</div>
+        <div class="tool-card__action">Open tool</div>
+      </a>
+
+      <!-- Wiki Tools -->
+      <a class="tool-card" href="urldecoder/" data-cat="wiki" data-name="url decoder utf encoded link readable">
+        <div class="tool-card__icon">🔗</div>
+        <div class="tool-card__cat">Wikipedia</div>
+        <div class="tool-card__title">URL Decoder</div>
+        <div class="tool-card__desc">Decode percent-encoded and UTF-encoded Wikipedia URLs into readable text. Useful for non-Latin scripts.</div>
+        <div class="tool-card__action">Open tool</div>
+      </a>
+
+      <a class="tool-card" href="wc/" data-cat="wiki" data-name="wikipedia article word counter wikitext section table">
+        <div class="tool-card__icon">📝</div>
+        <div class="tool-card__cat">Wikipedia</div>
+        <div class="tool-card__title">Wikipedia Word Counter</div>
+        <div class="tool-card__desc">Generate a wikitext table with word counts broken down by article section.</div>
+        <div class="tool-card__action">Open tool</div>
+      </a>
+
+      <a class="tool-card" href="onthisday/" data-cat="wiki date" data-name="on this day today bangla wikipedia events">
+        <div class="tool-card__icon">📆</div>
+        <div class="tool-card__cat">Wikipedia</div>
+        <div class="tool-card__title">On This Day</div>
+        <div class="tool-card__desc">Browse today's historical events, birthdays, and anniversaries from Bangla Wikipedia.</div>
+        <div class="tool-card__action">Open tool</div>
+      </a>
+
+      <a class="tool-card" href="pulse/" data-cat="wiki" data-name="bangla wikipedia live edit pulse recent changes">
+        <div class="tool-card__icon">📡</div>
+        <div class="tool-card__cat">Wikipedia</div>
+        <div class="tool-card__title">Edit Pulse</div>
+        <div class="tool-card__desc">Live feed of recent edits on Bangla Wikipedia — see who's editing what in real time.</div>
+        <div class="tool-card__action">Open tool</div>
+      </a>
+
+      <a class="tool-card" href="wiki-harmony/" data-cat="wiki" data-name="wikiharmony sound music wikipedia edits visualizer">
+        <div class="tool-card__icon">🎵</div>
+        <div class="tool-card__cat">Wikipedia</div>
+        <div class="tool-card__title">WikiHarmony</div>
+        <div class="tool-card__desc">An audio-visual experience that turns live Wikipedia edits into music and light.</div>
+        <div class="tool-card__action">Open tool</div>
+      </a>
+
+      <!-- Date Tools -->
+      <a class="tool-card" href="bndate/" data-cat="date wiki" data-name="bangla gregorian date converter bengali calendar">
+        <div class="tool-card__icon">📅</div>
+        <div class="tool-card__cat">Date &amp; Calendar</div>
+        <div class="tool-card__title">Bangla ↔ Gregorian Date</div>
+        <div class="tool-card__desc">Convert dates between the Bengali calendar and the Gregorian calendar, both directions.</div>
+        <div class="tool-card__action">Open tool</div>
+      </a>
+
+    </div><!-- /tools-grid -->
+  </div><!-- /page-content -->
+
+  <script src="yt-shell.js"></script>
+  <script>
+    const searchInput = document.getElementById('search');
+    const grid = document.getElementById('toolsGrid');
+    const cards = Array.from(grid.querySelectorAll('.tool-card'));
+    const catBtns = document.querySelectorAll('.cat-btn');
+    let activeCat = 'all';
+
+    function filterCards() {
+      const term = searchInput.value.toLowerCase().trim();
+      let visible = 0;
+      cards.forEach(card => {
+        const name = card.dataset.name || '';
+        const cat  = card.dataset.cat  || '';
+        const matchSearch = !term || name.includes(term);
+        const matchCat    = activeCat === 'all' || cat.includes(activeCat);
+        if (matchSearch && matchCat) {
+          card.style.display = '';
+          visible++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      let noRes = document.getElementById('no-results');
+      if (!noRes) {
+        noRes = document.createElement('p');
+        noRes.id = 'no-results';
+        noRes.textContent = 'No tools match your search.';
+        grid.appendChild(noRes);
+      }
+      noRes.style.display = visible === 0 ? 'block' : 'none';
+    }
+
+    searchInput.addEventListener('input', filterCards);
+
+    catBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        catBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeCat = btn.dataset.cat;
+        filterCards();
+      });
+    });
+  </script>
 </body>
 </html>

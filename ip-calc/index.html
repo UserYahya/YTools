@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IP Range Calculator — YTools</title>
+  <link rel="stylesheet" href="../common.css">
+</head>
+<body>
+  <div class="page-content page-content--narrow">
+    <div class="breadcrumb"><a href="../">YTools</a><span>›</span> IP Range Calculator</div>
+    <div class="tool-page-header">
+      <h1>🔢 IP Range Calculator</h1>
+      <p>Calculate the smallest CIDR range that covers a list of IP addresses. Supports IPv4 and IPv6.</p>
+    </div>
+    <div class="card">
+      <div class="form-group">
+        <label class="wm-label" for="ipInput">IP addresses <small style="font-weight:400;color:var(--wmf-gray-50)">(one per line, minimum 2)</small></label>
+        <textarea class="wm-textarea" id="ipInput" rows="6" placeholder="192.168.1.10&#10;192.168.1.50&#10;192.168.1.200"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="wm-label">IP version</label>
+        <div style="display:flex;gap:16px;margin-top:4px">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="radio" name="ipType" value="ipv4" checked> IPv4</label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="radio" name="ipType" value="ipv6"> IPv6</label>
+        </div>
+      </div>
+      <button class="wm-btn wm-btn--primary wm-btn--lg" onclick="calculateRange()">🔢 Calculate range</button>
+    </div>
+    <div id="output"></div>
+    <div class="similar-tools">
+      <h3>Related tools</h3>
+      <ul class="similar-tools__list">
+        <li><a href="../ip/">🌐 IP Information Viewer</a></li>
+        <li><a href="../ipmulti/">📋 Multi-IP Checker</a></li>
+        <li><a href="../ip-cidr/">🗂️ CIDR Subnet Tool</a></li>
+        <li><a href="../ip-whois/">🔍 IP WHOIS Lookup</a></li>
+      </ul>
+    </div>
+  </div>
+  <script src="../yt-shell.js"></script>
+  <script>
+    function ipToBinary(ip,type){if(type==='ipv4')return ip.split('.').map(o=>parseInt(o).toString(2).padStart(8,'0')).join('');let parts=ip.split(':'),full=[];for(let i=0;i<parts.length;i++){if(parts[i]===''){const m=8-(parts.length-1);for(let j=0;j<m;j++)full.push('0000000000000000');}else full.push(parseInt(parts[i],16).toString(2).padStart(16,'0'));}return full.join('');}
+    function binaryToIp(bin,type){if(type==='ipv4')return bin.match(/.{8}/g).map(b=>parseInt(b,2)).join('.');return bin.match(/.{16}/g).map(b=>parseInt(b,2).toString(16)).join(':');}
+    function calculateRange(){
+      const raw=document.getElementById('ipInput').value.trim();
+      const type=document.querySelector('input[name="ipType"]:checked').value;
+      const out=document.getElementById('output');
+      if(!raw){out.innerHTML='<div class="error-msg">Please enter at least 2 IP addresses.</div>';return;}
+      const ips=raw.split('\n').map(s=>s.trim()).filter(Boolean);
+      if(ips.length<2){out.innerHTML='<div class="error-msg">Please enter at least 2 IP addresses (one per line).</div>';return;}
+      try{
+        const binaries=ips.map(ip=>ipToBinary(ip,type));
+        let prefix=binaries[0];
+        for(let i=1;i<binaries.length;i++){let c='';for(let j=0;j<Math.min(prefix.length,binaries[i].length);j++){if(prefix[j]===binaries[i][j])c+=prefix[j];else break;}prefix=c;}
+        const prefixLen=prefix.length,totalBits=type==='ipv4'?32:128;
+        const network=binaryToIp(prefix.padEnd(totalBits,'0'),type);
+        const cidr=`${network}/${prefixLen}`,hostCount=Math.pow(2,totalBits-prefixLen);
+        const blockUrl=`https://meta.wikimedia.org/wiki/Special:GlobalBlock?wpAddress=${encodeURIComponent(cidr)}&wpExpiry=indefinite`;
+        const enwikiUrl=`https://en.wikipedia.org/wiki/Special:Block/${encodeURIComponent(cidr)}`;
+        out.innerHTML=`<div class="card">
+          <div class="section-heading">Result</div>
+          <table class="info-table">
+            <tr><th>CIDR range</th><td style="font-family:var(--font-mono);font-size:1.1rem;color:var(--wmf-blue)">${cidr}</td></tr>
+            <tr><th>Network address</th><td style="font-family:var(--font-mono)">${network}</td></tr>
+            <tr><th>Prefix length</th><td>/${prefixLen}</td></tr>
+            <tr><th>Addresses covered</th><td>${hostCount.toLocaleString()}</td></tr>
+            <tr><th>IPs analysed</th><td>${ips.length}</td></tr>
+          </table>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--wmf-gray-20)">
+            <a href="${blockUrl}" target="_blank" rel="noopener" style="font-size:.875rem;padding:5px 12px;border:1px solid var(--wmf-gray-30);border-radius:2px;color:var(--wmf-blue);text-decoration:none;background:var(--wmf-gray-10)">🚫 Global block this range</a>
+            <a href="${enwikiUrl}" target="_blank" rel="noopener" style="font-size:.875rem;padding:5px 12px;border:1px solid var(--wmf-gray-30);border-radius:2px;color:var(--wmf-blue);text-decoration:none;background:var(--wmf-gray-10)">🔒 Block on enwiki</a>
+            <button onclick="navigator.clipboard.writeText('${cidr}')" style="font-size:.875rem;padding:5px 12px;border:1px solid var(--wmf-gray-30);border-radius:2px;color:var(--wmf-blue);background:var(--wmf-gray-10);cursor:pointer;font-family:inherit">📋 Copy CIDR</button>
+          </div>
+        </div>`;
+      }catch(e){out.innerHTML='<div class="error-msg">⚠ Could not parse the IP addresses. Check the format and IP version selection.</div>';}
+    }
+  </script>
+</body>
+</html>

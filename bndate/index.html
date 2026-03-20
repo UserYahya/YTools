@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bangla Date Converter — YTools</title>
+    <!-- Tailwind CSS for styling -->
+    <link rel="stylesheet" href="../common.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles to apply the Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom focus ring for better accessibility and design */
+        .form-select, .form-input {
+            transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        }
+        .form-select:focus, .form-input:focus {
+            outline: none;
+            border-color: #4f46e5; /* Corresponds to Tailwind's indigo-600 */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-sky-100 to-indigo-100 min-h-screen flex items-center justify-center p-4">
+    <div class="container mx-auto max-w-4xl">
+        <!-- Main Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sky-600 to-indigo-600">Bangla ↔ Gregorian Date Converter</h1>
+            <p class="text-gray-600 mt-2">Easily convert dates between Bengali and Gregorian calendars.</p>
+        </header>
+
+        <!-- Combined Converter -->
+        <main class="bg-white/80 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-lg max-w-3xl mx-auto border border-gray-200/50">
+            <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 items-center">
+                <!-- Bangla Date Section -->
+                <div class="w-full">
+                    <h2 class="text-2xl font-semibold text-gray-800 text-center mb-6">Bangla</h2>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label for="bangla-day" class="block text-sm font-medium text-gray-600">Day</label>
+                            <select id="bangla-day" class="form-select mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:border-indigo-500 focus:ring-0">
+                                <!-- Options will be populated by JS -->
+                            </select>
+                        </div>
+                        <div>
+                            <label for="bangla-month" class="block text-sm font-medium text-gray-600">Month</label>
+                            <select id="bangla-month" class="form-select mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:border-indigo-500 focus:ring-0">
+                                <!-- Options will be populated by JS -->
+                            </select>
+                        </div>
+                        <div>
+                            <label for="bangla-year" class="block text-sm font-medium text-gray-600">Year</label>
+                            <input type="number" id="bangla-year" class="form-input mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:border-indigo-500 focus:ring-0" placeholder="e.g. 1431">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Separator -->
+                <div class="text-center my-4 md:my-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-400 mx-auto transform md:rotate-0 rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h8m0 0l-4-4m4 4l-4 4m0 6H8m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                </div>
+
+                <!-- Gregorian Date Section -->
+                <div class="w-full">
+                    <h2 class="text-2xl font-semibold text-gray-800 text-center mb-6">Gregorian</h2>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label for="english-day" class="block text-sm font-medium text-gray-600">Day</label>
+                            <select id="english-day" class="form-select mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:border-indigo-500 focus:ring-0">
+                                <!-- Options will be populated by JS -->
+                            </select>
+                        </div>
+                        <div>
+                            <label for="english-month" class="block text-sm font-medium text-gray-600">Month</label>
+                            <select id="english-month" class="form-select mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:border-indigo-500 focus:ring-0">
+                                <!-- Options will be populated by JS -->
+                            </select>
+                        </div>
+                        <div>
+                            <label for="english-year" class="block text-sm font-medium text-gray-600">Year</label>
+                            <input type="number" id="english-year" class="form-input mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:border-indigo-500 focus:ring-0" placeholder="e.g. 2024">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- Constants ---
+        const BANGLA_MONTHS = ["বৈশাখ", "জ্যৈষ্ঠ", "আষাঢ়", "শ্রাবণ", "ভাদ্র", "আশ্বিন", "কার্তিক", "অগ্রহায়ণ", "পৌষ", "মাঘ", "ফাল্গুন", "চৈত্র"];
+        const ENGLISH_MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const BANGLA_YEAR_OFFSET = 593;
+
+        // --- DOM Elements ---
+        const banglaDaySelect = document.getElementById('bangla-day');
+        const banglaMonthSelect = document.getElementById('bangla-month');
+        const banglaYearInput = document.getElementById('bangla-year');
+        const englishDaySelect = document.getElementById('english-day');
+        const englishMonthSelect = document.getElementById('english-month');
+        const englishYearInput = document.getElementById('english-year');
+
+        // --- Helper Functions ---
+        const isGregorianLeap = (year) => (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+
+        function populateSelect(selectElement, start, end, optionsArray) {
+            for (let i = start; i <= end; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = optionsArray ? optionsArray[i - start] : i;
+                selectElement.appendChild(option);
+            }
+        }
+
+        // --- Initialization ---
+        function initialize() {
+            // Populate Day dropdowns (1-31)
+            populateSelect(banglaDaySelect, 1, 31);
+            populateSelect(englishDaySelect, 1, 31);
+
+            // Populate Month dropdowns
+            populateSelect(banglaMonthSelect, 1, 12, BANGLA_MONTHS);
+            populateSelect(englishMonthSelect, 1, 12, ENGLISH_MONTHS);
+            
+            // Set default values to today's English date
+            const today = new Date();
+            englishDaySelect.value = today.getDate();
+            englishMonthSelect.value = today.getMonth() + 1;
+            englishYearInput.value = today.getFullYear();
+            
+            // Initial conversion to set the Bangla date
+            updateBangla();
+        }
+
+        /**
+         * Reads the Bangla date inputs and updates the Gregorian date inputs.
+         */
+        function updateGregorian() {
+            const bDay = parseInt(banglaDaySelect.value);
+            const bMonth = parseInt(banglaMonthSelect.value);
+            const bYear = parseInt(banglaYearInput.value);
+
+            if (isNaN(bDay) || isNaN(bMonth) || isNaN(bYear) || bYear < 1) {
+                return; // Don't convert if inputs are invalid or incomplete
+            }
+            
+            // Calculate Gregorian year
+            let gYear = bYear + BANGLA_YEAR_OFFSET;
+
+            // Estimate the start date (April 14th of the calculated Gregorian year)
+            const pohelaBoishakh = new Date(gYear, 3, 14);
+
+            // Calculate total days passed in the Bangla year
+            let totalDays = 0;
+            // First 5 months have 31 days
+            for (let i = 1; i < bMonth; i++) {
+                totalDays += (i <= 5) ? 31 : 30;
+            }
+            totalDays += bDay - 1;
+
+            // Add these days to Pohela Boishakh
+            const resultDate = new Date(pohelaBoishakh.getTime());
+            resultDate.setDate(pohelaBoishakh.getDate() + totalDays);
+            
+            // Set the values of the Gregorian inputs
+            englishDaySelect.value = resultDate.getDate();
+            englishMonthSelect.value = resultDate.getMonth() + 1;
+            englishYearInput.value = resultDate.getFullYear();
+        }
+
+        /**
+         * Reads the Gregorian date inputs and updates the Bangla date inputs.
+         */
+        function updateBangla() {
+            const gDay = parseInt(englishDaySelect.value);
+            const gMonth = parseInt(englishMonthSelect.value);
+            const gYear = parseInt(englishYearInput.value);
+
+             if (isNaN(gDay) || isNaN(gMonth) || isNaN(gYear) || gYear < 1) {
+                return; // Don't convert if inputs are invalid or incomplete
+            }
+            
+            const inputDate = new Date(gYear, gMonth - 1, gDay);
+            
+            // Determine the corresponding Bangla year
+            let bYear;
+            const pohelaBoishakhThisYear = new Date(gYear, 3, 14);
+            if (inputDate < pohelaBoishakhThisYear) {
+                bYear = gYear - BANGLA_YEAR_OFFSET - 1;
+            } else {
+                bYear = gYear - BANGLA_YEAR_OFFSET;
+            }
+            
+            // Find the start of the current Bangla year
+            const pohelaBoishakhOfCurrentBanglaYear = new Date(bYear + BANGLA_YEAR_OFFSET, 3, 14);
+
+            // Calculate days passed since the start of the Bangla year
+            const timeDiff = inputDate.getTime() - pohelaBoishakhOfCurrentBanglaYear.getTime();
+            let daysPassed = Math.round(timeDiff / (1000 * 60 * 60 * 24)) + 1;
+
+            let bMonth, bDay;
+            const banglaMonthDays = [31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30, 30];
+            // Adjust for leap year in Gregorian calendar affecting Falgun
+            if (isGregorianLeap(bYear + BANGLA_YEAR_OFFSET + 1)) {
+                 banglaMonthDays[10] = 31; // Falgun has 31 days
+            }
+
+            for (let i = 0; i < banglaMonthDays.length; i++) {
+                if (daysPassed <= banglaMonthDays[i]) {
+                    bMonth = i + 1;
+                    bDay = daysPassed;
+                    break;
+                }
+                daysPassed -= banglaMonthDays[i];
+            }
+
+            if (bDay && bMonth && bYear) {
+                // Set the values of the Bangla inputs
+                banglaDaySelect.value = bDay;
+                banglaMonthSelect.value = bMonth;
+                banglaYearInput.value = bYear;
+            }
+        }
+
+        // --- Event Listeners ---
+        
+        // Add event listeners for Bangla inputs to update Gregorian
+        banglaDaySelect.addEventListener('change', updateGregorian);
+        banglaMonthSelect.addEventListener('change', updateGregorian);
+        banglaYearInput.addEventListener('input', updateGregorian);
+
+        // Add event listeners for Gregorian inputs to update Bangla
+        englishDaySelect.addEventListener('change', updateBangla);
+        englishMonthSelect.addEventListener('change', updateBangla);
+        englishYearInput.addEventListener('input', updateBangla);
+        
+        // --- Run on page load ---
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+
+  <div style="max-width:860px;margin:0 auto;padding:0 24px 48px">
+    <div class="similar-tools">
+      <h3>Related tools</h3>
+      <ul class="similar-tools__list">
+        <li><a href="../onthisday/">📆 On This Day</a></li>
+        <li><a href="../wc/">📝 Word Counter</a></li>
+        <li><a href="../urldecoder/">🔗 URL Decoder</a></li>
+      </ul>
+    </div>
+  </div>
+  <script src="../yt-shell.js"></script>
+
+</body>
+</html>
+

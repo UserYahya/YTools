@@ -8,3 +8,4 @@ function decode() {
   var encoded = obj.value;
   obj.value = decodeURIComponent(encoded.replace(/\+/g,  " "));
 }
+

@@ -1,32 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset=utf-8 />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="Free and simple online URL encode - decoder" />
-<title>Online URL encode - decoder</title>
-<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/URL_decoder_VE_icon.svg/1024px-URL_decoder_VE_icon.svg.png" />
-<link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/c/cc/Eo_circle_indigo_letter-y.svg" sizes="192x192" />
-<link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/c/cc/Eo_circle_indigo_letter-y.svg" />
-<script src="js.js" > </script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL Decoder — YTools</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/URL_decoder_VE_icon.svg/240px-URL_decoder_VE_icon.svg.png" sizes="192x192">
+  <link rel="stylesheet" href="../common.css">
+  <style>
+    .decoded-out {
+      font-family: var(--font-mono);
+      font-size: .9375rem;
+      word-break: break-all;
+      background: var(--wmf-gray-10);
+      border: 1px solid var(--wmf-gray-20);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      min-height: 44px;
+      color: var(--wmf-gray-90);
+      margin-top: 4px;
+    }
+    .decoded-out a { color: var(--wmf-blue); }
+  </style>
 </head>
 <body>
-<div class="container">
-  <div class="row justify-content-center">
-    <div class="col-sm-8 border pb-3 rounded border-top-0">
-      <h2 class="text-center text-white bg-success pt-3 pb-4">URL Encode & Decoder</h2>
-
-      <div class="form-group mt-3">
-        <textarea class="form-control" rows="6" placeholder="Type or Paste your text here.." id="dencoder"></textarea>
+  <div class="page-content page-content--narrow">
+    <div class="breadcrumb"><a href="../">YTools</a><span>›</span> URL Decoder</div>
+    <div class="tool-page-header">
+      <h1>🔗 URL Decoder</h1>
+      <p>Decode percent-encoded and UTF-encoded URLs into readable text. Especially useful for non-Latin Wikipedia links.</p>
+    </div>
+    <div class="card">
+      <div class="form-group">
+        <label class="wm-label" for="encodedInput">Encoded URL</label>
+        <input class="wm-input" type="text" id="encodedInput" placeholder="https://en.wikipedia.org/wiki/%E0%A6%AC%E0%A6%BE%E0%A6%82%E0%A6%B2%E0%A6%BE%E0%A6%A6%E0%A7%87%E0%A6%B6" autocomplete="off" spellcheck="false">
       </div>
-      <div class="text-center">
-        <button class="btn btn-success btn-lg" type="button" onclick="encode()">Encode</button>
-        <button class="btn btn-danger btn-lg" type="button" onclick="decode()">Decode</button>
+      <div class="form-group">
+        <label class="wm-label">Decoded URL</label>
+        <div class="decoded-out" id="decodedOut">—</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="wm-btn wm-btn--primary" onclick="decode()">🔗 Decode</button>
+        <button class="wm-btn wm-btn--secondary" id="copyBtn" onclick="copyDecoded()" style="display:none">📋 Copy</button>
+        <button class="wm-btn wm-btn--secondary" id="openBtn" onclick="openUrl()" style="display:none">↗ Open URL</button>
+        <button class="wm-btn wm-btn--secondary" onclick="clearAll()">✕ Clear</button>
       </div>
     </div>
+    <div class="notice" style="margin-top:0">
+      Non-Latin Wikipedians often have problems with long encoded links. Paste any encoded URL above to get a readable version.
+    </div>
+    <div class="similar-tools">
+      <h3>Related tools</h3>
+      <ul class="similar-tools__list">
+        <li><a href="../wc/">📝 Word Counter</a></li>
+        <li><a href="../ip/">🌐 IP Information</a></li>
+        <li><a href="../bndate/">📅 Bangla Date Converter</a></li>
+      </ul>
+    </div>
   </div>
-</div>
-<br><center><footer><strong><a href="https://tools.yahyabd.xyz">→Return to the tools homepage</a></strong></footer></center>
+  <script src="../yt-shell.js"></script>
+  <script>
+    const input = document.getElementById('encodedInput');
+    const out = document.getElementById('decodedOut');
+    let lastDecoded = '';
+
+    input.addEventListener('input', decode);
+    input.addEventListener('keydown', e => { if(e.key==='Enter') decode(); });
+
+    function decode() {
+      const raw = input.value.trim();
+      if (!raw) { out.textContent = '—'; document.getElementById('copyBtn').style.display='none'; document.getElementById('openBtn').style.display='none'; return; }
+      try {
+        lastDecoded = decodeURIComponent(raw);
+        const isUrl = /^https?:\/\//i.test(lastDecoded);
+        out.innerHTML = isUrl
+          ? `<a href="${lastDecoded}" target="_blank" rel="noopener">${lastDecoded}</a>`
+          : lastDecoded;
+        document.getElementById('copyBtn').style.display = '';
+        document.getElementById('openBtn').style.display = isUrl ? '' : 'none';
+      } catch(e) {
+        out.textContent = '⚠ Invalid encoding — could not decode.';
+        out.style.color = 'var(--wmf-red)';
+        return;
+      }
+      out.style.color = '';
+    }
+
+    function copyDecoded() {
+      navigator.clipboard.writeText(lastDecoded).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = '✓ Copied';
+        setTimeout(() => { btn.textContent = '📋 Copy'; }, 1500);
+      });
+    }
+
+    function openUrl() { if (lastDecoded) window.open(lastDecoded, '_blank', 'noopener'); }
+
+    function clearAll() {
+      input.value = '';
+      out.textContent = '—';
+      document.getElementById('copyBtn').style.display='none';
+      document.getElementById('openBtn').style.display='none';
+      lastDecoded = '';
+    }
+  </script>
 </body>
 </html>

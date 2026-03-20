@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-IP Checker — YTools</title>
+  <link rel="stylesheet" href="../common.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    .results-table-wrap { overflow-x: auto; margin-top: 20px; }
+    table.rt { width: 100%; border-collapse: collapse; font-size: .875rem; }
+    table.rt th { background: var(--wmf-gray-10); color: var(--wmf-gray-70); font-weight: 600; padding: 10px 12px; text-align: left; border-bottom: 2px solid var(--wmf-gray-20); white-space: nowrap; }
+    table.rt td { padding: 9px 12px; border-bottom: 1px solid var(--wmf-gray-20); vertical-align: top; }
+    table.rt tr.row-proxy td { background: var(--wmf-yellow-bg); }
+    table.rt tr.row-blocked td { background: #fde8e8; }
+    table.rt tr.row-error td { color: var(--wmf-red); font-style: italic; }
+    .ip-mono { font-family: var(--font-mono); }
+    #multiMap { height: 360px; border: 1px solid var(--wmf-gray-20); border-radius: var(--radius); margin-top: 20px; }
+    .progress-bar-wrap { height: 4px; background: var(--wmf-gray-20); border-radius: 2px; margin-top: 12px; overflow: hidden; display: none; }
+    .progress-bar { height: 100%; background: var(--wmf-blue); transition: width .3s; }
+  </style>
+</head>
+<body>
+  <div class="page-content">
+    <div class="breadcrumb"><a href="../">YTools</a><span>›</span> Multi-IP Checker</div>
+    <div class="tool-page-header">
+      <h1>📋 Multi-IP Checker</h1>
+      <p>Check proxy/VPN status, location, and Wikimedia global-block status for multiple IPs at once.</p>
+    </div>
+    <div class="card">
+      <div class="form-group">
+        <label class="wm-label" for="ipInput">IP addresses <small style="font-weight:400;color:var(--wmf-gray-50)">(one per line)</small></label>
+        <textarea class="wm-textarea" id="ipInput" rows="8" placeholder="1.1.1.1&#10;8.8.8.8&#10;9.9.9.9"></textarea>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="wm-btn wm-btn--primary wm-btn--lg" onclick="processIPs()" id="checkBtn">🔍 Check all IPs</button>
+        <button class="wm-btn wm-btn--secondary" onclick="clearAll()">✕ Clear</button>
+      </div>
+      <div class="progress-bar-wrap" id="progressWrap"><div class="progress-bar" id="progressBar"></div></div>
+    </div>
+
+    <div id="resultsArea"></div>
+
+    <div class="similar-tools">
+      <h3>Related tools</h3>
+      <ul class="similar-tools__list">
+        <li><a href="../ip/">🌐 IP Information Viewer</a></li>
+        <li><a href="../ip-calc/">🔢 IP Range Calculator</a></li>
+        <li><a href="../ip-whois/">🔍 IP WHOIS Lookup</a></li>
+        <li><a href="../ip-cidr/">🗂️ CIDR Subnet Tool</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="../yt-shell.js"></script>
+  <script>
+    let map = null;
+
+    async function processIPs() {
+      const ips = document.getElementById('ipInput').value.split('\n').map(s=>s.trim()).filter(Boolean);
+      if (!ips.length) return;
+      const btn = document.getElementById('checkBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Checking…';
+      const pw = document.getElementById('progressWrap');
+      const pb = document.getElementById('progressBar');
+      pw.style.display = 'block'; pb.style.width = '0%';
+
+      const res = document.getElementById('resultsArea');
+      res.innerHTML = '';
+      if (map) { map.remove(); map = null; }
+
+      const results = [];
+      for (let i = 0; i < ips.length; i++) {
+        pb.style.width = ((i+1)/ips.length*100)+'%';
+        try {
+          const [ipData, wikiData] = await Promise.all([
+            fetch('get_ip_info.php?ip='+encodeURIComponent(ips[i])).then(r=>r.json()),
+            fetch('https://meta.wikimedia.org/w/api.php?action=query&format=json&list=globalblocks&bgip='+encodeURIComponent(ips[i])+'&origin=*').then(r=>r.json())
+          ]);
+          results.push({ ip: ips[i], data: ipData, blocked: (wikiData.query?.globalblocks||[]).length > 0 });
+        } catch(e) {
+          results.push({ ip: ips[i], error: true });
+        }
+      }
+
+      pw.style.display = 'none';
+      btn.disabled = false; btn.textContent = '🔍 Check all IPs';
+      renderResults(results);
+    }
+
+    function renderResults(results) {
+      const area = document.getElementById('resultsArea');
+      const summary = results.reduce((a,r)=>{
+        if(r.error) a.errors++;
+        else if(r.blocked) a.blocked++;
+        else if((r.data.proxy||'').toLowerCase()==='yes') a.proxy++;
+        else a.clean++;
+        return a;
+      },{proxy:0,blocked:0,clean:0,errors:0});
+
+      let rows = results.map(r => {
+        if (r.error) return `<tr class="row-error"><td class="ip-mono">${r.ip}</td><td colspan="6">Failed to fetch</td></tr>`;
+        const isProxy = (r.data.proxy||'').toLowerCase()==='yes';
+        const cls = r.blocked ? 'row-blocked' : (isProxy ? 'row-proxy' : '');
+        const loc = [r.data.city, r.data.country].filter(Boolean).join(', ') || 'N/A';
+        const proxyBadge = isProxy ? '<span class="badge badge--proxy">Proxy</span>' : '';
+        const blockedBadge = r.blocked ? '<span class="badge badge--blocked">Blocked</span>' : '';
+        return `<tr class="${cls}">
+          <td class="ip-mono"><a href="../ip/?ip=${r.ip}" target="_blank" style="color:var(--wmf-blue)">${r.ip}</a></td>
+          <td>${proxyBadge||'—'}</td>
+          <td>${r.data.type||'N/A'}</td>
+          <td>${loc}</td>
+          <td class="ip-mono" style="font-size:.8rem">${r.data.asn||'N/A'}</td>
+          <td>${r.data.provider||'N/A'}</td>
+          <td>${blockedBadge || '<span class="badge badge--clean">OK</span>'}</td>
+        </tr>`;
+      }).join('');
+
+      area.innerHTML = `<div class="card" style="padding:16px 20px;margin-bottom:16px;display:flex;gap:24px;flex-wrap:wrap">
+        <span>✅ Clean: <strong>${summary.clean}</strong></span>
+        <span style="color:#92400e">🕵️ Proxy: <strong>${summary.proxy}</strong></span>
+        <span style="color:#991b1b">🚫 Blocked: <strong>${summary.blocked}</strong></span>
+        ${summary.errors?`<span style="color:var(--wmf-red)">⚠ Errors: <strong>${summary.errors}</strong></span>`:''}
+      </div>
+      <div class="card card--flush">
+        <div class="results-table-wrap">
+          <table class="rt">
+            <thead><tr><th>IP Address</th><th>Proxy/VPN</th><th>Type</th><th>Location</th><th>ASN</th><th>Provider</th><th>Wiki Status</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </div>`;
+
+      // Map
+      const geoIps = results.filter(r=>!r.error && r.data.latitude && r.data.longitude);
+      if (geoIps.length) {
+        const mapEl = document.createElement('div'); mapEl.id = 'multiMap';
+        area.appendChild(mapEl);
+        setTimeout(() => {
+          map = L.map('multiMap').setView([geoIps[0].data.latitude, geoIps[0].data.longitude], 3);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+          const markers = geoIps.map(r => L.marker([r.data.latitude, r.data.longitude]).addTo(map)
+            .bindPopup(`<b>${r.ip}</b><br>${r.data.city}, ${r.data.country}<br>${r.data.provider}`));
+          if (geoIps.length > 1) map.fitBounds(new L.featureGroup(markers).getBounds().pad(.1));
+        }, 50);
+      }
+    }
+
+    function clearAll() {
+      document.getElementById('ipInput').value = '';
+      document.getElementById('resultsArea').innerHTML = '';
+      if (map) { map.remove(); map = null; }
+    }
+  </script>
+</body>
+</html>

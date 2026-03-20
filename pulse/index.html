@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Edit Pulse — YTools</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { box-sizing: border-box; }
+  
+  body {
+    margin: 0;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #e2e8f0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: auto;
+    padding: 30px 20px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 2.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #38bdf8 0%, #22c55e 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    color: #94a3b8;
+    margin-top: 8px;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+  }
+
+  .status-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #64748b;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(56, 189, 248, 0.5);
+    box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2);
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #38bdf8;
+    line-height: 1;
+  }
+
+  .stat-value.green { color: #22c55e; }
+  .stat-value.purple { color: #a78bfa; }
+  .stat-value.orange { color: #fb923c; }
+
+  .chart-container {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 30px;
+    margin: 20px 0;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  }
+
+  canvas {
+    width: 100%;
+    height: 350px;
+    border-radius: 12px;
+    display: block;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 8px;
+    color: #38bdf8;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
+
+  .btn:hover {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: #38bdf8;
+    transform: translateY(-2px);
+  }
+
+  .btn.active {
+    background: #38bdf8;
+    color: #0f172a;
+    border-color: #38bdf8;
+  }
+
+  .recent-edits {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 24px;
+    margin-top: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .recent-edits h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.2rem;
+    color: #38bdf8;
+  }
+
+  .edit-item {
+    padding: 12px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .edit-title {
+    font-weight: 500;
+    color: #e2e8f0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .edit-meta {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-left: 12px;
+  }
+
+  .edit-type {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-left: 8px;
+  }
+
+  .edit-type.new {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+  }
+
+  .edit-type.edit {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 0.85rem;
+    color: #64748b;
+    padding: 20px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(56, 189, 248, 0.3);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(56, 189, 248, 0.5);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>বাংলা উইকিপিডিয়া</h1>
+    <div class="subtitle">Live Edit Pulse Monitor</div>
+  </header>
+
+  <div class="status-bar">
+    <div class="status-item">
+      <span class="dot" id="statusDot"></span>
+      <span id="statusText">Connecting...</span>
+    </div>
+    <div class="status-item">
+      <span id="timeDisplay">--:--:--</span>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Edits / Hour</div>
+      <div class="stat-value" id="editsHour">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Today</div>
+      <div class="stat-value green" id="totalToday">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Peak Rate</div>
+      <div class="stat-value purple" id="peakRate">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Actively Editing</div>
+      <div class="stat-value orange" id="activeNow">0</div>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <canvas id="ecg" width="1200" height="350"></canvas>
+    <div class="controls">
+      <button class="btn active" onclick="setTimeRange(5)">5m</button>
+      <button class="btn" onclick="setTimeRange(15)">15m</button>
+      <button class="btn" onclick="setTimeRange(30)">30m</button>
+      <button class="btn" onclick="setTimeRange(60)">1h</button>
+    </div>
+  </div>
+
+  <div class="recent-edits">
+    <h3>Recent Edits</h3>
+    <div id="recentEditsList"></div>
+  </div>
+
+  <footer>
+    Data source: Wikimedia RecentChanges EventStream API
+  </footer>
+</div>
+
+<script>
+const WIKI = "bnwiki";
+const POINTS = 300;
+const SAMPLE_INTERVAL = 1000;
+
+const canvas = document.getElementById("ecg");
+const ctx = canvas.getContext("2d");
+const WIDTH = canvas.width;
+const HEIGHT = canvas.height;
+const BASELINE = HEIGHT / 2;
+
+const statusDot = document.getElementById("statusDot");
+const statusText = document.getElementById("statusText");
+const editsHourEl = document.getElementById("editsHour");
+const totalTodayEl = document.getElementById("totalToday");
+const peakRateEl = document.getElementById("peakRate");
+const activeNowEl = document.getElementById("activeNow");
+const timeDisplayEl = document.getElementById("timeDisplay");
+const recentEditsList = document.getElementById("recentEditsList");
+
+let waveform = new Array(POINTS).fill(0);
+let editsThisSecond = 0;
+let timeRange = 5;
+let recentEdits = [];
+let totalEditsToday = 0;
+let peakRate = 0;
+let editTimestamps = [];
+let activeUsers = new Map(); // Track users and their last edit time
+let revealProgress = 0;
+let backfillEditsCount = 0;
+
+function updateTime() {
+  const now = new Date();
+  timeDisplayEl.textContent = now.toLocaleTimeString('en-US', { hour12: false });
+}
+setInterval(updateTime, 1000);
+updateTime();
+
+async function backfillECG() {
+  const now = Date.now();
+  const start = new Date(now - timeRange * 60000);
+
+  const url =
+    "https://bn.wikipedia.org/w/api.php" +
+    "?action=query&list=recentchanges" +
+    "&rctype=edit|new" +
+    "&rcnamespace=0" +
+    "&rclimit=500" +
+    "&rcstart=" + new Date(now).toISOString() +
+    "&rcend=" + start.toISOString() +
+    "&format=json&origin=*";
+
+  try {
+    const res = await fetch(url);
+    const json = await res.json();
+    const edits = json.query.recentchanges || [];
+
+    // Store actual edit count for accurate calculation
+    backfillEditsCount = edits.length;
+
+    // Distribute edits across time buckets
+    const buckets = new Array(POINTS).fill(0);
+    const msPerBucket = (timeRange * 60000) / POINTS;
+    
+    // Track active users from backfill (last 15 minutes)
+    const fifteenMinAgo = now - 900000;
+    
+    edits.forEach(edit => {
+      const editTime = new Date(edit.timestamp).getTime();
+      const timeDiff = now - editTime;
+      const bucketIndex = Math.floor(timeDiff / msPerBucket);
+      if (bucketIndex >= 0 && bucketIndex < POINTS) {
+        buckets[POINTS - 1 - bucketIndex]++;
+      }
+      
+      // Add users who edited in last 15 minutes to activeUsers map
+      if (editTime >= fifteenMinAgo && edit.user) {
+        activeUsers.set(edit.user, editTime);
+      }
+    });
+
+    waveform = buckets;
+    
+    // Calculate peak from actual data
+    peakRate = Math.max(...buckets);
+    
+    updateStats();
+  } catch (err) {
+    console.error("Backfill error:", err);
+  }
+}
+
+const source = new EventSource("https://stream.wikimedia.org/v2/stream/recentchange");
+
+source.onopen = () => {
+  statusDot.style.background = "#22c55e";
+  statusText.textContent = "Live";
+};
+
+source.onerror = () => {
+  statusDot.style.background = "#ef4444";
+  statusText.textContent = "Disconnected";
+};
+
+source.onmessage = (event) => {
+  const rc = JSON.parse(event.data);
+  if (rc.wiki === WIKI && (rc.type === "edit" || rc.type === "new")) {
+    editsThisSecond++;
+    totalEditsToday++;
+    const now = Date.now();
+    editTimestamps.push(now);
+    
+    // Track active users
+    activeUsers.set(rc.user, now);
+    
+    // Keep only last hour of timestamps
+    const oneHourAgo = now - 3600000;
+    editTimestamps = editTimestamps.filter(t => t > oneHourAgo);
+    
+    addRecentEdit(rc);
+  }
+};
+
+function addRecentEdit(rc) {
+  recentEdits.unshift({
+    title: rc.title,
+    user: rc.user,
+    type: rc.type,
+    time: new Date().toLocaleTimeString('en-US', { hour12: false })
+  });
+  
+  if (recentEdits.length > 10) recentEdits.pop();
+  
+  recentEditsList.innerHTML = recentEdits.map(edit => `
+    <div class="edit-item">
+      <div class="edit-title">${edit.title}</div>
+      <div class="edit-meta">
+        ${edit.time}
+        <span class="edit-type ${edit.type}">${edit.type.toUpperCase()}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+setInterval(() => {
+  waveform.push(editsThisSecond);
+  waveform.shift();
+  
+  // Update peak if current second is higher
+  if (editsThisSecond > peakRate) {
+    peakRate = editsThisSecond;
+  }
+  
+  // Add to backfill count (rolling window)
+  backfillEditsCount += editsThisSecond;
+  
+  editsThisSecond = 0;
+  updateStats();
+}, SAMPLE_INTERVAL);
+
+function updateStats() {
+  // Calculate edits per hour based on actual edits in the time window
+  // backfillEditsCount = total edits in last 'timeRange' minutes
+  const editsPerHour = Math.round((backfillEditsCount / timeRange) * 60);
+  
+  editsHourEl.textContent = editsPerHour;
+  totalTodayEl.textContent = totalEditsToday;
+  
+  // Peak rate: convert per-second peak to per-hour
+  // peakRate is edits in one second, so multiply by 3600 for hourly rate
+  peakRateEl.textContent = peakRate * 3600;
+  
+  // Active users in last 15 minutes (industry standard for "active now")
+  const fifteenMinAgo = Date.now() - 900000; // 15 minutes in ms
+  const activeCount = Array.from(activeUsers.values()).filter(t => t > fifteenMinAgo).length;
+  activeNowEl.textContent = activeCount;
+  
+  // Clean up old users from the map
+  for (const [user, time] of activeUsers.entries()) {
+    if (time < fifteenMinAgo) {
+      activeUsers.delete(user);
+    }
+  }
+}
+
+function drawGrid() {
+  ctx.strokeStyle = "rgba(255,255,255,0.03)";
+  ctx.lineWidth = 1;
+  for (let y = 0; y <= HEIGHT; y += 50) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(WIDTH, y);
+    ctx.stroke();
+  }
+  
+  ctx.strokeStyle = "rgba(56, 189, 248, 0.1)";
+  ctx.beginPath();
+  ctx.moveTo(0, BASELINE);
+  ctx.lineTo(WIDTH, BASELINE);
+  ctx.stroke();
+}
+
+function drawWave() {
+  const gradient = ctx.createLinearGradient(0, 0, WIDTH, 0);
+  gradient.addColorStop(0, "#38bdf8");
+  gradient.addColorStop(0.5, "#22c55e");
+  gradient.addColorStop(1, "#a78bfa");
+  
+  ctx.strokeStyle = gradient;
+  ctx.lineWidth = 3;
+  ctx.shadowColor = "#22c55e";
+  ctx.shadowBlur = 15;
+
+  ctx.beginPath();
+  const visiblePoints = Math.floor(POINTS * revealProgress);
+
+  waveform.forEach((v, i) => {
+    if (i > visiblePoints) return;
+    const x = (i / (POINTS - 1)) * WIDTH;
+    const maxVal = Math.max(...waveform) || 1;
+    const amp = (v / maxVal) * (BASELINE * 0.8);
+    const y = BASELINE - amp;
+
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+
+  ctx.stroke();
+  
+  // Fill area under curve
+  ctx.lineTo(WIDTH, BASELINE);
+  ctx.lineTo(0, BASELINE);
+  ctx.closePath();
+  
+  const fillGradient = ctx.createLinearGradient(0, 0, 0, HEIGHT);
+  fillGradient.addColorStop(0, "rgba(34, 197, 94, 0.2)");
+  fillGradient.addColorStop(1, "rgba(34, 197, 94, 0)");
+  ctx.fillStyle = fillGradient;
+  ctx.fill();
+  
+  ctx.shadowBlur = 0;
+}
+
+function animate() {
+  ctx.fillStyle = "#0f172a";
+  ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+  drawGrid();
+  drawWave();
+
+  if (revealProgress < 1) {
+    revealProgress += 0.015;
+  }
+
+  requestAnimationFrame(animate);
+}
+
+function setTimeRange(minutes) {
+  timeRange = minutes;
+  document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  waveform = new Array(POINTS).fill(0);
+  revealProgress = 0;
+  backfillEditsCount = 0; // Reset count when changing time range
+  peakRate = 0; // Reset peak
+  backfillECG();
+}
+
+(async function init() {
+  await backfillECG();
+  animate();
+})();
+</script>
+
+  <!-- YTools shell + similar tools -->
+  <div style="max-width:900px;margin:0 auto;padding:0 24px 48px">
+    <link rel="stylesheet" href="../common.css">
+    <div class="similar-tools">
+      <h3>Related tools</h3>
+      <ul class="similar-tools__list">
+        <li><a href="../wiki-harmony/">🎵 WikiHarmony</a></li>
+        <li><a href="../onthisday/">📆 On This Day</a></li>
+        <li><a href="../wc/">📝 Word Counter</a></li>
+        <li><a href="../">← All YTools</a></li>
+      </ul>
+    </div>
+  </div>
+  <script src="../yt-shell.js"></script>
+
+</body>
+</html>

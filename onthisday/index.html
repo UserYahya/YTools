@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আজকের এই দিনে | উইকিপিডিয়া</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Hind Siliguri & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        body {
+            font-family: 'Hind Siliguri', 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #38b2ac, #81e6d9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a202c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #4a5568;
+            border-radius: 10px;
+            border: 2px solid #1a202c;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #718096;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 antialiased">
+
+    <!-- Main Container -->
+    <div class="container mx-auto max-w-4xl p-4 sm:p-6 md:p-8">
+
+        <!-- Header Section -->
+        <header class="text-center my-8">
+            <h1 class="text-4xl md:text-5xl font-bold gradient-text">আজকের এই দিনে</h1>
+            <p id="current-date" class="text-lg md:text-xl text-gray-400 mt-2"></p>
+        </header>
+
+        <!-- Loading Spinner -->
+        <div id="loader" class="flex justify-center items-center my-16">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-teal-500"></div>
+        </div>
+
+        <!-- Error Message Container -->
+        <div id="error-message" class="hidden text-center my-16 p-6 bg-red-900/50 rounded-lg">
+            <h2 class="text-2xl text-red-400 font-semibold">একটি সমস্যা হয়েছে!</h2>
+            <p class="text-red-300 mt-2">দুঃখিত, এই মুহূর্তে তথ্য আনা সম্ভব হচ্ছে না। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন।</p>
+        </div>
+
+        <!-- Main Content Area -->
+        <main id="content" class="hidden space-y-8">
+            
+            <!-- Events Section -->
+            <section class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-gray-700">
+                <h2 class="text-2xl font-semibold text-teal-300 border-b-2 border-teal-500/30 pb-3 mb-4">ঐতিহাসিক ঘটনা</h2>
+                <ul id="events-list" class="space-y-4 list-inside">
+                    <!-- JS will populate this -->
+                </ul>
+            </section>
+
+            <!-- Births Section -->
+            <section class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-gray-700">
+                <h2 class="text-2xl font-semibold text-sky-300 border-b-2 border-sky-500/30 pb-3 mb-4">জন্মদিন</h2>
+                <ul id="births-list" class="space-y-4 list-inside">
+                    <!-- JS will populate this -->
+                </ul>
+            </section>
+
+            <!-- Deaths Section -->
+            <section class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-gray-700">
+                <h2 class="text-2xl font-semibold text-rose-300 border-b-2 border-rose-500/30 pb-3 mb-4">মৃত্যুবার্ষিকী</h2>
+                <ul id="deaths-list" class="space-y-4 list-inside">
+                    <!-- JS will populate this -->
+                </ul>
+            </section>
+
+        </main>
+        
+        <!-- Footer -->
+        <footer class="text-center mt-12 mb-6">
+            <p class="text-gray-500 text-sm">
+                (তথ্যগুলো ইংরেজি উইকিপিডিয়া থেকে সংগৃহীত)
+            </p>
+            <p class="text-gray-500 mt-1">
+                তথ্যসূত্র: <a href="https://www.wikipedia.org/" target="_blank" rel="noopener noreferrer" class="hover:text-teal-400 underline">উইকিপিডিয়া</a>
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        // DOM Elements
+        const loader = document.getElementById('loader');
+        const content = document.getElementById('content');
+        const errorMessage = document.getElementById('error-message');
+        const dateDisplay = document.getElementById('current-date');
+
+        const lists = {
+            events: document.getElementById('events-list'),
+            births: document.getElementById('births-list'),
+            deaths: document.getElementById('deaths-list')
+        };
+        
+        // Function to convert numbers to Bengali numerals
+        function toBengaliNumber(num) {
+            const bengaliDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+            // Ensure input is a string to handle non-numeric characters gracefully
+            return String(num).replace(/\d/g, digit => bengaliDigits[parseInt(digit)]);
+        }
+
+        // Function to format the date in Bengali
+        function formatBengaliDate() {
+            const now = new Date();
+            const day = toBengaliNumber(now.getDate());
+            const year = toBengaliNumber(now.getFullYear());
+            const monthNames = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
+            const month = monthNames[now.getMonth()];
+            
+            return `${day} ${month}, ${year}`;
+        }
+        
+        // Function to create a list item element for display
+        function createListItem(item) {
+            const listItem = document.createElement('li');
+            listItem.className = 'flex items-start text-gray-300';
+            
+            const pageLink = item.pages && item.pages.length > 0 ? item.pages[0].content_urls.desktop.page : '#';
+
+            listItem.innerHTML = `
+                <span class="mr-4 text-teal-400 font-semibold text-right w-16 shrink-0">${toBengaliNumber(item.year)}</span>
+                <span class="flex-1">
+                    <a href="${pageLink}" target="_blank" rel="noopener noreferrer" class="hover:text-white hover:underline transition-colors duration-200">
+                        ${item.text}
+                    </a>
+                </span>
+            `;
+            return listItem;
+        }
+
+        // Function to show a message when a section is empty
+        function createEmptyMessage(message) {
+             const listItem = document.createElement('li');
+             listItem.className = 'text-gray-400 italic';
+             listItem.textContent = message;
+             return listItem;
+        }
+        
+        // Main function to fetch and display data
+        async function fetchOnThisDay() {
+            const now = new Date();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            
+            // **FIX**: Switched to the more reliable English Wikipedia API
+            const apiUrl = `https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/${month}/${day}`;
+
+            try {
+                const response = await fetch(apiUrl, { headers: { 'Accept': 'application/json' } });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                // Populate Events
+                if (data.events && data.events.length > 0) {
+                    data.events.forEach(event => lists.events.appendChild(createListItem(event)));
+                } else {
+                    lists.events.appendChild(createEmptyMessage('আজকের দিনে কোনো বিশেষ ঘটনা নেই।'));
+                }
+
+                // Populate Births
+                if (data.births && data.births.length > 0) {
+                    data.births.forEach(birth => lists.births.appendChild(createListItem(birth)));
+                } else {
+                    lists.births.appendChild(createEmptyMessage('আজকের দিনে কোনো উল্লেখযোগ্য জন্মদিন নেই।'));
+                }
+
+                // Populate Deaths
+                if (data.deaths && data.deaths.length > 0) {
+                    data.deaths.forEach(death => lists.deaths.appendChild(createListItem(death)));
+                } else {
+                    lists.deaths.appendChild(createEmptyMessage('আজকের দিনে কোনো উল্লেখযোগ্য মৃত্যুবার্ষিকী নেই।'));
+                }
+
+                // Show content and hide loader
+                loader.style.display = 'none';
+                content.classList.remove('hidden');
+
+            } catch (error) {
+                console.error("Failed to fetch data:", error);
+                // Show error message and hide loader
+                loader.style.display = 'none';
+                errorMessage.classList.remove('hidden');
+            }
+        }
+
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            dateDisplay.textContent = formatBengaliDate();
+            fetchOnThisDay();
+        });
+    </script>
+
+  <!-- YTools shell + similar tools -->
+  <div style="max-width:900px;margin:0 auto;padding:0 24px 48px">
+    <link rel="stylesheet" href="../common.css">
+    <div class="similar-tools">
+      <h3>Related tools</h3>
+      <ul class="similar-tools__list">
+        <li><a href="../bndate/">📅 Bangla Date Converter</a></li>
+        <li><a href="../pulse/">📡 Edit Pulse</a></li>
+        <li><a href="../wc/">📝 Word Counter</a></li>
+        <li><a href="../wiki-harmony/">🎵 WikiHarmony</a></li>
+        <li><a href="../">← All YTools</a></li>
+      </ul>
+    </div>
+  </div>
+  <script src="../yt-shell.js"></script>
+
+</body>
+</html>
+

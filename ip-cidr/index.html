@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CIDR Subnet Calculator — YTools</title>
+  <link rel="stylesheet" href="../common.css">
+</head>
+<body>
+  <div class="page-content page-content--narrow">
+    <div class="breadcrumb"><a href="../">YTools</a><span>›</span> CIDR Subnet Calculator</div>
+    <div class="tool-page-header">
+      <h1>🗂️ CIDR Subnet Calculator</h1>
+      <p>Expand any CIDR notation into full subnet details — network address, broadcast, host range, and usable host count.</p>
+    </div>
+    <div class="card">
+      <div class="form-group">
+        <label class="wm-label" for="cidrInput">CIDR notation</label>
+        <div class="input-row">
+          <input class="wm-input" type="text" id="cidrInput" placeholder="e.g. 192.168.1.0/24 or 2001:db8::/32" autocomplete="off" spellcheck="false">
+          <button class="wm-btn wm-btn--primary" onclick="calculate()">🔢 Calculate</button>
+        </div>
+      </div>
+      <div class="notice">Supports both IPv4 and IPv6 CIDR notation.</div>
+    </div>
+    <div id="result"></div>
+    <div class="similar-tools">
+      <h3>Related tools</h3>
+      <ul class="similar-tools__list">
+        <li><a href="../ip-calc/">🔢 IP Range Calculator</a></li>
+        <li><a href="../ip/">🌐 IP Information Viewer</a></li>
+        <li><a href="../ipmulti/">📋 Multi-IP Checker</a></li>
+        <li><a href="../ip-whois/">🔍 IP WHOIS Lookup</a></li>
+      </ul>
+    </div>
+  </div>
+  <script src="../yt-shell.js"></script>
+  <script>
+    document.getElementById('cidrInput').addEventListener('keydown', e => { if(e.key==='Enter') calculate(); });
+
+    function ipToNum(ip) {
+      return ip.split('.').reduce((a,o)=>(a<<8)|parseInt(o), 0) >>> 0;
+    }
+    function numToIp(n) {
+      return [(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255].join('.');
+    }
+
+    function calculate() {
+      const raw = document.getElementById('cidrInput').value.trim();
+      const res = document.getElementById('result');
+      if (!raw) return;
+
+      // Try IPv4
+      const v4match = raw.match(/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\/(\d{1,2})$/);
+      if (v4match) {
+        const [,ip,prefix] = v4match;
+        const p = parseInt(prefix);
+        if (p < 0 || p > 32) { res.innerHTML='<div class="error-msg">Prefix length must be 0–32 for IPv4.</div>'; return; }
+        const mask = p === 0 ? 0 : (~0 << (32-p)) >>> 0;
+        const net  = (ipToNum(ip) & mask) >>> 0;
+        const bcast= (net | (~mask >>> 0)) >>> 0;
+        const first= p >= 31 ? net : net+1;
+        const last = p >= 31 ? bcast : bcast-1;
+        const hosts= p >= 31 ? Math.pow(2,32-p) : Math.pow(2,32-p)-2;
+        const totalAddrs = Math.pow(2,32-p);
+        const maskStr = numToIp(mask);
+        const wildcard= numToIp(~mask>>>0);
+        const cidr = `${numToIp(net)}/${p}`;
+        const blockUrl = `https://meta.wikimedia.org/wiki/Special:GlobalBlock?wpAddress=${encodeURIComponent(cidr)}&wpExpiry=indefinite`;
+
+        res.innerHTML = `<div class="card">
+          <div class="section-heading">IPv4 subnet for <span style="font-family:var(--font-mono);color:var(--wmf-blue)">${cidr}</span></div>
+          <table class="info-table">
+            <tr><th>Network address</th><td style="font-family:var(--font-mono)">${numToIp(net)}</td></tr>
+            <tr><th>Subnet mask</th><td style="font-family:var(--font-mono)">${maskStr}</td></tr>
+            <tr><th>Wildcard mask</th><td style="font-family:var(--font-mono)">${wildcard}</td></tr>
+            <tr><th>Broadcast</th><td style="font-family:var(--font-mono)">${numToIp(bcast)}</td></tr>
+            <tr><th>First host</th><td style="font-family:var(--font-mono)">${numToIp(first)}</td></tr>
+            <tr><th>Last host</th><td style="font-family:var(--font-mono)">${numToIp(last)}</td></tr>
+            <tr><th>Usable hosts</th><td>${hosts.toLocaleString()}</td></tr>
+            <tr><th>Total addresses</th><td>${totalAddrs.toLocaleString()}</td></tr>
+            <tr><th>Prefix length</th><td>/${p}</td></tr>
+          </table>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--wmf-gray-20)">
+            <a href="${blockUrl}" target="_blank" rel="noopener" style="font-size:.875rem;padding:5px 12px;border:1px solid var(--wmf-gray-30);border-radius:2px;color:var(--wmf-blue);text-decoration:none;background:var(--wmf-gray-10)">🚫 Global block this range</a>
+            <button onclick="navigator.clipboard.writeText('${cidr}')" style="font-size:.875rem;padding:5px 12px;border:1px solid var(--wmf-gray-30);border-radius:2px;color:var(--wmf-blue);background:var(--wmf-gray-10);cursor:pointer;font-family:inherit">📋 Copy CIDR</button>
+          </div>
+        </div>`;
+        return;
+      }
+
+      // Try IPv6 (basic)
+      const v6match = raw.match(/^([0-9a-fA-F:]+)\/(\d{1,3})$/);
+      if (v6match) {
+        const [,addr,prefix] = v6match;
+        const p = parseInt(prefix);
+        if (p < 0 || p > 128) { res.innerHTML='<div class="error-msg">Prefix length must be 0–128 for IPv6.</div>'; return; }
+        const hosts = p >= 127 ? Math.pow(2,128-p) : (128-p > 53 ? '> 9 quadrillion' : Math.pow(2,128-p).toLocaleString());
+        res.innerHTML = `<div class="card">
+          <div class="section-heading">IPv6 subnet for <span style="font-family:var(--font-mono);color:var(--wmf-blue)">${addr}/${p}</span></div>
+          <table class="info-table">
+            <tr><th>Prefix</th><td style="font-family:var(--font-mono)">${addr}/${p}</td></tr>
+            <tr><th>Prefix length</th><td>/${p}</td></tr>
+            <tr><th>Total addresses</th><td>2<sup>${128-p}</sup>${128-p<=53?' = '+Math.pow(2,128-p).toLocaleString():''}</td></tr>
+          </table>
+          <div class="notice" style="margin-top:12px">Full IPv6 subnet expansion requires 128-bit arithmetic beyond JavaScript's native range. Use a server-side tool for precise results.</div>
+        </div>`;
+        return;
+      }
+
+      res.innerHTML = '<div class="error-msg">⚠ Invalid CIDR format. Examples: <code>10.0.0.0/8</code> or <code>2001:db8::/32</code></div>';
+    }
+  </script>
+</body>
+</html>
