@@ -9,3 +9,4 @@ function decode() {
   obj.value = decodeURIComponent(encoded.replace(/\+/g,  " "));
 }
 
+

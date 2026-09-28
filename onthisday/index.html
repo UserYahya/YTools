@@ -1,235 +1,298 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html class="light" lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>আজকের এই দিনে | উইকিপিডিয়া</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Hind Siliguri & Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        /* Custom styles */
-        body {
-            font-family: 'Hind Siliguri', 'Inter', sans-serif;
-            scroll-behavior: smooth;
-        }
-        .gradient-text {
-            background: linear-gradient(90deg, #38b2ac, #81e6d9);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        /* Custom scrollbar for better aesthetics */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1a202c;
-        }
-        ::-webkit-scrollbar-thumb {
-            background-color: #4a5568;
-            border-radius: 10px;
-            border: 2px solid #1a202c;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background-color: #718096;
-        }
-    </style>
-</head>
-<body class="bg-gray-900 text-gray-200 antialiased">
-
-    <!-- Main Container -->
-    <div class="container mx-auto max-w-4xl p-4 sm:p-6 md:p-8">
-
-        <!-- Header Section -->
-        <header class="text-center my-8">
-            <h1 class="text-4xl md:text-5xl font-bold gradient-text">আজকের এই দিনে</h1>
-            <p id="current-date" class="text-lg md:text-xl text-gray-400 mt-2"></p>
-        </header>
-
-        <!-- Loading Spinner -->
-        <div id="loader" class="flex justify-center items-center my-16">
-            <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-teal-500"></div>
-        </div>
-
-        <!-- Error Message Container -->
-        <div id="error-message" class="hidden text-center my-16 p-6 bg-red-900/50 rounded-lg">
-            <h2 class="text-2xl text-red-400 font-semibold">একটি সমস্যা হয়েছে!</h2>
-            <p class="text-red-300 mt-2">দুঃখিত, এই মুহূর্তে তথ্য আনা সম্ভব হচ্ছে না। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন।</p>
-        </div>
-
-        <!-- Main Content Area -->
-        <main id="content" class="hidden space-y-8">
-            
-            <!-- Events Section -->
-            <section class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-gray-700">
-                <h2 class="text-2xl font-semibold text-teal-300 border-b-2 border-teal-500/30 pb-3 mb-4">ঐতিহাসিক ঘটনা</h2>
-                <ul id="events-list" class="space-y-4 list-inside">
-                    <!-- JS will populate this -->
-                </ul>
-            </section>
-
-            <!-- Births Section -->
-            <section class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-gray-700">
-                <h2 class="text-2xl font-semibold text-sky-300 border-b-2 border-sky-500/30 pb-3 mb-4">জন্মদিন</h2>
-                <ul id="births-list" class="space-y-4 list-inside">
-                    <!-- JS will populate this -->
-                </ul>
-            </section>
-
-            <!-- Deaths Section -->
-            <section class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-gray-700">
-                <h2 class="text-2xl font-semibold text-rose-300 border-b-2 border-rose-500/30 pb-3 mb-4">মৃত্যুবার্ষিকী</h2>
-                <ul id="deaths-list" class="space-y-4 list-inside">
-                    <!-- JS will populate this -->
-                </ul>
-            </section>
-
-        </main>
-        
-        <!-- Footer -->
-        <footer class="text-center mt-12 mb-6">
-            <p class="text-gray-500 text-sm">
-                (তথ্যগুলো ইংরেজি উইকিপিডিয়া থেকে সংগৃহীত)
-            </p>
-            <p class="text-gray-500 mt-1">
-                তথ্যসূত্র: <a href="https://www.wikipedia.org/" target="_blank" rel="noopener noreferrer" class="hover:text-teal-400 underline">উইকিপিডিয়া</a>
-            </p>
-        </footer>
-
-    </div>
-
-    <script>
-        // DOM Elements
-        const loader = document.getElementById('loader');
-        const content = document.getElementById('content');
-        const errorMessage = document.getElementById('error-message');
-        const dateDisplay = document.getElementById('current-date');
-
-        const lists = {
-            events: document.getElementById('events-list'),
-            births: document.getElementById('births-list'),
-            deaths: document.getElementById('deaths-list')
-        };
-        
-        // Function to convert numbers to Bengali numerals
-        function toBengaliNumber(num) {
-            const bengaliDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
-            // Ensure input is a string to handle non-numeric characters gracefully
-            return String(num).replace(/\d/g, digit => bengaliDigits[parseInt(digit)]);
-        }
-
-        // Function to format the date in Bengali
-        function formatBengaliDate() {
-            const now = new Date();
-            const day = toBengaliNumber(now.getDate());
-            const year = toBengaliNumber(now.getFullYear());
-            const monthNames = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
-            const month = monthNames[now.getMonth()];
-            
-            return `${day} ${month}, ${year}`;
-        }
-        
-        // Function to create a list item element for display
-        function createListItem(item) {
-            const listItem = document.createElement('li');
-            listItem.className = 'flex items-start text-gray-300';
-            
-            const pageLink = item.pages && item.pages.length > 0 ? item.pages[0].content_urls.desktop.page : '#';
-
-            listItem.innerHTML = `
-                <span class="mr-4 text-teal-400 font-semibold text-right w-16 shrink-0">${toBengaliNumber(item.year)}</span>
-                <span class="flex-1">
-                    <a href="${pageLink}" target="_blank" rel="noopener noreferrer" class="hover:text-white hover:underline transition-colors duration-200">
-                        ${item.text}
-                    </a>
-                </span>
-            `;
-            return listItem;
-        }
-
-        // Function to show a message when a section is empty
-        function createEmptyMessage(message) {
-             const listItem = document.createElement('li');
-             listItem.className = 'text-gray-400 italic';
-             listItem.textContent = message;
-             return listItem;
-        }
-        
-        // Main function to fetch and display data
-        async function fetchOnThisDay() {
-            const now = new Date();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            
-            // **FIX**: Switched to the more reliable English Wikipedia API
-            const apiUrl = `https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/${month}/${day}`;
-
-            try {
-                const response = await fetch(apiUrl, { headers: { 'Accept': 'application/json' } });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                
-                // Populate Events
-                if (data.events && data.events.length > 0) {
-                    data.events.forEach(event => lists.events.appendChild(createListItem(event)));
-                } else {
-                    lists.events.appendChild(createEmptyMessage('আজকের দিনে কোনো বিশেষ ঘটনা নেই।'));
-                }
-
-                // Populate Births
-                if (data.births && data.births.length > 0) {
-                    data.births.forEach(birth => lists.births.appendChild(createListItem(birth)));
-                } else {
-                    lists.births.appendChild(createEmptyMessage('আজকের দিনে কোনো উল্লেখযোগ্য জন্মদিন নেই।'));
-                }
-
-                // Populate Deaths
-                if (data.deaths && data.deaths.length > 0) {
-                    data.deaths.forEach(death => lists.deaths.appendChild(createListItem(death)));
-                } else {
-                    lists.deaths.appendChild(createEmptyMessage('আজকের দিনে কোনো উল্লেখযোগ্য মৃত্যুবার্ষিকী নেই।'));
-                }
-
-                // Show content and hide loader
-                loader.style.display = 'none';
-                content.classList.remove('hidden');
-
-            } catch (error) {
-                console.error("Failed to fetch data:", error);
-                // Show error message and hide loader
-                loader.style.display = 'none';
-                errorMessage.classList.remove('hidden');
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <!-- Tailwind CSS & Google Fonts (Static Injection) -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    window.tailwind = {
+      config: {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-subtle': '#F8F9FA',
+              'error-container': '#ffdad6',
+              'tertiary-container': '#a65400',
+              'tertiary-fixed': '#ffdcc5',
+              'surface-tint': '#2259bf',
+              'surface-container-low': '#f5f3f4',
+              'secondary-fixed-dim': '#54ddb4',
+              'surface-container-highest': '#e3e2e3',
+              'surface-variant': '#e3e2e3',
+              'secondary': '#006c53',
+              'surface-container-lowest': '#ffffff',
+              'inverse-primary': '#b1c5ff',
+              'on-primary': '#ffffff',
+              'on-secondary': '#ffffff',
+              'on-secondary-container': '#007258',
+              'outline-variant': '#c3c6d5',
+              'on-background': '#1b1c1d',
+              'surface-bright': '#faf9fa',
+              'on-primary-container': '#e7ebff',
+              'outline': '#737784',
+              'surface-container': '#efedee',
+              'tertiary': '#824000',
+              'on-error': '#ffffff',
+              'on-primary-fixed-variant': '#00419d',
+              'on-secondary-fixed-variant': '#00513e',
+              'primary-container': '#3366cc',
+              'on-surface': '#1b1c1d',
+              'error': '#ba1a1a',
+              'on-tertiary-fixed': '#301400',
+              'on-tertiary-fixed-variant': '#713700',
+              'inverse-on-surface': '#f2f0f1',
+              'surface': '#faf9fa',
+              'background': '#faf9fa',
+              'primary-fixed': '#d9e2ff',
+              'on-surface-variant': '#434653',
+              'chrono-event': '#E67E22',
+              'secondary-container': '#74facf',
+              'on-tertiary-container': '#ffe7d9',
+              'on-tertiary': '#ffffff',
+              'on-secondary-fixed': '#002117',
+              'surface-dim': '#dbdadb',
+              'primary': '#094cb2',
+              'primary-fixed-dim': '#b1c5ff',
+              'border-subtle': '#A2A9B1',
+              'ip-network': '#3366CC',
+              'surface-container-high': '#e9e8e9',
+              'on-error-container': '#93000a',
+              'on-primary-fixed': '#001946',
+              'text-secondary': '#72777D',
+              'inverse-surface': '#303031',
+              'secondary-fixed': '#74facf',
+              'wiki-project': '#00AF89',
+              'tertiary-fixed-dim': '#ffb783'
+            },
+            borderRadius: {
+              'DEFAULT': '0.125rem',
+              'lg': '0.25rem',
+              'xl': '0.5rem',
+              'full': '0.75rem'
+            },
+            spacing: {
+              'stack-lg': '24px',
+              'gutter': '16px',
+              'base': '4px',
+              'stack-sm': '8px',
+              'margin-mobile': '12px',
+              'container-max': '1200px',
+              'stack-md': '16px'
+            },
+            fontFamily: {
+              'body-lg': ['Inter', 'sans-serif'],
+              'label-md': ['Inter', 'sans-serif'],
+              'display-lg': ['Source Serif 4', 'serif'],
+              'headline-sm': ['Source Serif 4', 'serif'],
+              'code': ['JetBrains Mono', 'monospace'],
+              'body-md': ['Inter', 'sans-serif'],
+              'body-sm': ['Inter', 'sans-serif'],
+              'headline-md': ['Source Serif 4', 'serif']
+            },
+            fontSize: {
+              'body-lg': ['16px', {lineHeight: '24px', fontWeight: '400'}],
+              'label-md': ['13px', {lineHeight: '16px', fontWeight: '600'}],
+              'display-lg': ['32px', {lineHeight: '40px', fontWeight: '400'}],
+              'headline-sm': ['20px', {lineHeight: '28px', fontWeight: '400'}],
+              'code': ['13px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-md': ['14px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-sm': ['12px', {lineHeight: '18px', fontWeight: '400'}],
+              'headline-md': ['24px', {lineHeight: '32px', fontWeight: '400'}]
             }
+          }
         }
+      }
+    };
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+    .quiet-shadow {
+      box-shadow: 0 2px 2px 0 rgba(0,0,0,0.1);
+    }
+    body {
+      font-family: 'Inter', sans-serif !important;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Source Serif 4', serif !important;
+    }
+    code, pre, .font-code {
+      font-family: 'JetBrains Mono', monospace !important;
+    }
+  </style>
 
-        // Run on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            dateDisplay.textContent = formatBengaliDate();
-            fetchOnThisDay();
-        });
-    </script>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>আজকের এই দিনে - YTools</title>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
 
-  <!-- YTools shell + similar tools -->
-  <div style="max-width:900px;margin:0 auto;padding:0 24px 48px">
-    <link rel="stylesheet" href="../common.css">
-    <div class="similar-tools">
-      <h3>Related tools</h3>
-      <ul class="similar-tools__list">
-        <li><a href="../bndate/">📅 Bangla Date Converter</a></li>
-        <li><a href="../pulse/">📡 Edit Pulse</a></li>
-        <li><a href="../wc/">📝 Word Counter</a></li>
-        <li><a href="../wiki-harmony/">🎵 WikiHarmony</a></li>
-        <li><a href="../">← All YTools</a></li>
-      </ul>
+<main class="max-w-container-max mx-auto px-gutter py-stack-lg min-h-screen">
+  <!-- Breadcrumbs & Tool Header -->
+  <div class="mb-stack-lg">
+    <nav class="flex items-center text-body-sm text-text-secondary mb-base">
+      <a class="hover:text-primary no-underline" href="../">Tools</a>
+      <span class="material-symbols-outlined text-[14px] mx-base">chevron_right</span>
+      <span class="text-on-surface">আজকের এই দিনে</span>
+    </nav>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-stack-md border-b border-border-subtle pb-stack-md">
+      <div>
+        <h1 class="font-headline-md text-headline-md font-bold">আজকের এই দিনে</h1>
+        <p class="text-text-secondary mt-base font-body-md" id="current-date">...</p>
+      </div>
     </div>
   </div>
-  <script src="../yt-shell.js"></script>
 
+  <!-- Loading Spinner -->
+  <div id="loader" class="flex justify-center items-center py-24">
+    <div class="flex items-center gap-3 text-text-secondary">
+      <span class="material-symbols-outlined animate-spin text-[36px] text-primary">sync</span>
+      <span class="font-semibold">তথ্য লোড করা হচ্ছে...</span>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div id="error-message" class="hidden p-stack-md bg-error-container text-error rounded border border-error/20 font-semibold my-8 text-center">
+    <h2>একটি সমস্যা হয়েছে!</h2>
+    <p class="text-body-sm mt-1">দুঃখিত, এই মুহূর্তে তথ্য আনা সম্ভব হচ্ছে না। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন।</p>
+  </div>
+
+  <!-- Main Content Area -->
+  <main id="content" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-stack-lg mb-24">
+    <!-- Events Section -->
+    <section class="bg-surface-container-lowest border border-border-subtle rounded p-stack-md shadow-sm">
+      <div class="flex items-center gap-stack-sm border-b border-border-subtle pb-base mb-stack-md">
+        <span class="material-symbols-outlined text-chrono-event">history</span>
+        <h2 class="text-headline-sm font-bold text-on-surface">ঐতিহাসিক ঘটনা</h2>
+      </div>
+      <ul id="events-list" class="space-y-stack-md p-0 list-none m-0"></ul>
+    </section>
+
+    <!-- Births Section -->
+    <section class="bg-surface-container-lowest border border-border-subtle rounded p-stack-md shadow-sm">
+      <div class="flex items-center gap-stack-sm border-b border-border-subtle pb-base mb-stack-md">
+        <span class="material-symbols-outlined text-wiki-project">cake</span>
+        <h2 class="text-headline-sm font-bold text-on-surface">জন্মদিন</h2>
+      </div>
+      <ul id="births-list" class="space-y-stack-md p-0 list-none m-0"></ul>
+    </section>
+
+    <!-- Deaths Section -->
+    <section class="bg-surface-container-lowest border border-border-subtle rounded p-stack-md shadow-sm">
+      <div class="flex items-center gap-stack-sm border-b border-border-subtle pb-base mb-stack-md">
+        <span class="material-symbols-outlined text-error">sentiment_very_dissatisfied</span>
+        <h2 class="text-headline-sm font-bold text-on-surface">মৃত্যুবার্ষিকী</h2>
+      </div>
+      <ul id="deaths-list" class="space-y-stack-md p-0 list-none m-0"></ul>
+    </section>
+  </main>
+</main>
+
+<script src="../yt-shell.js"></script>
+<script>
+  const loader = document.getElementById('loader');
+  const content = document.getElementById('content');
+  const errorMessage = document.getElementById('error-message');
+  const dateDisplay = document.getElementById('current-date');
+
+  const lists = {
+    events: document.getElementById('events-list'),
+    births: document.getElementById('births-list'),
+    deaths: document.getElementById('deaths-list')
+  };
+
+  // Convert numbers to Bengali numerals
+  function toBengaliNumber(num) {
+    const bengaliDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+    return String(num).replace(/\d/g, digit => bengaliDigits[parseInt(digit)]);
+  }
+
+  // Format date in Bengali
+  function formatBengaliDate() {
+    const now = new Date();
+    const day = toBengaliNumber(now.getDate());
+    const year = toBengaliNumber(now.getFullYear());
+    const monthNames = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
+    const month = monthNames[now.getMonth()];
+    return `আজ ${day} ${month}, ${year} ইং`;
+  }
+
+  // Create list item element
+  function createListItem(item) {
+    const listItem = document.createElement('li');
+    listItem.className = 'flex items-start gap-stack-sm border-b border-surface-container pb-stack-sm last:border-none';
+    
+    const pageLink = item.pages && item.pages.length > 0 ? item.pages[0].content_urls.desktop.page : '#';
+
+    listItem.innerHTML = `
+      <span class="text-primary font-code font-bold w-12 shrink-0 text-left">${toBengaliNumber(item.year)}</span>
+      <span class="flex-1 text-body-sm text-on-surface-variant">
+        <a href="${pageLink}" target="_blank" rel="noopener noreferrer" class="hover:text-primary hover:underline text-on-surface no-underline">
+          ${item.text}
+        </a>
+      </span>`;
+    return listItem;
+  }
+
+  function createEmptyMessage(message) {
+    const listItem = document.createElement('li');
+    listItem.className = 'text-text-secondary italic text-body-sm py-4';
+    listItem.textContent = message;
+    return listItem;
+  }
+
+  async function fetchOnThisDay() {
+    const now = new Date();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    
+    const apiUrl = `https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/${month}/${day}`;
+
+    try {
+      const response = await fetch(apiUrl, { headers: { 'Accept': 'application/json' } });
+      if (!response.ok) throw new Error();
+      const data = await response.json();
+
+      // Populate Events
+      if (data.events && data.events.length > 0) {
+        data.events.slice(0, 30).forEach(event => lists.events.appendChild(createListItem(event)));
+      } else {
+        lists.events.appendChild(createEmptyMessage('আজকের দিনে কোনো বিশেষ ঘটনা নেই।'));
+      }
+
+      // Populate Births
+      if (data.births && data.births.length > 0) {
+        data.births.slice(0, 30).forEach(birth => lists.births.appendChild(createListItem(birth)));
+      } else {
+        lists.births.appendChild(createEmptyMessage('আজকের দিনে কোনো উল্লেখযোগ্য जन्मदिन নেই।'));
+      }
+
+      // Populate Deaths
+      if (data.deaths && data.deaths.length > 0) {
+        data.deaths.slice(0, 30).forEach(death => lists.deaths.appendChild(createListItem(death)));
+      } else {
+        lists.deaths.appendChild(createEmptyMessage('আজকের দিনে কোনো উল্লেখযোগ্য মৃত্যুবার্ষিকী নেই।'));
+      }
+
+      loader.style.display = 'none';
+      content.classList.remove('hidden');
+
+    } catch (error) {
+      console.error(error);
+      loader.style.display = 'none';
+      errorMessage.classList.remove('hidden');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    dateDisplay.textContent = formatBengaliDate();
+    fetchOnThisDay();
+  });
+</script>
 </body>
 </html>
-

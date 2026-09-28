@@ -3,9 +3,15 @@ header('Content-Type: application/json');
 
 if (isset($_GET['ip'])) {
     $ip = $_GET['ip'];
-    $apiKey = "API_KEY"; // Replace with your actual API key
+    if (!filter_var($ip, FILTER_VALIDATE_IP)) {
+        echo json_encode(['error' => 'Invalid IP address.']);
+        exit;
+    }
+    // The proxycheck.io key lives outside public_html (~/proxycheck.key on Toolforge), never in the repository.
+    $keyFile = dirname(__DIR__, 2) . '/proxycheck.key';
+    $apiKey = getenv('PROXYCHECK_KEY') ?: (is_readable($keyFile) ? trim(file_get_contents($keyFile)) : '');
 
-    $apiUrl = "https://proxycheck.io/v2/" . $ip . "?vpn=1&asn=1&key=" . $apiKey;
+    $apiUrl = "https://proxycheck.io/v2/" . $ip . "?vpn=1&asn=1" . ($apiKey ? "&key=" . urlencode($apiKey) : "");
 
     $context = stream_context_create([
         'http' => [

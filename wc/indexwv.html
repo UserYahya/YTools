@@ -1,0 +1,303 @@
+<html lang="bn">
+<head>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <!-- Tailwind CSS & Google Fonts (Static Injection) -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    window.tailwind = {
+      config: {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-subtle': '#F8F9FA',
+              'error-container': '#ffdad6',
+              'tertiary-container': '#a65400',
+              'tertiary-fixed': '#ffdcc5',
+              'surface-tint': '#2259bf',
+              'surface-container-low': '#f5f3f4',
+              'secondary-fixed-dim': '#54ddb4',
+              'surface-container-highest': '#e3e2e3',
+              'surface-variant': '#e3e2e3',
+              'secondary': '#006c53',
+              'surface-container-lowest': '#ffffff',
+              'inverse-primary': '#b1c5ff',
+              'on-primary': '#ffffff',
+              'on-secondary': '#ffffff',
+              'on-secondary-container': '#007258',
+              'outline-variant': '#c3c6d5',
+              'on-background': '#1b1c1d',
+              'surface-bright': '#faf9fa',
+              'on-primary-container': '#e7ebff',
+              'outline': '#737784',
+              'surface-container': '#efedee',
+              'tertiary': '#824000',
+              'on-error': '#ffffff',
+              'on-primary-fixed-variant': '#00419d',
+              'on-secondary-fixed-variant': '#00513e',
+              'primary-container': '#3366cc',
+              'on-surface': '#1b1c1d',
+              'error': '#ba1a1a',
+              'on-tertiary-fixed': '#301400',
+              'on-tertiary-fixed-variant': '#713700',
+              'inverse-on-surface': '#f2f0f1',
+              'surface': '#faf9fa',
+              'background': '#faf9fa',
+              'primary-fixed': '#d9e2ff',
+              'on-surface-variant': '#434653',
+              'chrono-event': '#E67E22',
+              'secondary-container': '#74facf',
+              'on-tertiary-container': '#ffe7d9',
+              'on-tertiary': '#ffffff',
+              'on-secondary-fixed': '#002117',
+              'surface-dim': '#dbdadb',
+              'primary': '#094cb2',
+              'primary-fixed-dim': '#b1c5ff',
+              'border-subtle': '#A2A9B1',
+              'ip-network': '#3366CC',
+              'surface-container-high': '#e9e8e9',
+              'on-error-container': '#93000a',
+              'on-primary-fixed': '#001946',
+              'text-secondary': '#72777D',
+              'inverse-surface': '#303031',
+              'secondary-fixed': '#74facf',
+              'wiki-project': '#00AF89',
+              'tertiary-fixed-dim': '#ffb783'
+            },
+            borderRadius: {
+              'DEFAULT': '0.125rem',
+              'lg': '0.25rem',
+              'xl': '0.5rem',
+              'full': '0.75rem'
+            },
+            spacing: {
+              'stack-lg': '24px',
+              'gutter': '16px',
+              'base': '4px',
+              'stack-sm': '8px',
+              'margin-mobile': '12px',
+              'container-max': '1200px',
+              'stack-md': '16px'
+            },
+            fontFamily: {
+              'body-lg': ['Inter', 'sans-serif'],
+              'label-md': ['Inter', 'sans-serif'],
+              'display-lg': ['Source Serif 4', 'serif'],
+              'headline-sm': ['Source Serif 4', 'serif'],
+              'code': ['JetBrains Mono', 'monospace'],
+              'body-md': ['Inter', 'sans-serif'],
+              'body-sm': ['Inter', 'sans-serif'],
+              'headline-md': ['Source Serif 4', 'serif']
+            },
+            fontSize: {
+              'body-lg': ['16px', {lineHeight: '24px', fontWeight: '400'}],
+              'label-md': ['13px', {lineHeight: '16px', fontWeight: '600'}],
+              'display-lg': ['32px', {lineHeight: '40px', fontWeight: '400'}],
+              'headline-sm': ['20px', {lineHeight: '28px', fontWeight: '400'}],
+              'code': ['13px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-md': ['14px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-sm': ['12px', {lineHeight: '18px', fontWeight: '400'}],
+              'headline-md': ['24px', {lineHeight: '32px', fontWeight: '400'}]
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+    .quiet-shadow {
+      box-shadow: 0 2px 2px 0 rgba(0,0,0,0.1);
+    }
+    body {
+      font-family: 'Inter', sans-serif !important;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Source Serif 4', serif !important;
+    }
+    code, pre, .font-code {
+      font-family: 'JetBrains Mono', monospace !important;
+    }
+  </style>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
+    <title>উইকিভ্রমণ নিবন্ধের শব্দ গণক</title>
+    <style>
+        body {
+            font-family: 'Noto Serif Bengali', serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        input, textarea {
+            font-family: 'Noto Serif Bengali', serif;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        #articleInput {
+            height: 150px;
+        }
+        button {
+            font-family: 'Noto Serif Bengali', serif;
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        #copyButton {
+            background-color: #008CBA;
+        }
+        #result {
+            font-family: 'Noto Serif Bengali', serif;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            background-color: #f8f8f8;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>উইকিভ্রমণ নিবন্ধের শব্দগণক</h1>
+        <input id="siteInput" placeholder="উইকিভ্রমণ সাইটের ডোমেইন (যেমন: bn.wikivoyage.org)" value="bn.wikivoyage.org">
+        <textarea id="articleInput" placeholder="এখানে নিবন্ধের নাম দিন (প্রত্যেক লাইনে একটি করে)"></textarea>
+        <button id="countButton">শব্দ গুনুন</button>
+        <button id="copyButton" style="display: none;">ক্লিপবোর্ডে অনুলিপি</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('countButton').addEventListener('click', countWordsForMultipleArticles);
+        document.getElementById('copyButton').addEventListener('click', copyToClipboard);
+
+        async function countWordsForMultipleArticles() {
+            const site = document.getElementById('siteInput').value.trim();
+            const articleNames = document.getElementById('articleInput').value.split('\n').filter(name => name.trim() !== '');
+            const resultElement = document.getElementById('result');
+            resultElement.textContent = 'প্রক্রিয়াকরণ হচ্ছে...';
+
+            let wikitext = '{| class="wikitable sortable"\n! নিবন্ধের নাম !! শব্দসংখ্যা\n|-\n';
+            let totalWords = 0;
+
+            for (const articleName of articleNames) {
+                const result = await getWordCount(site, articleName.trim());
+                if (typeof result.count === 'number') {
+                    totalWords += result.count;
+                    wikitext += `| ${articleName} || ${result.count}\n|-\n`;
+                } else {
+                    wikitext += `| ${articleName} || ${result.error}\n|-\n`;
+                }
+            }
+
+            wikitext += `| '''মোট শব্দ''' || '''${totalWords}'''\n|}`;
+            resultElement.textContent = wikitext;
+            document.getElementById('copyButton').style.display = 'block';
+        }
+
+        async function getWordCount(site, title) {
+            try {
+                const response = await fetch(`https://${site}/w/api.php?action=parse&page=${encodeURIComponent(title)}&format=json&prop=text&origin=*`);
+                const data = await response.json();
+
+                if (data.error) {
+                    console.error(`Error fetching "${title}":`, data.error.info);
+                    return { error: 'নিবন্ধ পাওয়া যায়নি' };
+                }
+
+                const htmlContent = data.parse.text['*'];
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlContent, 'text/html');
+
+                // Remove unwanted elements
+                const unwantedSelectors = [
+                    '.mw-empty-elt', '.mw-editsection', '.reference', '.references',
+                    '.reflist', '.mbox-small', '.ambox', '.navbox', '.catlinks',
+                    '.noprint', '.metadata', '.portal', '.infobox',
+                    'style', 'script', '.thumbinner', '.listing-lastedit'
+                ];
+                unwantedSelectors.forEach(selector => {
+                    doc.querySelectorAll(selector).forEach(el => el.remove());
+                });
+
+                // Get the main content
+                let content = '';
+                const contentElement = doc.querySelector('.mw-parser-output');
+                if (contentElement) {
+                    content = contentElement.textContent || "";
+                } else {
+                    // Fallback: get all paragraph content if .mw-parser-output is not found
+                    const paragraphs = doc.querySelectorAll('p');
+                    content = Array.from(paragraphs).map(p => p.textContent).join(' ');
+                }
+
+                if (!content) {
+                    console.error(`No content found for "${title}"`);
+                    return { error: 'বিষয়বস্তু পাওয়া যায়নি' };
+                }
+
+                // Clean up the content
+                const cleanContent = content
+                    .replace(/[\u200B-\u200D\uFEFF]/g, '') // Remove zero-width spaces
+                    .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+                    .replace(/[\u0964\u0965]/g, '.') // Replace Bengali full stops with Latin full stops
+                    .replace(/[\u09E6-\u09EF]/g, d => String.fromCharCode(d.charCodeAt(0) - 0x09E6 + 0x30)) // Convert Bengali digits to Latin digits
+                    .trim();
+
+                // Count words based on the site language
+                let wordCount;
+                if (site.startsWith('bn.')) {
+                    // For Bengali, count sequences of Bengali characters
+                    wordCount = (cleanContent.match(/[\u0980-\u09FF]+/g) || []).length;
+                } else {
+                    // For other languages (assuming mainly English), use a more general word boundary approach
+                    wordCount = cleanContent.split(/\s+/).filter(word => word.match(/\p{L}/u)).length;
+                }
+
+                console.log(`Processed "${title}": ${wordCount} words found`);
+                return { count: wordCount };
+            } catch (error) {
+                console.error(`Error processing "${title}":`, error);
+                return { error: 'প্রক্রিয়াকরণে ত্রুটি' };
+            }
+        }
+
+        function copyToClipboard() {
+            const resultText = document.getElementById('result').textContent;
+            navigator.clipboard.writeText(resultText).then(() => {
+                alert('আউটপুট ক্লিপবোর্ডে অনুলিপি করা হয়েছে!');
+            }, (err) => {
+                console.error('Could not copy text: ', err);
+                alert('অনুলিপি করা ব্যর্থ হয়েছে। অনুগ্রহ করে ম্যানুয়ালি নির্বাচন করে অনুলিপি করার চেষ্টা করুন।');
+            });
+        }
+    </script>
+</body>
+</html>

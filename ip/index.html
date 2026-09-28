@@ -1,297 +1,619 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IP Information Viewer — YTools</title>
-  <link rel="stylesheet" href="../common.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>IP Information Viewer - YTools</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <!-- Tailwind CSS & Google Fonts (shared YTools design system, used by yt-shell.js) -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    window.tailwind = {
+      config: {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-subtle': '#F8F9FA',
+              'error-container': '#ffdad6',
+              'tertiary-container': '#a65400',
+              'tertiary-fixed': '#ffdcc5',
+              'surface-tint': '#2259bf',
+              'surface-container-low': '#f5f3f4',
+              'secondary-fixed-dim': '#54ddb4',
+              'surface-container-highest': '#e3e2e3',
+              'surface-variant': '#e3e2e3',
+              'secondary': '#006c53',
+              'surface-container-lowest': '#ffffff',
+              'inverse-primary': '#b1c5ff',
+              'on-primary': '#ffffff',
+              'on-secondary': '#ffffff',
+              'on-secondary-container': '#007258',
+              'outline-variant': '#c3c6d5',
+              'on-background': '#1b1c1d',
+              'surface-bright': '#faf9fa',
+              'on-primary-container': '#e7ebff',
+              'outline': '#737784',
+              'surface-container': '#efedee',
+              'tertiary': '#824000',
+              'on-error': '#ffffff',
+              'on-primary-fixed-variant': '#00419d',
+              'on-secondary-fixed-variant': '#00513e',
+              'primary-container': '#3366cc',
+              'on-surface': '#1b1c1d',
+              'error': '#ba1a1a',
+              'on-tertiary-fixed': '#301400',
+              'on-tertiary-fixed-variant': '#713700',
+              'inverse-on-surface': '#f2f0f1',
+              'surface': '#faf9fa',
+              'background': '#faf9fa',
+              'primary-fixed': '#d9e2ff',
+              'on-surface-variant': '#434653',
+              'chrono-event': '#E67E22',
+              'secondary-container': '#74facf',
+              'on-tertiary-container': '#ffe7d9',
+              'on-tertiary': '#ffffff',
+              'on-secondary-fixed': '#002117',
+              'surface-dim': '#dbdadb',
+              'primary': '#094cb2',
+              'primary-fixed-dim': '#b1c5ff',
+              'border-subtle': '#A2A9B1',
+              'ip-network': '#3366CC',
+              'surface-container-high': '#e9e8e9',
+              'on-error-container': '#93000a',
+              'on-primary-fixed': '#001946',
+              'text-secondary': '#72777D',
+              'inverse-surface': '#303031',
+              'secondary-fixed': '#74facf',
+              'wiki-project': '#00AF89',
+              'tertiary-fixed-dim': '#ffb783'
+            },
+            borderRadius: {
+              'DEFAULT': '0.125rem',
+              'lg': '0.25rem',
+              'xl': '0.5rem',
+              'full': '0.75rem'
+            },
+            spacing: {
+              'stack-lg': '24px',
+              'gutter': '16px',
+              'base': '4px',
+              'stack-sm': '8px',
+              'margin-mobile': '12px',
+              'container-max': '1200px',
+              'stack-md': '16px'
+            },
+            fontFamily: {
+              'body-lg': ['Inter', 'sans-serif'],
+              'label-md': ['Inter', 'sans-serif'],
+              'display-lg': ['Source Serif 4', 'serif'],
+              'headline-sm': ['Source Serif 4', 'serif'],
+              'code': ['JetBrains Mono', 'monospace'],
+              'body-md': ['Inter', 'sans-serif'],
+              'body-sm': ['Inter', 'sans-serif'],
+              'headline-md': ['Source Serif 4', 'serif']
+            },
+            fontSize: {
+              'body-lg': ['16px', {lineHeight: '24px', fontWeight: '400'}],
+              'label-md': ['13px', {lineHeight: '16px', fontWeight: '600'}],
+              'display-lg': ['32px', {lineHeight: '40px', fontWeight: '400'}],
+              'headline-sm': ['20px', {lineHeight: '28px', fontWeight: '400'}],
+              'code': ['13px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-md': ['14px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-sm': ['12px', {lineHeight: '18px', fontWeight: '400'}],
+              'headline-md': ['24px', {lineHeight: '32px', fontWeight: '400'}]
+            }
+          }
+        }
+      }
+    };
+  </script>
   <style>
-    .status-bar {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-      align-items: center;
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
     }
-
-    .ip-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0;
-    }
-
-    @media (max-width: 600px) { .ip-grid { grid-template-columns: 1fr; } }
-
-    .ip-grid .info-table th { width: 140px; }
-
-    .result-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .result-header h2 {
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: var(--wmf-gray-90);
-    }
-
-    .result-header .ip-addr {
-      font-family: var(--font-mono);
-      font-size: 1.25rem;
-      color: var(--wmf-blue);
-    }
-
-    .copy-btn {
-      cursor: pointer;
-      background: none;
-      border: none;
-      font-size: 14px;
-      color: var(--wmf-gray-50);
-      padding: 0 4px;
-    }
-
-    .copy-btn:hover { color: var(--wmf-blue); }
-
-    .action-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid var(--wmf-gray-20);
-    }
-
-    .action-links a {
-      font-size: .875rem;
-      padding: 5px 12px;
-      border: 1px solid var(--wmf-gray-30);
-      border-radius: var(--radius-sm);
-      color: var(--wmf-blue);
-      text-decoration: none;
-      background: var(--wmf-gray-10);
-      transition: background .15s;
-    }
-
-    .action-links a:hover { background: var(--wmf-blue-light); }
-
-    .tabs { margin-bottom: 0; }
-
-    #ipResult { margin-top: 24px; }
+    body { font-family: 'Inter', sans-serif !important; }
+    h1, h2, h3, h4, h5, h6 { font-family: 'Source Serif 4', serif !important; }
+    code, pre, .font-code { font-family: 'JetBrains Mono', monospace !important; }
+    #map { height: 100%; min-height: 260px; width: 100%; z-index: 1; }
+    .toast { transition: opacity .2s, transform .2s; }
   </style>
+  <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/leaflet/1.9.4/leaflet.css">
+  <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 </head>
-<body>
-  <div class="page-content page-content--narrow">
-    <div class="breadcrumb">
-      <a href="../">YTools</a><span>›</span> IP Information Viewer
-    </div>
+<body class="bg-surface text-on-surface font-body-md selection:bg-primary-fixed">
 
-    <div class="tool-page-header">
-      <h1>🌐 IP Information Viewer</h1>
-      <p>Lookup proxy/VPN status, geolocation, ASN, and Wikimedia global-block status for any IP address.</p>
-    </div>
-
-    <div class="card">
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="single">Single IP</button>
-        <button class="tab-btn" data-tab="myip">My IP</button>
-      </div>
-
-      <div class="tab-panel active" id="tab-single">
-        <div class="form-group">
-          <label class="wm-label" for="ipInput">IP address (IPv4 or IPv6)</label>
-          <div class="input-row">
-            <input class="wm-input" type="text" id="ipInput" placeholder="e.g. 1.1.1.1 or 2001:db8::1" autocomplete="off" spellcheck="false">
-            <button class="wm-btn wm-btn--primary" id="checkBtn" onclick="doCheck()">🔍 Check</button>
-          </div>
-        </div>
-        <div class="notice">
-          Tip: You can also link directly to a result with <code>?ip=1.2.3.4</code> in the URL.
-        </div>
-      </div>
-
-      <div class="tab-panel" id="tab-myip">
-        <p style="color:var(--wmf-gray-50);font-size:.9375rem;margin-bottom:12px;">Detect and check your own public IP address.</p>
-        <button class="wm-btn wm-btn--primary" onclick="checkMyIp()">📡 Detect my IP &amp; check</button>
-      </div>
-    </div>
-
-    <div id="ipResult"></div>
-
-    <div class="similar-tools">
-      <h3>Related tools</h3>
-      <ul class="similar-tools__list">
-        <li><a href="../ipmulti/">📋 Multi-IP Checker</a></li>
-        <li><a href="../ip-calc/">🔢 IP Range Calculator</a></li>
-        <li><a href="../ip-whois/">🔍 IP WHOIS Lookup</a></li>
-        <li><a href="../ip-cidr/">🗂️ CIDR Subnet Tool</a></li>
-      </ul>
+<main class="max-w-container-max mx-auto px-gutter py-stack-lg min-h-screen">
+  <!-- Breadcrumbs & Tool Header -->
+  <div class="mb-stack-lg">
+    <nav class="flex items-center text-body-sm text-text-secondary mb-base" aria-label="Breadcrumb">
+      <a class="hover:text-primary no-underline" href="../">Tools</a>
+      <span class="material-symbols-outlined text-[14px] mx-base" aria-hidden="true">chevron_right</span>
+      <span class="text-on-surface">IP Information Viewer</span>
+    </nav>
+    <div class="border-b border-border-subtle pb-stack-md">
+      <h1 class="font-headline-md text-headline-md font-bold">IP Information Viewer</h1>
+      <p class="text-text-secondary mt-base font-body-md">Network, location, proxy/VPN and Wikimedia block status for any IPv4 or IPv6 address.</p>
     </div>
   </div>
 
-  <script src="../yt-shell.js"></script>
-  <script>
-    /* ── Tab switching ─────────────────────────────────────── */
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-      });
-    });
+  <!-- Tool Input Area -->
+  <section class="mb-stack-lg bg-surface-subtle p-stack-md rounded border border-border-subtle">
+    <form id="lookupForm" novalidate>
+      <label class="block font-label-md text-label-md mb-base text-on-surface" for="ipInput">IP address or hostname</label>
+      <div class="flex flex-col sm:flex-row gap-stack-sm">
+        <div class="relative flex-grow">
+          <span class="material-symbols-outlined absolute left-stack-sm top-1/2 -translate-y-1/2 text-text-secondary" aria-hidden="true">search</span>
+          <input class="w-full pl-10 pr-stack-md py-stack-sm bg-surface-container-lowest border border-border-subtle rounded focus:ring-1 focus:ring-primary focus:border-primary text-code font-code"
+                 id="ipInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"
+                 placeholder="e.g. 8.8.8.8, 2001:4860:4860::8888 or example.org"/>
+        </div>
+        <button type="submit" id="lookupBtn" class="bg-primary text-on-primary px-stack-lg py-stack-sm rounded font-label-md text-label-md hover:opacity-90 active:opacity-80 transition-all flex items-center justify-center gap-base disabled:opacity-60 disabled:cursor-progress">
+          <span class="material-symbols-outlined text-[18px]" aria-hidden="true">travel_explore</span><span id="lookupLabel">Lookup Address</span>
+        </button>
+        <button type="button" id="myIpBtn" title="Detects your public IP via api.ipify.org" class="bg-surface-container-lowest text-primary border border-border-subtle px-stack-md py-stack-sm rounded font-label-md text-label-md hover:bg-surface-container-low transition-all flex items-center justify-center gap-base disabled:opacity-60">
+          <span class="material-symbols-outlined text-[18px]" aria-hidden="true">my_location</span> My IP
+        </button>
+      </div>
+    </form>
+    <div id="recent" class="hidden mt-stack-sm flex flex-wrap items-center gap-base text-body-sm">
+      <span class="text-text-secondary mr-base flex items-center gap-1"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">history</span>Recent:</span>
+      <span id="recentList" class="contents"></span>
+      <button type="button" id="clearRecent" class="text-text-secondary hover:text-error underline ml-base">Clear</button>
+    </div>
+  </section>
 
-    /* ── Enter key ─────────────────────────────────────────── */
-    document.getElementById('ipInput').addEventListener('keydown', e => {
-      if (e.key === 'Enter') doCheck();
-    });
+  <div id="status" role="status" aria-live="polite"></div>
+  <div id="ipResult"></div>
+</main>
 
-    /* ── Map ───────────────────────────────────────────────── */
-    let map = null;
+<div id="toast" role="status" aria-live="polite" class="toast fixed left-1/2 bottom-6 -translate-x-1/2 translate-y-4 opacity-0 pointer-events-none z-[1000] bg-inverse-surface text-inverse-on-surface text-body-md px-stack-md py-stack-sm rounded-lg shadow-lg"></div>
 
-    function setMap(lat, lng, city, country) {
-      const el = document.getElementById('map');
-      if (!el) return;
-      if (map) { map.remove(); map = null; }
-      map = L.map('map').setView([lat, lng], 10);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      }).addTo(map);
-      L.marker([lat, lng]).addTo(map).bindPopup(`${city}, ${country}`).openPopup();
+<script src="../yt-shell.js"></script>
+<script>
+(() => {
+  'use strict';
+
+  const RECENT_KEY = 'ytools_recent_ips';
+  const RECENT_LIMIT = 6;
+  const $ = id => document.getElementById(id);
+  const input = $('ipInput');
+  const statusEl = $('status');
+  const resultEl = $('ipResult');
+  let map = null;
+  let busy = false;
+
+  const CARD = 'bg-surface-container-lowest border border-border-subtle rounded p-stack-md';
+  const HEAD = 'font-label-md text-label-md text-text-secondary uppercase tracking-wider';
+  const TONES = {
+    ok:   { box: 'bg-secondary-container/20 border-secondary/30', text: 'text-secondary', icon: 'check_circle', pill: 'bg-secondary-container/40 text-secondary' },
+    warn: { box: 'bg-tertiary-fixed/40 border-tertiary/30',       text: 'text-tertiary',  icon: 'warning',      pill: 'bg-tertiary-fixed text-tertiary' },
+    bad:  { box: 'bg-error-container/40 border-error/30',         text: 'text-error',     icon: 'block',        pill: 'bg-error-container text-error' },
+    info: { box: 'bg-primary-fixed/40 border-primary/20',         text: 'text-primary',   icon: 'info',         pill: 'bg-primary-fixed text-primary' }
+  };
+
+  // ---------- helpers ----------
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const enc = encodeURIComponent;
+  const isYes = v => String(v || '').toLowerCase() === 'yes';
+  const looksLikeIp = s => /^(\d{1,3}\.){3}\d{1,3}$/.test(s) || (s.includes(':') && /^[0-9a-f:.]+$/i.test(s));
+  const icon = (name, size = 18) => `<span class="material-symbols-outlined text-[${size}px]" aria-hidden="true">${name}</span>`;
+
+  async function fetchJson(url, timeout = 15000) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeout);
+    try {
+      const r = await fetch(url, { signal: ctrl.signal });
+      const data = await r.json().catch(() => null);
+      if (!data) throw new Error(`HTTP ${r.status}`);
+      return data;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  function toast(msg) {
+    const t = $('toast');
+    t.textContent = msg;
+    t.classList.remove('opacity-0', 'translate-y-4');
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(() => t.classList.add('opacity-0', 'translate-y-4'), 1800);
+  }
+
+  async function copyText(text, label) {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast(label || 'Copied');
+    } catch {
+      toast('Could not copy. Select the text and copy it manually.');
+    }
+  }
+
+  const copyBtn = (text, what) =>
+    `<button type="button" class="text-text-secondary hover:text-primary p-0.5 rounded transition-colors" data-copy="${esc(text)}" data-label="${esc(what)} copied" title="Copy ${esc(what)}" aria-label="Copy ${esc(what)}">${icon('content_copy', 16)}</button>`;
+
+  function fmtDate(ts) {
+    if (!ts) return '—';
+    if (/^infinit/.test(ts)) return 'Never (indefinite)';
+    const d = new Date(ts);
+    return isNaN(d) ? ts : d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  }
+
+  function banner(kind, title, body = '', spin = false) {
+    const t = TONES[kind];
+    const lead = spin
+      ? `<span class="material-symbols-outlined animate-spin ${t.text}" aria-hidden="true">sync</span>`
+      : `<span class="material-symbols-outlined text-[28px] ${t.text}" aria-hidden="true">${t.icon}</span>`;
+    return `<div class="flex items-start gap-stack-sm p-stack-md rounded border ${t.box} mb-stack-lg">
+      ${lead}
+      <div><div class="font-bold text-body-lg ${t.text}">${title}</div>${body ? `<div class="text-body-md text-on-surface mt-1">${body}</div>` : ''}</div>
+    </div>`;
+  }
+
+  const pill = (kind, text) => `<span class="${TONES[kind].pill} text-[11px] px-2 py-0.5 rounded font-bold uppercase">${esc(text)}</span>`;
+
+  function setBusy(on) {
+    busy = on;
+    $('lookupBtn').disabled = on;
+    $('myIpBtn').disabled = on;
+    $('lookupLabel').textContent = on ? 'Looking up…' : 'Lookup Address';
+  }
+
+  function showError(title, body) {
+    resultEl.innerHTML = '';
+    statusEl.innerHTML = banner('bad', esc(title), esc(body));
+  }
+
+  function updateUrl(q) {
+    const url = new URL(location.href);
+    url.searchParams.set('ip', q);
+    history.replaceState(null, '', url);
+  }
+
+  // ---------- recent lookups (per-browser convenience) ----------
+  function readRecent() {
+    try {
+      const r = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+      return Array.isArray(r) ? r.filter(x => x && x.ip) : [];
+    } catch { return []; }
+  }
+
+  function saveRecent(ip, provider) {
+    try {
+      const list = readRecent().filter(x => x.ip !== ip);
+      list.unshift({ ip, provider });
+      localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, RECENT_LIMIT)));
+    } catch { /* storage unavailable */ }
+    renderRecent();
+  }
+
+  function renderRecent() {
+    const list = readRecent();
+    $('recent').classList.toggle('hidden', list.length === 0);
+    $('recentList').innerHTML = list.map(x =>
+      `<button type="button" data-ip="${esc(x.ip)}" title="${esc(x.provider || '')}" class="font-code text-body-sm text-primary bg-surface-container-lowest border border-border-subtle hover:border-primary rounded px-stack-sm py-0.5 transition-colors">${esc(x.ip)}</button>`
+    ).join('');
+  }
+
+  // ---------- Wikimedia block APIs ----------
+  const globalBlocksUrl = ip =>
+    'https://meta.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&origin=*' +
+    '&list=globalblocks&bgprop=id|target|address|by|timestamp|expiry|reason|range&bgip=' + enc(ip);
+  const localBlocksUrl = ip =>
+    'https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&origin=*' +
+    '&list=blocks&bkprop=id|user|by|timestamp|expiry|reason|range|flags&bkip=' + enc(ip);
+
+  // ---------- main lookup ----------
+  async function lookup(query) {
+    query = (query || '').trim();
+    if (busy) return;
+    if (!query) {
+      statusEl.innerHTML = banner('info', 'Enter an address to look up', 'Type an IP address such as <span class="font-code">8.8.8.8</span>, or press “My IP”.');
+      input.focus();
+      return;
     }
 
-    /* ── My IP ─────────────────────────────────────────────── */
-    function checkMyIp() {
-      const res = document.getElementById('ipResult');
-      res.innerHTML = `<div class="loading-row"><span class="spinner"></span> Detecting your IP…</div>`;
-      fetch('https://api.ipify.org?format=json')
-        .then(r => r.json())
-        .then(d => { fetchAndDisplay(d.ip); })
-        .catch(() => {
-          res.innerHTML = `<div class="error-msg">Could not detect your IP address.</div>`;
-        });
-    }
+    input.value = query;
+    updateUrl(query);
+    setBusy(true);
+    resultEl.innerHTML = '';
+    statusEl.innerHTML = banner('info', `Looking up <span class="font-code">${esc(query)}</span>…`, '', true);
 
-    /* ── Main check ────────────────────────────────────────── */
-    function doCheck() {
-      const ip = document.getElementById('ipInput').value.trim();
-      if (!ip) return;
-      fetchAndDisplay(ip);
-    }
+    try {
+      const infoPromise = fetchJson('get_ip_info.php?ip=' + enc(query), 20000);
 
-    function fetchAndDisplay(ip) {
-      const res = document.getElementById('ipResult');
-      res.innerHTML = `<div class="loading-row"><span class="spinner"></span> Looking up <strong>${ip}</strong>…</div>`;
-
-      Promise.all([
-        fetch('get_ip_info.php?ip=' + encodeURIComponent(ip)).then(r => r.json()),
-        fetch('https://meta.wikimedia.org/w/api.php?action=query&format=json&list=globalblocks&bgip=' + encodeURIComponent(ip) + '&origin=*').then(r => r.json())
-      ])
-      .then(([info, wiki]) => {
-        if (info.error) {
-          res.innerHTML = `<div class="error-msg">⚠ ${info.error}</div>`;
-          return;
-        }
-        const globalBlocks = wiki.query?.globalblocks || [];
-        renderResult(res, ip, info, globalBlocks);
-      })
-      .catch(() => {
-        res.innerHTML = `<div class="error-msg">⚠ An error occurred while fetching data. Please try again.</div>`;
-      });
-    }
-
-    function renderResult(container, ip, info, globalBlocks) {
-      const isProxy   = (info.proxy  || '').toLowerCase() === 'yes';
-      const isVpn     = (info.vpn    || '').toLowerCase() === 'yes';
-      const isBlocked = globalBlocks.length > 0;
-
-      /* Status badges */
-      let badges = '';
-      if (isProxy)   badges += `<span class="badge badge--proxy">🕵️ Proxy</span>`;
-      if (isVpn)     badges += `<span class="badge badge--vpn">🔒 VPN</span>`;
-      if (isBlocked) badges += `<span class="badge badge--blocked">🚫 Globally Blocked</span>`;
-      if (!isProxy && !isVpn && !isBlocked) badges += `<span class="badge badge--clean">✅ Clean</span>`;
-
-      /* Block info rows */
-      let blockRows = '';
-      if (isBlocked) {
-        globalBlocks.slice(0, 3).forEach(b => {
-          blockRows += `<tr>
-            <th>Block target</th>
-            <td>${b.target} — ${b.reason} (by ${b.by}, expires ${b.expiry})</td>
-          </tr>`;
-        });
+      // A hostname has to be resolved before Wikimedia can be asked about it.
+      let ip = query;
+      if (!looksLikeIp(query)) {
+        const info = await infoPromise.catch(() => null);
+        if (!info) return showError('Lookup failed', 'The lookup service did not respond. Please try again.');
+        if (info.error) return showError('Could not look up this address', info.error);
+        ip = info.ip;
       }
 
-      /* Currency */
-      const cur = info.currency ? `${info.currency.code} — ${info.currency.name}` : 'N/A';
+      const [infoR, globalR, localR] = await Promise.allSettled([
+        infoPromise, fetchJson(globalBlocksUrl(ip)), fetchJson(localBlocksUrl(ip))
+      ]);
 
-      /* Wikimedia action links */
-      const range = info.range || ip;
-      const actionLinks = `
-        <div class="action-links">
-          <a href="https://meta.wikimedia.org/wiki/Special:GlobalBlock?wpAddress=${encodeURIComponent(range)}&wpExpiry=indefinite" target="_blank" rel="noopener">🚫 Global block this range</a>
-          <a href="https://en.wikipedia.org/wiki/Special:Block/${encodeURIComponent(ip)}" target="_blank" rel="noopener">🔒 Block on enwiki</a>
-          <a href="https://meta.wikimedia.org/wiki/Special:GlobalContributions/${encodeURIComponent(ip)}" target="_blank" rel="noopener">📝 Global contributions</a>
-          <a href="https://en.wikipedia.org/wiki/Special:Contributions/${encodeURIComponent(ip)}" target="_blank" rel="noopener">📝 enwiki contributions</a>
-          <a href="https://login.wikimedia.org/wiki/Special:CheckUser/${encodeURIComponent(ip)}" target="_blank" rel="noopener">🔎 Login Wiki CU</a>
-        </div>`;
+      const info = infoR.status === 'fulfilled' ? infoR.value : null;
+      if (info && info.error) return showError('Could not look up this address', info.error);
 
-      container.innerHTML = `
-        <div class="card">
-          <div class="result-header">
-            <div>
-              <div style="font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--wmf-gray-50);margin-bottom:4px">Result</div>
-              <div class="ip-addr">${ip} <button class="copy-btn" title="Copy IP" onclick="navigator.clipboard.writeText('${ip}')">📋</button></div>
-            </div>
-            <div class="status-bar">${badges}</div>
+      const globalBlocks = globalR.status === 'fulfilled' && !globalR.value.error ? (globalR.value.query?.globalblocks || []) : null;
+      const localBlocks = localR.status === 'fulfilled' && !localR.value.error ? (localR.value.query?.blocks || []) : null;
+
+      statusEl.innerHTML = '';
+      render(ip, info, globalBlocks, localBlocks);
+      saveRecent(ip, info ? (info.provider || info.organisation || '') : '');
+    } catch (err) {
+      console.error(err);
+      showError('Something went wrong', 'Please check the address and try again.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // ---------- rendering ----------
+  function verdict(info, globalBlocks, localBlocks) {
+    const g = globalBlocks?.length || 0, l = localBlocks?.length || 0;
+    const proxy = info && isYes(info.proxy);
+    const vpn = info && (isYes(info.vpn) || /vpn/i.test(info.type || ''));
+    const unchecked = [globalBlocks === null && 'global blocks', localBlocks === null && 'English Wikipedia blocks', !info && 'network details'].filter(Boolean);
+
+    let kind, title, body;
+    if (g || l) {
+      const parts = [];
+      if (g) parts.push(`${g} active global block${g > 1 ? 's' : ''}`);
+      if (l) parts.push(`${l} active block${l > 1 ? 's' : ''} on English Wikipedia`);
+      kind = 'bad'; title = 'This address is currently blocked';
+      body = `Covered by ${parts.join(' and ')}.`;
+    } else if (proxy || vpn) {
+      kind = 'warn'; title = `Flagged as a ${vpn ? 'VPN' : 'proxy'}`;
+      body = 'No active Wikimedia blocks were found.';
+    } else {
+      kind = 'ok'; title = 'No problems found';
+      body = 'No active global or English Wikipedia blocks, and not flagged as a proxy or VPN.';
+    }
+    if (unchecked.length) body += ` <span class="text-tertiary font-semibold">Couldn’t check ${unchecked.join(', ')} right now.</span>`;
+    return { kind, html: banner(kind, title, body) };
+  }
+
+  function row(label, value, copy) {
+    const empty = value === undefined || value === null || value === '';
+    return `<div class="flex justify-between items-center gap-stack-md py-1.5 border-b border-surface-container last:border-0">
+      <span class="text-body-sm text-text-secondary shrink-0">${label}</span>
+      <span class="text-body-sm font-bold text-right break-all flex items-center gap-1">${empty ? '<span class="text-text-secondary font-normal">N/A</span>' : esc(value)}${copy && !empty ? copyBtn(value, label) : ''}</span>
+    </div>`;
+  }
+
+  // Block reasons are wikitext: turn [[target|label]] into readable links, escape everything else.
+  function wikiReason(text, wiki) {
+    if (!text) return 'No reason given';
+    return String(text).split(/(\[\[[^\]]+\]\])/).map(part => {
+      const m = part.match(/^\[\[([^|\]]+)(?:\|([^\]]*))?\]\]$/);
+      if (!m) return esc(part);
+      let target = m[1].trim();
+      const label = (m[2] || target).trim();
+      let host = wiki;
+      const iw = target.match(/^:?(m|meta|w|en):(.+)$/i);
+      if (iw) {
+        host = /^(m|meta)$/i.test(iw[1]) ? 'meta.wikimedia.org' : 'en.wikipedia.org';
+        target = iw[2];
+      }
+      const href = `https://${host}/wiki/${target.split('/').map(enc).join('/').replace(/%3A/gi, ':')}`;
+      return `<a class="underline hover:text-primary" href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>`;
+    }).join('');
+  }
+
+  function blockRows(blocks, label, wiki) {
+    const headLine = (dot, status) => `<div class="flex items-center justify-between gap-stack-sm">
+        <span class="flex items-center gap-base font-semibold"><span class="w-2 h-2 rounded-full ${dot} shrink-0"></span>${label}</span>${status}
+      </div>`;
+    const wrap = inner => `<div class="py-stack-sm border-b border-surface-container last:border-0">${inner}</div>`;
+
+    if (blocks === null) {
+      return wrap(headLine('bg-tertiary', pill('warn', 'Unknown')) +
+        `<p class="text-body-sm text-text-secondary mt-1">Could not reach the API. Try again later.</p>`);
+    }
+    if (!blocks.length) return wrap(headLine('bg-wiki-project', pill('ok', 'Not blocked')));
+
+    return blocks.map(b => wrap(
+      headLine('bg-error', pill('bad', 'Blocked')) + `
+      <p class="text-body-md text-on-surface mt-1">${wikiReason(b.reason, wiki)}</p>
+      <p class="text-body-sm text-text-secondary mt-1 flex flex-wrap gap-x-stack-md gap-y-1">
+        <span>Target: <span class="font-code">${esc(b.target || b.address || b.user)}</span></span>
+        <span>By: ${esc(b.by)}</span>
+        <span>Since: ${esc(fmtDate(b.timestamp))}</span>
+        <span>Expires: <strong class="text-on-surface">${esc(fmtDate(b.expiry))}</strong></span>
+      </p>`)).join('');
+  }
+
+  function riskBar(risk) {
+    if (risk === undefined || risk === null || risk === '') return '<span class="text-text-secondary">N/A</span>';
+    const n = Math.max(0, Math.min(100, Number(risk)));
+    const tone = n >= 67 ? 'bad' : n >= 34 ? 'warn' : 'ok';
+    const bar = { ok: 'bg-secondary', warn: 'bg-tertiary', bad: 'bg-error' }[tone];
+    return `<div class="w-full">
+      <div class="flex justify-between text-body-sm"><span class="text-text-secondary">Risk score</span><span class="font-bold ${TONES[tone].text}">${n}/100 · ${{ ok: 'Low', warn: 'Medium', bad: 'High' }[tone]}</span></div>
+      <div class="h-2 rounded-full bg-surface-container mt-1 overflow-hidden" role="img" aria-label="Risk ${n} of 100"><div class="h-full ${bar}" style="width:${n}%"></div></div>
+    </div>`;
+  }
+
+  const action = (href, emoji, label) =>
+    `<a class="bg-white hover:bg-surface-container-low text-primary border border-border-subtle px-3 py-1.5 rounded text-body-sm font-semibold no-underline transition-all" href="${esc(href)}" target="_blank" rel="noopener">${emoji} ${esc(label)}</a>`;
+
+  function render(ip, info, globalBlocks, localBlocks) {
+    const i = info || {};
+    const isIpv6 = (i.version || (ip.includes(':') ? 6 : 4)) === 6;
+    const range = i.range || '';
+    const place = [i.city, i.region, i.country].filter(Boolean).join(', ');
+    const proxy = isYes(i.proxy);
+    const vpn = isYes(i.vpn) || /vpn/i.test(i.type || '');
+    const hasCoords = i.latitude !== undefined && i.longitude !== undefined && i.latitude !== '' && i.longitude !== '';
+    const shareUrl = `${location.origin}${location.pathname}?ip=${enc(ip)}`;
+    const details = [ip, range && `Range: ${range}`, i.asn && `ASN: ${i.asn}`, (i.provider || i.organisation) && `Provider: ${i.provider || i.organisation}`, place && `Location: ${place}`].filter(Boolean).join('\n');
+    const v = verdict(info, globalBlocks, localBlocks);
+
+    resultEl.innerHTML = `
+      ${v.html}
+      <div class="grid grid-cols-12 gap-gutter">
+
+        <!-- Target -->
+        <div class="col-span-12 lg:col-span-4 ${CARD}">
+          <div class="flex items-center justify-between mb-stack-md">
+            <h3 class="${HEAD}">Target Address</h3>
+            <span class="bg-ip-network/10 text-ip-network text-[10px] px-base py-[2px] rounded font-bold">${isIpv6 ? 'IPv6' : 'IPv4'}</span>
           </div>
+          <div class="text-headline-sm font-code font-bold text-on-surface mb-stack-sm flex items-center gap-stack-sm break-all">
+            <span>${esc(ip)}</span>${copyBtn(ip, 'IP')}
+          </div>
+          ${i.resolved_from ? `<div class="text-body-sm text-text-secondary mb-base">Resolved from <span class="font-code">${esc(i.resolved_from)}</span></div>` : ''}
+          <div class="flex items-center gap-base text-body-sm text-text-secondary">
+            ${icon('location_on', 16)}<span>${esc(place || 'Location unknown')}</span>
+          </div>
+          <div class="mt-stack-md pt-stack-md border-t border-border-subtle">
+            ${row('ASN', i.asn)}
+            ${row('Provider', i.provider || i.organisation)}
+          </div>
+          <div class="flex flex-wrap gap-base mt-stack-md">
+            <button type="button" data-copy="${esc(details)}" data-label="Details copied" class="text-primary border border-border-subtle hover:bg-surface-container-low px-stack-sm py-1 rounded text-body-sm font-semibold flex items-center gap-1">${icon('content_copy', 16)} Copy details</button>
+            <button type="button" data-copy="${esc(shareUrl)}" data-label="Link copied" class="text-primary border border-border-subtle hover:bg-surface-container-low px-stack-sm py-1 rounded text-body-sm font-semibold flex items-center gap-1">${icon('link', 16)} Share link</button>
+          </div>
+        </div>
 
-          <table class="info-table">
-            <tr><th>Proxy</th><td>${info.proxy || 'N/A'}</td></tr>
-            <tr><th>Type</th><td>${info.type || 'N/A'}</td></tr>
-            <tr><th>Continent</th><td>${info.continent || 'N/A'}</td></tr>
-            <tr><th>Country</th><td>${info.country || 'N/A'}</td></tr>
-            <tr><th>Region</th><td>${info.region || 'N/A'}</td></tr>
-            <tr><th>City</th><td>${info.city || 'N/A'}</td></tr>
-            <tr><th>Latitude / Longitude</th><td>${info.latitude || 'N/A'} / ${info.longitude || 'N/A'}</td></tr>
-            <tr><th>Timezone</th><td>${info.timezone || 'N/A'}</td></tr>
-            <tr><th>ASN</th><td>${info.asn || 'N/A'}</td></tr>
-            <tr><th>Range (CIDR)</th><td>
-              ${info.range || 'N/A'}
-              ${info.range ? `<a href="https://meta.wikimedia.org/wiki/Special:GlobalBlock?wpAddress=${encodeURIComponent(info.range)}" target="_blank" rel="noopener" style="margin-left:8px;font-size:.8125rem">[Global block]</a>` : ''}
-            </td></tr>
-            <tr><th>Provider / ISP</th><td>${info.provider || 'N/A'}</td></tr>
-            <tr><th>Organisation</th><td>${info.organisation || 'N/A'}</td></tr>
-            <tr><th>Currency</th><td>${cur}</td></tr>
-            <tr><th>Globally Blocked</th><td>${isBlocked ? `<strong style="color:var(--wmf-red)">Yes — ${globalBlocks.length} active block(s)</strong>` : 'No'}</td></tr>
-            ${blockRows}
-          </table>
+        <!-- Block status -->
+        <div class="col-span-12 lg:col-span-8 ${CARD}">
+          <h3 class="${HEAD} mb-stack-md">Wikimedia Block Status</h3>
+          ${blockRows(globalBlocks, 'Global (all wikis)', 'meta.wikimedia.org')}
+          ${blockRows(localBlocks, 'English Wikipedia', 'en.wikipedia.org')}
+          <p class="text-body-sm text-text-secondary mt-stack-sm">Shows active blocks covering this address. Other wikis may have their own local blocks.</p>
+        </div>
 
-          ${actionLinks}
+        <!-- Technical details -->
+        <div class="col-span-12 md:col-span-6 lg:col-span-4 ${CARD}">
+          <h3 class="${HEAD} mb-stack-sm">Network Details</h3>
+          ${row('IP range (CIDR)', range, true)}
+          ${row('Reverse DNS (PTR)', i.hostname, true)}
+          ${row('Organisation', i.organisation)}
+          ${row('Connection type', i.type)}
+        </div>
 
-          <div id="map" style="margin-top:20px"></div>
-        </div>`;
+        <!-- Proxy & risk -->
+        <div class="col-span-12 md:col-span-6 lg:col-span-4 ${CARD}">
+          <h3 class="${HEAD} mb-stack-sm">Proxy / VPN Detection</h3>
+          <div class="flex flex-wrap gap-base mb-stack-md">
+            ${pill(proxy ? 'bad' : 'ok', proxy ? 'Proxy detected' : 'No proxy')}
+            ${pill(vpn ? 'bad' : 'ok', vpn ? 'VPN detected' : 'No VPN')}
+          </div>
+          ${riskBar(i.risk)}
+          <p class="text-body-sm text-text-secondary mt-stack-sm">From proxycheck.io. A hint, not proof.</p>
+        </div>
 
-      if (info.latitude && info.longitude) {
-        setTimeout(() => setMap(info.latitude, info.longitude, info.city || '', info.country || ''), 50);
-      }
+        <!-- Location -->
+        <div class="col-span-12 lg:col-span-4 ${CARD}">
+          <h3 class="${HEAD} mb-stack-sm">Location</h3>
+          ${row('Country', i.country && (i.isocode ? `${i.country} (${i.isocode})` : i.country))}
+          ${row('Region', i.region)}
+          ${row('City', i.city)}
+          ${row('Coordinates', hasCoords ? `${i.latitude}, ${i.longitude}` : '')}
+          ${row('Currency', i.currency ? [i.currency.code, i.currency.name].filter(Boolean).join(' — ') : '')}
+        </div>
+
+        ${hasCoords ? `
+        <!-- Map -->
+        <div class="col-span-12 md:col-span-7 bg-surface-container-lowest border border-border-subtle rounded h-72 overflow-hidden relative">
+          <div class="absolute top-4 left-14 z-[10] bg-surface/90 backdrop-blur px-stack-sm py-base rounded border border-border-subtle shadow-sm flex items-center gap-base">
+            ${icon('map')}<span class="text-body-sm font-bold">Approximate location</span>
+          </div>
+          <div class="w-full h-full bg-surface-container" id="map" role="img" aria-label="Map of the approximate location"></div>
+        </div>` : ''}
+
+        <!-- Actions -->
+        <div class="col-span-12 ${hasCoords ? 'md:col-span-5' : ''} bg-surface-subtle border border-border-subtle p-stack-md rounded flex flex-col gap-stack-md">
+          <div>
+            <h4 class="${HEAD} text-on-surface mb-stack-sm">Investigate</h4>
+            <div class="flex flex-wrap gap-2">
+              ${action(`https://meta.wikimedia.org/wiki/Special:GlobalContributions/${enc(ip)}`, '📝', 'Global contributions')}
+              ${action(`https://en.wikipedia.org/wiki/Special:Contributions/${enc(ip)}`, '📝', 'enwiki contributions')}
+              ${range ? action(`https://en.wikipedia.org/wiki/Special:Contributions/${enc(range)}`, '📝', 'Range contributions') : ''}
+              ${action(`https://whois-referral.toolforge.org/gateway.py?lookup=true&ip=${enc(ip)}`, '🔎', 'WHOIS')}
+            </div>
+          </div>
+          <div>
+            <h4 class="${HEAD} text-on-surface mb-stack-sm">Block <span class="normal-case tracking-normal font-normal">(admins / stewards)</span></h4>
+            <div class="flex flex-wrap gap-2">
+              ${action(`https://en.wikipedia.org/wiki/Special:Block/${enc(ip)}`, '🔒', 'Block on enwiki')}
+              ${action(`https://meta.wikimedia.org/wiki/Special:GlobalBlock/${enc(ip)}`, '🚫', 'Global block IP')}
+              ${range ? action(`https://meta.wikimedia.org/wiki/Special:GlobalBlock/${enc(range)}`, '🚫', 'Global block range') : ''}
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="text-body-sm text-text-secondary mt-stack-md">Network data: proxycheck.io · Blocks: Wikimedia API · Map © OpenStreetMap contributors. Locations are approximate and usually point to the provider, not a person.</p>`;
+
+    if (hasCoords) drawMap(Number(i.latitude), Number(i.longitude), place);
+  }
+
+  function drawMap(lat, lng, label) {
+    if (map) { map.remove(); map = null; }
+    const el = $('map');
+    if (!el || !window.L || !isFinite(lat) || !isFinite(lng)) return;
+    map = L.map(el, { scrollWheelZoom: false }).setView([lat, lng], 9);
+    L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    L.marker([lat, lng]).addTo(map).bindPopup(esc(label || 'Approximate location'));
+  }
+
+  // ---------- events ----------
+  $('lookupForm').addEventListener('submit', e => { e.preventDefault(); lookup(input.value); });
+
+  $('myIpBtn').addEventListener('click', async () => {
+    if (busy) return;
+    setBusy(true);
+    statusEl.innerHTML = banner('info', 'Detecting your public IP…', '', true);
+    try {
+      const d = await fetchJson('https://api.ipify.org?format=json', 10000);
+      setBusy(false);
+      lookup(d.ip);
+    } catch {
+      setBusy(false);
+      showError('Could not detect your IP', 'Please type an IP address instead.');
     }
+  });
 
-    /* ── URL param ─────────────────────────────────────────── */
-    window.addEventListener('load', () => {
-      const params = new URLSearchParams(location.search);
-      const ip = params.get('ip');
-      if (ip) {
-        document.getElementById('ipInput').value = ip;
-        fetchAndDisplay(ip);
-      }
-    });
-  </script>
+  $('recentList').addEventListener('click', e => {
+    const chip = e.target.closest('[data-ip]');
+    if (chip) lookup(chip.dataset.ip);
+  });
+
+  $('clearRecent').addEventListener('click', () => {
+    try { localStorage.removeItem(RECENT_KEY); } catch { /* ignore */ }
+    renderRecent();
+  });
+
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('[data-copy]');
+    if (btn) copyText(btn.dataset.copy, btn.dataset.label);
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) {
+      e.preventDefault();
+      input.focus();
+      input.select();
+    }
+  });
+
+  // ---------- start ----------
+  renderRecent();
+  const initial = new URLSearchParams(location.search).get('ip');
+  if (initial) lookup(initial);
+  else input.focus();
+})();
+</script>
 </body>
 </html>

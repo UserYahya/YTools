@@ -1,351 +1,572 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YTools — Wikimedia Helper Tools</title>
-  <link rel="stylesheet" href="common.css">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <!-- Tailwind CSS & Google Fonts (Static Injection) -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    window.tailwind = {
+      config: {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-subtle': '#F8F9FA',
+              'error-container': '#ffdad6',
+              'tertiary-container': '#a65400',
+              'tertiary-fixed': '#ffdcc5',
+              'surface-tint': '#2259bf',
+              'surface-container-low': '#f5f3f4',
+              'secondary-fixed-dim': '#54ddb4',
+              'surface-container-highest': '#e3e2e3',
+              'surface-variant': '#e3e2e3',
+              'secondary': '#006c53',
+              'surface-container-lowest': '#ffffff',
+              'inverse-primary': '#b1c5ff',
+              'on-primary': '#ffffff',
+              'on-secondary': '#ffffff',
+              'on-secondary-container': '#007258',
+              'outline-variant': '#c3c6d5',
+              'on-background': '#1b1c1d',
+              'surface-bright': '#faf9fa',
+              'on-primary-container': '#e7ebff',
+              'outline': '#737784',
+              'surface-container': '#efedee',
+              'tertiary': '#824000',
+              'on-error': '#ffffff',
+              'on-primary-fixed-variant': '#00419d',
+              'on-secondary-fixed-variant': '#00513e',
+              'primary-container': '#3366cc',
+              'on-surface': '#1b1c1d',
+              'error': '#ba1a1a',
+              'on-tertiary-fixed': '#301400',
+              'on-tertiary-fixed-variant': '#713700',
+              'inverse-on-surface': '#f2f0f1',
+              'surface': '#faf9fa',
+              'background': '#faf9fa',
+              'primary-fixed': '#d9e2ff',
+              'on-surface-variant': '#434653',
+              'chrono-event': '#E67E22',
+              'secondary-container': '#74facf',
+              'on-tertiary-container': '#ffe7d9',
+              'on-tertiary': '#ffffff',
+              'on-secondary-fixed': '#002117',
+              'surface-dim': '#dbdadb',
+              'primary': '#094cb2',
+              'primary-fixed-dim': '#b1c5ff',
+              'border-subtle': '#A2A9B1',
+              'ip-network': '#3366CC',
+              'surface-container-high': '#e9e8e9',
+              'on-error-container': '#93000a',
+              'on-primary-fixed': '#001946',
+              'text-secondary': '#72777D',
+              'inverse-surface': '#303031',
+              'secondary-fixed': '#74facf',
+              'wiki-project': '#00AF89',
+              'tertiary-fixed-dim': '#ffb783'
+            },
+            borderRadius: {
+              'DEFAULT': '0.125rem',
+              'lg': '0.25rem',
+              'xl': '0.5rem',
+              'full': '0.75rem'
+            },
+            spacing: {
+              'stack-lg': '24px',
+              'gutter': '16px',
+              'base': '4px',
+              'stack-sm': '8px',
+              'margin-mobile': '12px',
+              'container-max': '1200px',
+              'stack-md': '16px'
+            },
+            fontFamily: {
+              'body-lg': ['Inter', 'sans-serif'],
+              'label-md': ['Inter', 'sans-serif'],
+              'display-lg': ['Source Serif 4', 'serif'],
+              'headline-sm': ['Source Serif 4', 'serif'],
+              'code': ['JetBrains Mono', 'monospace'],
+              'body-md': ['Inter', 'sans-serif'],
+              'body-sm': ['Inter', 'sans-serif'],
+              'headline-md': ['Source Serif 4', 'serif']
+            },
+            fontSize: {
+              'body-lg': ['16px', {lineHeight: '24px', fontWeight: '400'}],
+              'label-md': ['13px', {lineHeight: '16px', fontWeight: '600'}],
+              'display-lg': ['32px', {lineHeight: '40px', fontWeight: '400'}],
+              'headline-sm': ['20px', {lineHeight: '28px', fontWeight: '400'}],
+              'code': ['13px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-md': ['14px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-sm': ['12px', {lineHeight: '18px', fontWeight: '400'}],
+              'headline-md': ['24px', {lineHeight: '32px', fontWeight: '400'}]
+            }
+          }
+        }
+      }
+    };
+  </script>
   <style>
-    /* ── HERO ──────────────────────────────────────────────── */
-    .hero {
-      background: var(--wmf-base);
-      border-bottom: 1px solid var(--wmf-gray-20);
-      padding: 40px 24px 32px;
-      text-align: center;
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
     }
-
-    .hero__logo {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: var(--wmf-blue);
-      color: #fff;
-      font-size: 28px;
-      font-weight: 700;
-      font-family: var(--font-sans);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 16px;
-      box-shadow: 0 2px 8px rgba(51,102,204,.3);
+    .quiet-shadow {
+      box-shadow: 0 2px 2px 0 rgba(0,0,0,0.1);
     }
-
-    .hero h1 {
-      font-family: var(--font-sans);
-      font-size: 2rem;
-      font-weight: 600;
-      color: var(--wmf-gray-90);
+    body {
+      font-family: 'Inter', sans-serif !important;
     }
-
-    .hero p {
-      color: var(--wmf-gray-50);
-      margin: 8px 0 24px;
-      font-size: 1.0625rem;
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Source Serif 4', serif !important;
     }
-
-    .hero__search {
-      max-width: 520px;
-      margin: 0 auto;
-      position: relative;
+    code, pre, .font-code {
+      font-family: 'JetBrains Mono', monospace !important;
     }
+  </style>
 
-    .hero__search input {
-      width: 100%;
-      height: 44px;
-      padding: 0 16px 0 44px;
-      font-size: 1rem;
-      border: 1px solid var(--wmf-gray-30);
-      border-radius: var(--radius-sm);
-      background: var(--wmf-gray-10);
-      transition: border-color .15s, background .15s;
-    }
-
-    .hero__search input:focus {
-      outline: none;
-      border-color: var(--wmf-blue);
-      background: #fff;
-      box-shadow: 0 0 0 2px rgba(51,102,204,.15);
-    }
-
-    .hero__search-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--wmf-gray-50);
-      font-size: 18px;
-      pointer-events: none;
-    }
-
-    /* ── CATEGORY FILTERS ─────────────────────────────────── */
-    .category-bar {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 24px;
-      align-items: center;
-    }
-
-    .cat-btn {
-      padding: 4px 14px;
-      border: 1px solid var(--wmf-gray-30);
-      border-radius: 2px;
-      background: var(--wmf-base);
-      font-size: .875rem;
-      cursor: pointer;
-      transition: background .15s, border-color .15s, color .15s;
-      color: var(--wmf-gray-70);
-      font-family: var(--font-ui);
-    }
-
-    .cat-btn.active, .cat-btn:hover {
-      background: var(--wmf-blue);
-      border-color: var(--wmf-blue-dark);
-      color: #fff;
-    }
-
-    /* ── TOOLS GRID ───────────────────────────────────────── */
-    .tools-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 16px;
-    }
-
-    .tool-card {
-      background: var(--wmf-base);
-      border: 1px solid var(--wmf-gray-20);
-      border-radius: var(--radius);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      transition: border-color .15s, box-shadow .15s;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .tool-card:hover {
-      border-color: var(--wmf-blue);
-      box-shadow: 0 2px 12px rgba(51,102,204,.12);
-    }
-
-    .tool-card__icon {
-      font-size: 1.75rem;
-      margin-bottom: 12px;
-      line-height: 1;
-    }
-
-    .tool-card__cat {
-      font-size: .7rem;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      font-weight: 700;
-      color: var(--wmf-gray-50);
-      margin-bottom: 4px;
-    }
-
-    .tool-card__title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--wmf-gray-90);
-      margin-bottom: 6px;
-      line-height: 1.3;
-    }
-
-    .tool-card__desc {
-      font-size: .875rem;
-      color: var(--wmf-gray-50);
-      flex: 1;
-      line-height: 1.5;
-    }
-
-    .tool-card__action {
-      margin-top: 16px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: .875rem;
-      font-weight: 600;
-      color: var(--wmf-blue);
-    }
-
-    .tool-card__action::after { content: ' →'; }
-
-    .tool-card--new .tool-card__cat::after {
-      content: ' NEW';
-      color: var(--wmf-green);
-      margin-left: 6px;
-    }
-
-    #no-results {
-      display: none;
-      text-align: center;
-      color: var(--wmf-gray-50);
-      padding: 48px 0;
-      grid-column: 1 / -1;
-      font-size: .9375rem;
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>YTools - Open Knowledge Utility</title>
+  <style>
+    .filter-tab.active {
+      color: #094cb2 !important;
+      border-bottom: 2px solid #094cb2;
     }
   </style>
 </head>
-<body>
-  <!-- Header injected by shell -->
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col">
 
-  <div class="hero">
-    <div class="hero__logo">Y</div>
-    <h1>YTools — Wikimedia Helpers</h1>
-    <p>Simple, focused tools for Wikimedia contributors</p>
-    <div class="hero__search">
-      <span class="hero__search-icon">🔍</span>
-      <input type="text" id="search" placeholder="Search tools…" autocomplete="off" aria-label="Search tools">
+<main class="flex-grow max-w-container-max mx-auto w-full px-gutter">
+  <!-- Hero Section -->
+  <section class="py-12 md:py-20 border-b border-border-subtle mb-stack-lg">
+    <div class="max-w-3xl mx-auto text-center">
+      <h1 class="font-display-lg text-display-lg text-on-surface mb-stack-md">The contributor's toolset for open knowledge.</h1>
+      <p class="font-body-lg text-body-lg text-text-secondary mb-stack-lg">Reliable, high-density utilities for the Wikimedia ecosystem and beyond.</p>
+      
+      <div class="relative max-w-xl mx-auto">
+        <div class="flex items-center bg-white border border-border-subtle shadow-sm px-4 py-3 gap-3 focus-within:ring-1 focus-within:ring-primary focus-within:border-primary transition-all rounded">
+          <span class="material-symbols-outlined text-text-secondary">search</span>
+          <input autofocus class="w-full bg-transparent border-none focus:ring-0 text-body-lg font-body-lg p-0" id="search" placeholder="Find a tool (e.g. 'IP Checker', 'Date')..." type="text" autocomplete="off"/>
+          <kbd class="hidden md:block bg-surface-subtle border border-border-subtle px-1.5 py-0.5 rounded text-[10px] text-text-secondary font-code">CTRL + K</kbd>
+        </div>
+      </div>
     </div>
+  </section>
+
+  <!-- Tool Filter Tabs -->
+  <nav class="flex items-center gap-stack-lg border-b border-border-subtle mb-stack-lg overflow-x-auto whitespace-nowrap scrollbar-hide">
+    <button class="filter-tab active font-label-md text-label-md py-stack-md px-1 transition-all" onclick="setCategory('all')">All Tools</button>
+    <button class="filter-tab font-label-md text-label-md py-stack-md px-1 text-on-surface-variant hover:text-primary transition-all" onclick="setCategory('ip')">IP &amp; Network</button>
+    <button class="filter-tab font-label-md text-label-md py-stack-md px-1 text-on-surface-variant hover:text-primary transition-all" onclick="setCategory('wiki')">Wikipedia</button>
+    <button class="filter-tab font-label-md text-label-md py-stack-md px-1 text-on-surface-variant hover:text-primary transition-all" onclick="setCategory('date')">Date &amp; Calendar</button>
+  </nav>
+
+  <!-- Tool Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-stack-md mb-24" id="tool-container">
+    
+    <!-- Tool: Event Dashboard (Featured/Highlighted) -->
+    <div class="tool-card border-2 border-primary ring-1 ring-primary/20 shadow-md p-stack-md flex flex-col gap-stack-sm bg-white hover:bg-surface-subtle transition-all duration-300 relative overflow-hidden" data-category="wiki" data-name="event dashboard registration metawiki bnwiki oauth wmf acd account creation">
+      <div class="absolute top-0 right-0">
+        <span class="bg-primary text-on-primary text-[9px] uppercase font-bold px-2 py-1 rounded-bl flex items-center gap-0.5 shadow-sm">
+          <span class="material-symbols-outlined text-[10px] fill-current">star</span> Highlighted
+        </span>
+      </div>
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 bg-primary/10 flex items-center justify-center rounded">
+          <span class="material-symbols-outlined text-primary">group_add</span>
+        </div>
+        <span class="bg-wiki-project/10 text-wiki-project text-[10px] uppercase font-bold px-1.5 py-0.5 rounded mr-16">Wikipedia</span>
+      </div>
+      <div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold flex items-center gap-1">
+          Event Dashboard
+        </h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Quickly create Wikipedia accounts for workshop/editathon participants, bypassing IP throttle limits. Includes a live editor leaderboard and contribution statistics.</p>
+      </div>
+      <div class="mt-auto pt-stack-md">
+        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline no-underline" href="https://acd.toolforge.org/" target="_blank" rel="noopener">
+          Open tool <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tool: Anubad Shuddhi (Featured/Highlighted) -->
+    <div class="tool-card border-2 border-primary ring-1 ring-primary/20 shadow-md p-stack-md flex flex-col gap-stack-sm bg-white hover:bg-surface-subtle transition-all duration-300 relative overflow-hidden" data-category="wiki" data-name="anubad shuddhi translation validation machine translation bangla wikipedia artificial intelligence ai">
+      <div class="absolute top-0 right-0">
+        <span class="bg-primary text-on-primary text-[9px] uppercase font-bold px-2 py-1 rounded-bl flex items-center gap-0.5 shadow-sm">
+          <span class="material-symbols-outlined text-[10px] fill-current">star</span> Highlighted
+        </span>
+      </div>
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 bg-primary/10 flex items-center justify-center rounded">
+          <span class="material-symbols-outlined text-primary">translate</span>
+        </div>
+        <span class="bg-wiki-project/10 text-wiki-project text-[10px] uppercase font-bold px-1.5 py-0.5 rounded mr-16">Wikipedia</span>
+      </div>
+      <div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold flex items-center gap-1">
+          Anubad Shuddhi
+        </h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">An AI-based web tool designed to improve machine translations and reduce linguistic rigidity in Bangla Wikipedia. Log in with your Wikipedia account to use the tool.</p>
+      </div>
+      <div class="mt-auto pt-stack-md">
+        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline no-underline" href="https://anubad-shuddhi.toolforge.org/" target="_blank" rel="noopener">
+          Open tool <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tool 1: IP Information Viewer -->
+    <div class="tool-card border border-border-subtle p-stack-md flex flex-col gap-stack-sm bg-surface-container-lowest transition-all hover:bg-surface-subtle hover:border-primary" data-category="ip" data-name="ip information viewer proxy vpn detection asn location provider geo global blocks">
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 bg-ip-network/10 flex items-center justify-center rounded">
+          <span class="material-symbols-outlined text-ip-network">public</span>
+        </div>
+        <span class="bg-ip-network/10 text-ip-network text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Network</span>
+      </div>
+      <div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">IP Information Viewer</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Detect VPNs &amp; proxies, and check Wikimedia global block status for any IP address.</p>
+      </div>
+      <div class="mt-auto pt-stack-md">
+        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline no-underline" href="ip/">
+          Open tool <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tool 2: Multi-IP Checker -->
+    <div class="tool-card border border-border-subtle p-stack-md flex flex-col gap-stack-sm bg-surface-container-lowest transition-all hover:bg-surface-subtle hover:border-primary" data-category="ip" data-name="multi ip checker batch vpn proxy bulk lists">
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 bg-ip-network/10 flex items-center justify-center rounded">
+          <span class="material-symbols-outlined text-ip-network">view_list</span>
+        </div>
+        <span class="bg-ip-network/10 text-ip-network text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Network</span>
+      </div>
+      <div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Multi-IP Checker</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Paste a list of IPs to check proxy/VPN status and metadata for all of them at once.</p>
+      </div>
+      <div class="mt-auto pt-stack-md">
+        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline no-underline" href="ipmulti/">
+          Open tool <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tool 3: IP Range Calculator -->
+    <div class="tool-card border border-border-subtle p-stack-md flex flex-col gap-stack-sm bg-surface-container-lowest transition-all hover:bg-surface-subtle hover:border-primary" data-category="ip" data-name="ip range calculator cidr subnet mask">
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 bg-ip-network/10 flex items-center justify-center rounded">
+          <span class="material-symbols-outlined text-ip-network">calculate</span>
+        </div>
+        <span class="bg-ip-network/10 text-ip-network text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Network</span>
+      </div>
+      <div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">IP Range Calculator</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Calculate the smallest CIDR range that covers a list of IP addresses. Supports IPv4/IPv6.</p>
+      </div>
+      <div class="mt-auto pt-stack-md">
+        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline no-underline" href="ip-calc/">
+          Open tool <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tool 5: CIDR Subnet Calculator -->
+    <div class="tool-card border border-border-subtle p-stack-md flex flex-col gap-stack-sm bg-surface-container-lowest transition-all hover:bg-surface-subtle hover:border-primary" data-category="ip" data-name="cidr subnet calculator hosts mask network block">
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 bg-ip-network/10 flex items-center justify-center rounded">
+          <span class="material-symbols-outlined text-ip-network">lan</span>
+        </div>
+        <span class="bg-ip-network/10 text-ip-network text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Network</span>
+      </div>
+      <div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">CIDR Subnet Calculator</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Expand any CIDR notation into its full subnet details — network, host range, and count.</p>
+      </div>
+      <div class="mt-auto pt-stack-md">
+        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline no-underline" href="ip-cidr/">
+          Open tool <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tool 6: Simple IP Tool -->
+    <div class="tool-card border border-border-subtle p-stack-md flex flex-col gap-stack-sm bg-surface-container-lowest transition-all hover:bg-surface-subtle hover:border-primary" data-category="ip" data-name="simple ip tool map location routing org">
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 bg-ip-network/10 flex items-center justify-center rounded">
+          <span class="material-symbols-outlined text-ip-network">location_on</span>
+        </div>
+        <span class="bg-ip-network/10 text-ip-network text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Network</span>
+      </div>
+      <div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Simple IP Tool</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Basic IP information and location map using the free ipinfo.io API.</p>
+      </div>
+      <div class="mt-auto pt-stack-md">
+        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline no-underline" href="ipinfo/">
+          Open tool <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tool 7: URL Decoder -->
+    <div class="tool-card border border-border-subtle p-stack-md flex flex-col gap-stack-sm bg-surface-container-lowest transition-all hover:bg-surface-subtle hover:border-primary" data-category="wiki" data-name="url decoder utf encoded link readable percent translation">
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 bg-wiki-project/10 flex items-center justify-center rounded">
+          <span class="material-symbols-outlined text-wiki-project">link_off</span>
+        </div>
+        <span class="bg-wiki-project/10 text-wiki-project text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Wikipedia</span>
+      </div>
+      <div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">URL Decoder</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Decode percent-encoded and UTF-encoded Wikipedia URLs into readable text.</p>
+      </div>
+      <div class="mt-auto pt-stack-md">
+        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline no-underline" href="urldecoder/">
+          Open tool <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tool 8: Wikipedia Word Counter -->
+    <div class="tool-card border border-border-subtle p-stack-md flex flex-col gap-stack-sm bg-surface-container-lowest transition-all hover:bg-surface-subtle hover:border-primary" data-category="wiki" data-name="wikipedia article word counter wikitext section table stats">
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 bg-wiki-project/10 flex items-center justify-center rounded">
+          <span class="material-symbols-outlined text-wiki-project">format_list_numbered</span>
+        </div>
+        <span class="bg-wiki-project/10 text-wiki-project text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Wikipedia</span>
+      </div>
+      <div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Word Counter</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Generate a wikitext table with word counts broken down by article section.</p>
+      </div>
+      <div class="mt-auto pt-stack-md">
+        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline no-underline" href="wc/">
+          Open tool <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tool 9: Grouped Word Counter -->
+    <div class="tool-card border border-border-subtle p-stack-md flex flex-col gap-stack-sm bg-surface-container-lowest transition-all hover:bg-surface-subtle hover:border-primary" data-category="wiki" data-name="grouped word counter list fountain editathon wcl scan">
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 bg-wiki-project/10 flex items-center justify-center rounded">
+          <span class="material-symbols-outlined text-wiki-project">fact_check</span>
+        </div>
+        <span class="bg-wiki-project/10 text-wiki-project text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Wikipedia</span>
+      </div>
+      <div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Grouped Word Counter</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Scan lists of articles from a URL (e.g. Fountain editathon), group by user, and calculate word counts.</p>
+      </div>
+      <div class="mt-auto pt-stack-md">
+        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline no-underline" href="wcl/">
+          Open tool <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tool 10: Duplicate Line Detector -->
+    <div class="tool-card border border-border-subtle p-stack-md flex flex-col gap-stack-sm bg-surface-container-lowest transition-all hover:bg-surface-subtle hover:border-primary" data-category="wiki" data-name="wikimedia duplicate line detector clean cleanup text list">
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 bg-wiki-project/10 flex items-center justify-center rounded">
+          <span class="material-symbols-outlined text-wiki-project">content_copy</span>
+        </div>
+        <span class="bg-wiki-project/10 text-wiki-project text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Wikipedia</span>
+      </div>
+      <div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Duplicate Line Detector</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Find duplicate lines of text in any Wikimedia project page.</p>
+      </div>
+      <div class="mt-auto pt-stack-md">
+        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline no-underline" href="dupchecker/">
+          Open tool <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tool 11: On This Day -->
+    <div class="tool-card border border-border-subtle p-stack-md flex flex-col gap-stack-sm bg-surface-container-lowest transition-all hover:bg-surface-subtle hover:border-primary" data-category="wiki date" data-name="on this day today bangla wikipedia events history calendar">
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 bg-chrono-event/10 flex items-center justify-center rounded">
+          <span class="material-symbols-outlined text-chrono-event">today</span>
+        </div>
+        <span class="bg-chrono-event/10 text-chrono-event text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Chrono</span>
+      </div>
+      <div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">On This Day</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Browse today's historical events, birthdays, and anniversaries from Bangla Wikipedia.</p>
+      </div>
+      <div class="mt-auto pt-stack-md">
+        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline no-underline" href="onthisday/">
+          Open tool <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tool 12: Edit Pulse -->
+    <div class="tool-card border border-border-subtle p-stack-md flex flex-col gap-stack-sm bg-surface-container-lowest transition-all hover:bg-surface-subtle hover:border-primary" data-category="wiki" data-name="bangla wikipedia live edit pulse recent changes stream feed">
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 bg-wiki-project/10 flex items-center justify-center rounded">
+          <span class="material-symbols-outlined text-wiki-project">sensors</span>
+        </div>
+        <span class="bg-wiki-project/10 text-wiki-project text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Wikipedia</span>
+      </div>
+      <div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Edit Pulse</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Live feed of recent edits on Bangla Wikipedia — see who is editing what in real time.</p>
+      </div>
+      <div class="mt-auto pt-stack-md">
+        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline no-underline" href="pulse/">
+          Open tool <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tool 13: WikiHarmony -->
+    <div class="tool-card border border-border-subtle p-stack-md flex flex-col gap-stack-sm bg-surface-container-lowest transition-all hover:bg-surface-subtle hover:border-primary" data-category="wiki" data-name="wikiharmony sound music wikipedia edits visualizer harmony sound">
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 bg-wiki-project/10 flex items-center justify-center rounded">
+          <span class="material-symbols-outlined text-wiki-project">music_note</span>
+        </div>
+        <span class="bg-wiki-project/10 text-wiki-project text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Wikipedia</span>
+      </div>
+      <div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">WikiHarmony</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">An audio-visual experience that turns live Wikipedia edits into music and light.</p>
+      </div>
+      <div class="mt-auto pt-stack-md">
+        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline no-underline" href="wiki-harmony/">
+          Open tool <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tool 14: Bangla Date Converter -->
+    <div class="tool-card border border-border-subtle p-stack-md flex flex-col gap-stack-sm bg-surface-container-lowest transition-all hover:bg-surface-subtle hover:border-primary" data-category="date" data-name="bangla gregorian date converter bengali calendar conversion">
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 bg-chrono-event/10 flex items-center justify-center rounded">
+          <span class="material-symbols-outlined text-chrono-event">calendar_month</span>
+        </div>
+        <span class="bg-chrono-event/10 text-chrono-event text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Chrono</span>
+      </div>
+      <div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Bangla ↔ Gregorian Date</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Convert dates between the Bengali calendar and the Gregorian calendar, both directions.</p>
+      </div>
+      <div class="mt-auto pt-stack-md">
+        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline no-underline" href="bndate/">
+          Open tool <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+  
+  <div class="hidden text-center text-text-secondary py-12 text-body-lg" id="no-results">
+    No tools match your criteria. Try adjusting your search term.
   </div>
 
-  <div class="page-content">
-    <div class="category-bar">
-      <button class="cat-btn active" data-cat="all">All tools</button>
-      <button class="cat-btn" data-cat="ip">IP &amp; Network</button>
-      <button class="cat-btn" data-cat="wiki">Wikipedia</button>
-      <button class="cat-btn" data-cat="date">Date &amp; Calendar</button>
+  <!-- Call to Action / Documentation Excerpt -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-stack-lg mb-24 items-center border-t border-border-subtle pt-12">
+    <div>
+      <h2 class="font-headline-md text-headline-md text-on-surface mb-stack-md">Contributing to YTools</h2>
+      <p class="font-body-md text-body-md text-on-surface-variant mb-stack-md">YTools is an open-source project hosted on Wikimedia Toolforge. We provide a standardized design system and utility libraries for developers looking to build tools for the Wikimedia contributor community.</p>
+      <ul class="space-y-base mb-stack-lg list-none p-0">
+        <li class="flex items-center gap-stack-sm text-body-sm">
+          <span class="material-symbols-outlined text-wiki-project text-[18px]">check_circle</span>
+          Built with lightweight JS &amp; modern styling guidelines
+        </li>
+        <li class="flex items-center gap-stack-sm text-body-sm">
+          <span class="material-symbols-outlined text-wiki-project text-[18px]">check_circle</span>
+          Tailwind CSS layout and theme variables
+        </li>
+        <li class="flex items-center gap-stack-sm text-body-sm">
+          <span class="material-symbols-outlined text-wiki-project text-[18px]">check_circle</span>
+          Open for community additions
+        </li>
+      </ul>
+      <a class="bg-primary text-on-primary px-stack-lg py-2 rounded font-label-md text-label-md hover:bg-opacity-95 transition-all no-underline inline-block" href="https://github.com/UserYahya/YTools" target="_blank" rel="noopener">Read Developer Docs</a>
     </div>
+    
+    <div class="flex justify-center">
+      <div class="bg-surface-subtle border border-border-subtle p-gutter rounded relative overflow-hidden w-full max-w-md">
+        <div class="w-full aspect-video rounded shadow-sm bg-cover bg-center grayscale opacity-85 hover:grayscale-0 transition-all duration-500" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDgT3jCcRZSfUUxLODoA1cJYEBqTiIXKjjDh_XqWQeDHJ98IvmQitWNF3KvOi4FxDX8C6zEHKLNjomOtkw8pdbPd1pbWMWpsVIKY6HEPBhmoOhBYdXJN3Wwdszr9ReC0rjx64tm266XLrLYN7ccyjPgp6rXeniSux-xyqwr6UXsvNYoigvihvgxqg5kgY7lN3TYMyFXsjsfOV5ef-tlSnExaEpavr05ezjnvaqr7oEVj_rggtUlp6PHfl1M60nmCdCfC25nM0jFL6th')"></div>
+      </div>
+    </div>
+  </section>
+</main>
 
-    <div class="tools-grid" id="toolsGrid">
+<script src="yt-shell.js"></script>
+<script>
+  const searchInput = document.getElementById('search');
+  const container = document.getElementById('tool-container');
+  const cards = Array.from(container.querySelectorAll('.tool-card'));
+  const noResults = document.getElementById('no-results');
+  let activeCat = 'all';
 
-      <!-- IP Tools -->
-      <a class="tool-card" href="ip/" data-cat="ip" data-name="ip information viewer proxy vpn detection">
-        <div class="tool-card__icon">🌐</div>
-        <div class="tool-card__cat">IP &amp; Network</div>
-        <div class="tool-card__title">IP Information Viewer</div>
-        <div class="tool-card__desc">Detect VPNs &amp; proxies for global blocks. Shows ASN, location, range, provider, and Wikimedia block status.</div>
-        <div class="tool-card__action">Open tool</div>
-      </a>
-
-      <a class="tool-card" href="ipmulti/" data-cat="ip" data-name="multi ip checker batch vpn proxy">
-        <div class="tool-card__icon">📋</div>
-        <div class="tool-card__cat">IP &amp; Network</div>
-        <div class="tool-card__title">Multi-IP Checker</div>
-        <div class="tool-card__desc">Paste a list of IPs to check proxy/VPN status and metadata for all of them at once.</div>
-        <div class="tool-card__action">Open tool</div>
-      </a>
-
-      <a class="tool-card" href="ip-calc/" data-cat="ip" data-name="ip range calculator cidr subnet">
-        <div class="tool-card__icon">🔢</div>
-        <div class="tool-card__cat">IP &amp; Network</div>
-        <div class="tool-card__title">IP Range Calculator</div>
-        <div class="tool-card__desc">Calculate the CIDR range from two IP addresses. Supports IPv4 and IPv6.</div>
-        <div class="tool-card__action">Open tool</div>
-      </a>
-
-      <a class="tool-card tool-card--new" href="ip-whois/" data-cat="ip" data-name="ip whois lookup arin ripe registration">
-        <div class="tool-card__icon">🔍</div>
-        <div class="tool-card__cat">IP &amp; Network</div>
-        <div class="tool-card__title">IP WHOIS Lookup</div>
-        <div class="tool-card__desc">Query WHOIS registration data for any IP address — registrar, allocated range, contact info, and more.</div>
-        <div class="tool-card__action">Open tool</div>
-      </a>
-
-      <a class="tool-card tool-card--new" href="ip-cidr/" data-cat="ip" data-name="cidr subnet calculator hosts mask network">
-        <div class="tool-card__icon">🗂️</div>
-        <div class="tool-card__cat">IP &amp; Network</div>
-        <div class="tool-card__title">CIDR Subnet Calculator</div>
-        <div class="tool-card__desc">Expand any CIDR notation into its full subnet details — network address, broadcast, host range, and count.</div>
-        <div class="tool-card__action">Open tool</div>
-      </a>
-
-      <!-- Wiki Tools -->
-      <a class="tool-card" href="urldecoder/" data-cat="wiki" data-name="url decoder utf encoded link readable">
-        <div class="tool-card__icon">🔗</div>
-        <div class="tool-card__cat">Wikipedia</div>
-        <div class="tool-card__title">URL Decoder</div>
-        <div class="tool-card__desc">Decode percent-encoded and UTF-encoded Wikipedia URLs into readable text. Useful for non-Latin scripts.</div>
-        <div class="tool-card__action">Open tool</div>
-      </a>
-
-      <a class="tool-card" href="wc/" data-cat="wiki" data-name="wikipedia article word counter wikitext section table">
-        <div class="tool-card__icon">📝</div>
-        <div class="tool-card__cat">Wikipedia</div>
-        <div class="tool-card__title">Wikipedia Word Counter</div>
-        <div class="tool-card__desc">Generate a wikitext table with word counts broken down by article section.</div>
-        <div class="tool-card__action">Open tool</div>
-      </a>
-
-      <a class="tool-card" href="onthisday/" data-cat="wiki date" data-name="on this day today bangla wikipedia events">
-        <div class="tool-card__icon">📆</div>
-        <div class="tool-card__cat">Wikipedia</div>
-        <div class="tool-card__title">On This Day</div>
-        <div class="tool-card__desc">Browse today's historical events, birthdays, and anniversaries from Bangla Wikipedia.</div>
-        <div class="tool-card__action">Open tool</div>
-      </a>
-
-      <a class="tool-card" href="pulse/" data-cat="wiki" data-name="bangla wikipedia live edit pulse recent changes">
-        <div class="tool-card__icon">📡</div>
-        <div class="tool-card__cat">Wikipedia</div>
-        <div class="tool-card__title">Edit Pulse</div>
-        <div class="tool-card__desc">Live feed of recent edits on Bangla Wikipedia — see who's editing what in real time.</div>
-        <div class="tool-card__action">Open tool</div>
-      </a>
-
-      <a class="tool-card" href="wiki-harmony/" data-cat="wiki" data-name="wikiharmony sound music wikipedia edits visualizer">
-        <div class="tool-card__icon">🎵</div>
-        <div class="tool-card__cat">Wikipedia</div>
-        <div class="tool-card__title">WikiHarmony</div>
-        <div class="tool-card__desc">An audio-visual experience that turns live Wikipedia edits into music and light.</div>
-        <div class="tool-card__action">Open tool</div>
-      </a>
-
-      <!-- Date Tools -->
-      <a class="tool-card" href="bndate/" data-cat="date wiki" data-name="bangla gregorian date converter bengali calendar">
-        <div class="tool-card__icon">📅</div>
-        <div class="tool-card__cat">Date &amp; Calendar</div>
-        <div class="tool-card__title">Bangla ↔ Gregorian Date</div>
-        <div class="tool-card__desc">Convert dates between the Bengali calendar and the Gregorian calendar, both directions.</div>
-        <div class="tool-card__action">Open tool</div>
-      </a>
-
-    </div><!-- /tools-grid -->
-  </div><!-- /page-content -->
-
-  <script src="yt-shell.js"></script>
-  <script>
-    const searchInput = document.getElementById('search');
-    const grid = document.getElementById('toolsGrid');
-    const cards = Array.from(grid.querySelectorAll('.tool-card'));
-    const catBtns = document.querySelectorAll('.cat-btn');
-    let activeCat = 'all';
-
-    function filterCards() {
-      const term = searchInput.value.toLowerCase().trim();
-      let visible = 0;
-      cards.forEach(card => {
-        const name = card.dataset.name || '';
-        const cat  = card.dataset.cat  || '';
-        const matchSearch = !term || name.includes(term);
-        const matchCat    = activeCat === 'all' || cat.includes(activeCat);
-        if (matchSearch && matchCat) {
-          card.style.display = '';
-          visible++;
-        } else {
-          card.style.display = 'none';
-        }
-      });
-      let noRes = document.getElementById('no-results');
-      if (!noRes) {
-        noRes = document.createElement('p');
-        noRes.id = 'no-results';
-        noRes.textContent = 'No tools match your search.';
-        grid.appendChild(noRes);
+  function filterCards() {
+    const term = searchInput.value.toLowerCase().trim();
+    let visible = 0;
+    
+    cards.forEach(card => {
+      const name = card.dataset.name || '';
+      const cat = card.dataset.category || '';
+      
+      const matchSearch = !term || name.includes(term);
+      const matchCat = activeCat === 'all' || cat.split(' ').includes(activeCat);
+      
+      if (matchSearch && matchCat) {
+        card.style.display = 'flex';
+        visible++;
+      } else {
+        card.style.display = 'none';
       }
-      noRes.style.display = visible === 0 ? 'block' : 'none';
-    }
-
-    searchInput.addEventListener('input', filterCards);
-
-    catBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        catBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        activeCat = btn.dataset.cat;
-        filterCards();
-      });
     });
-  </script>
+
+    noResults.style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  function setCategory(category) {
+    activeCat = category;
+    
+    // Update active state of tabs
+    const tabs = document.querySelectorAll('.filter-tab');
+    tabs.forEach(tab => {
+      tab.classList.remove('active');
+      const text = tab.innerText.toLowerCase();
+      if (text.includes(category) || (category === 'all' && text.includes('all'))) {
+        tab.classList.add('active');
+      }
+    });
+
+    filterCards();
+  }
+
+  searchInput.addEventListener('input', filterCards);
+
+  // Global shortcut CTRL + K
+  window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      searchInput.focus();
+    }
+  });
+
+  // Check query parameter on load
+  window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const q = urlParams.get('q') || urlParams.get('search');
+    if (q) {
+      searchInput.value = q;
+      filterCards();
+    }
+  });
+</script>
 </body>
 </html>
+

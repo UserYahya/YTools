@@ -1,330 +1,329 @@
 <!DOCTYPE html>
-<html lang="bn">
-
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
-    <title>Wikipedia Word Counter — YTools</title>
-    <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --success-color: #27ae60;
-            --danger-color: #e74c3c;
-        }
-
-        body {
-            font-family: 'Noto Serif Bengali', serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f8f9fa;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            color: var(--primary-color);
-            text-align: center;
-            margin-bottom: 2rem;
-            font-size: 2.2rem;
-        }
-
-        .input-group {
-            margin-bottom: 1.5rem;
-        }
-
-        input,
-        textarea {
-            font-family: 'Noto Serif Bengali', serif;
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        input:focus,
-        textarea:focus {
-            border-color: var(--secondary-color);
-            outline: none;
-        }
-
-        #articleInput {
-            height: 200px;
-            resize: vertical;
-        }
-
-        button {
-            font-family: 'Noto Serif Bengali', serif;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: transform 0.2s ease, opacity 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        #countButton {
-            background-color: var(--success-color);
-            color: white;
-            margin-bottom: 1rem;
-        }
-
-        #countButton:hover {
-            opacity: 0.9;
-        }
-
-        #copyButton {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-
-        #result {
-            margin-top: 2rem;
-            background-color: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 2px solid #e9ecef;
-            font-family: monospace;
-            overflow-x: auto;
-        }
-
-        .progress-bar {
-            height: 4px;
-            background-color: #e0e0e0;
-            border-radius: 2px;
-            margin: 1rem 0;
-            overflow: hidden;
-            display: none;
-        }
-
-        .progress {
-            height: 100%;
-            background-color: var(--success-color);
-            transition: width 0.3s ease;
-        }
-
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--secondary-color);
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            display: none;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <!-- Tailwind CSS & Google Fonts (Static Injection) -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    window.tailwind = {
+      config: {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-subtle': '#F8F9FA',
+              'error-container': '#ffdad6',
+              'tertiary-container': '#a65400',
+              'tertiary-fixed': '#ffdcc5',
+              'surface-tint': '#2259bf',
+              'surface-container-low': '#f5f3f4',
+              'secondary-fixed-dim': '#54ddb4',
+              'surface-container-highest': '#e3e2e3',
+              'surface-variant': '#e3e2e3',
+              'secondary': '#006c53',
+              'surface-container-lowest': '#ffffff',
+              'inverse-primary': '#b1c5ff',
+              'on-primary': '#ffffff',
+              'on-secondary': '#ffffff',
+              'on-secondary-container': '#007258',
+              'outline-variant': '#c3c6d5',
+              'on-background': '#1b1c1d',
+              'surface-bright': '#faf9fa',
+              'on-primary-container': '#e7ebff',
+              'outline': '#737784',
+              'surface-container': '#efedee',
+              'tertiary': '#824000',
+              'on-error': '#ffffff',
+              'on-primary-fixed-variant': '#00419d',
+              'on-secondary-fixed-variant': '#00513e',
+              'primary-container': '#3366cc',
+              'on-surface': '#1b1c1d',
+              'error': '#ba1a1a',
+              'on-tertiary-fixed': '#301400',
+              'on-tertiary-fixed-variant': '#713700',
+              'inverse-on-surface': '#f2f0f1',
+              'surface': '#faf9fa',
+              'background': '#faf9fa',
+              'primary-fixed': '#d9e2ff',
+              'on-surface-variant': '#434653',
+              'chrono-event': '#E67E22',
+              'secondary-container': '#74facf',
+              'on-tertiary-container': '#ffe7d9',
+              'on-tertiary': '#ffffff',
+              'on-secondary-fixed': '#002117',
+              'surface-dim': '#dbdadb',
+              'primary': '#094cb2',
+              'primary-fixed-dim': '#b1c5ff',
+              'border-subtle': '#A2A9B1',
+              'ip-network': '#3366CC',
+              'surface-container-high': '#e9e8e9',
+              'on-error-container': '#93000a',
+              'on-primary-fixed': '#001946',
+              'text-secondary': '#72777D',
+              'inverse-surface': '#303031',
+              'secondary-fixed': '#74facf',
+              'wiki-project': '#00AF89',
+              'tertiary-fixed-dim': '#ffb783'
+            },
+            borderRadius: {
+              'DEFAULT': '0.125rem',
+              'lg': '0.25rem',
+              'xl': '0.5rem',
+              'full': '0.75rem'
+            },
+            spacing: {
+              'stack-lg': '24px',
+              'gutter': '16px',
+              'base': '4px',
+              'stack-sm': '8px',
+              'margin-mobile': '12px',
+              'container-max': '1200px',
+              'stack-md': '16px'
+            },
+            fontFamily: {
+              'body-lg': ['Inter', 'sans-serif'],
+              'label-md': ['Inter', 'sans-serif'],
+              'display-lg': ['Source Serif 4', 'serif'],
+              'headline-sm': ['Source Serif 4', 'serif'],
+              'code': ['JetBrains Mono', 'monospace'],
+              'body-md': ['Inter', 'sans-serif'],
+              'body-sm': ['Inter', 'sans-serif'],
+              'headline-md': ['Source Serif 4', 'serif']
+            },
+            fontSize: {
+              'body-lg': ['16px', {lineHeight: '24px', fontWeight: '400'}],
+              'label-md': ['13px', {lineHeight: '16px', fontWeight: '600'}],
+              'display-lg': ['32px', {lineHeight: '40px', fontWeight: '400'}],
+              'headline-sm': ['20px', {lineHeight: '28px', fontWeight: '400'}],
+              'code': ['13px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-md': ['14px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-sm': ['12px', {lineHeight: '18px', fontWeight: '400'}],
+              'headline-md': ['24px', {lineHeight: '32px', fontWeight: '400'}]
             }
-
-            100% {
-                transform: rotate(360deg);
-            }
+          }
         }
+      }
+    };
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+    .quiet-shadow {
+      box-shadow: 0 2px 2px 0 rgba(0,0,0,0.1);
+    }
+    body {
+      font-family: 'Inter', sans-serif !important;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Source Serif 4', serif !important;
+    }
+    code, pre, .font-code {
+      font-family: 'JetBrains Mono', monospace !important;
+    }
+  </style>
 
-        .error-message {
-            color: var(--danger-color);
-            margin: 0.5rem 0;
-        }
-    </style>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Wikipedia Word Counter - YTools</title>
 </head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
 
-<body>
-    <div class="container">
-        <h1>শব্দগণক</h1>
-        <p>এই সরঞ্জাম দিয়ে যে কোনো উইকিমিডিয়া উইকির কোনো পাতার মোট শব্দ সংখ্যা গণনা করা যাবে। এটি তথ্যছক, বিষয়শ্রেণি
-            কিংবা নিবন্ধের
-            মূল বিষয়বস্তুর অংশ নয় এমন লেখা গণনা করবে না।</p>
-        <div class="input-group">
-            <input id="siteInput" placeholder="উইকি সাইটের ডোমেইন (যেমন: bn.wikipedia.org)" value="bn.wikipedia.org">
-        </div>
-        <div class="input-group">
-            <textarea id="articleInput" placeholder="এখানে নিবন্ধের নাম দিন (প্রত্যেক লাইনে একটি করে)"></textarea>
-        </div>
-        <div class="progress-bar">
-            <div class="progress"></div>
-        </div>
-        <button id="countButton">
-            <span class="loader"></span>
-            <span>শব্দ গুনুন</span>
-        </button>
-        <button id="copyButton" style="display: none;">ক্লিপবোর্ডে অনুলিপি</button>
-        <div id="result"></div>
-    </div>
-
-    <script>
-        document.getElementById('countButton').addEventListener('click', countWordsForMultipleArticles);
-        document.getElementById('copyButton').addEventListener('click', copyToClipboard);
-
-        async function countWordsForMultipleArticles() {
-            const site = document.getElementById('siteInput').value.trim();
-            const articleNames = document.getElementById('articleInput').value
-                .split('\n')
-                .map(name => name.trim())
-                .filter(name => name !== '');
-
-            if (articleNames.length === 0) {
-                showError('অনুগ্রহ করে কমপক্ষে একটি নিবন্ধের নাম লিখুন');
-                return;
-            }
-
-            const countButton = document.getElementById('countButton');
-            const loader = countButton.querySelector('.loader');
-            const progressBar = document.querySelector('.progress-bar');
-            const progress = document.querySelector('.progress');
-
-            countButton.disabled = true;
-            loader.style.display = 'block';
-            progressBar.style.display = 'block';
-
-            const totalArticles = articleNames.length;
-            let processed = 0;
-
-            try {
-                const results = await Promise.all(articleNames.map(async (articleName) => {
-                    const result = await getWordCount(site, articleName);
-                    processed++;
-                    progress.style.width = `${(processed / totalArticles) * 100}%`;
-                    return { articleName, result };
-                }));
-
-                let wikitext = '{| class="wikitable sortable"\n! নিবন্ধের নাম !! শব্দসংখ্যা\n|-\n';
-                let totalWords = 0;
-
-                results.forEach(({ articleName, result }) => {
-                    if (typeof result.count === 'number') {
-                        totalWords += result.count;
-                        wikitext += `| [[${articleName}]] || ${result.count.toLocaleString('bn')}\n|-\n`;
-                    } else {
-                        wikitext += `| ${articleName} || ${result.error}\n|-\n`;
-                    }
-                });
-
-                wikitext += `| '''মোট শব্দ''' || '''${totalWords.toLocaleString('bn')}'''\n|}`;
-                document.getElementById('result').textContent = wikitext;
-                document.getElementById('copyButton').style.display = 'block';
-            } catch (error) {
-                showError('কিছু ত্রুটি হয়েছে। অনুগ্রহপূর্বক আবার চেষ্টা করুন।');
-            } finally {
-                countButton.disabled = false;
-                loader.style.display = 'none';
-                progressBar.style.display = 'none';
-                progress.style.width = '0%';
-            }
-        }
-
-        async function getWordCount(site, title) {
-            try {
-                const apiUrl = `https://${site}/w/api.php?action=parse&page=${encodeURIComponent(title)}&format=json&prop=text&origin=*`;
-                const response = await fetch(apiUrl);
-
-                if (!response.ok) throw new Error('Network response was not ok');
-
-                const data = await response.json();
-
-                if (data.error) {
-                    console.error(`Error fetching "${title}":`, data.error.info);
-                    return { error: 'নিবন্ধ পাওয়া যায়নি' };
-                }
-
-                const htmlContent = data.parse.text['*'];
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(htmlContent, 'text/html');
-
-                // Optimized element removal
-                const cleanHtml = htmlContent.replace(/<style[\s\S]*?<\/style>|<script[\s\S]*?<\/script>|<noscript[\s\S]*?<\/noscript>/gi, '');
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = cleanHtml;
-
-                // Remove unwanted elements
-                const unwantedSelectors = [
-                    '.mw-empty-elt', '.mw-editsection', '.reference', '.references',
-                    '.reflist', '.mbox-small', '.ambox', '.navbox', '.catlinks',
-                    '.noprint', '.metadata', '.portal',
-                    'style', 'script', '.thumbinner', '.listing-lastedit'
-                ].join(',');
-
-                tempDiv.querySelectorAll(unwantedSelectors).forEach(el => el.remove());
-
-                // Get text content
-                const content = tempDiv.textContent || "";
-
-                // Optimized word counting
-                const wordCount = site.startsWith('bn.')
-                    ? (content.match(/[\u0980-\u09FF]+/g) || []).length
-                    : content.split(/\s+/).filter(word => word.length > 0).length;
-
-                return { count: wordCount };
-            } catch (error) {
-                console.error(`Error processing "${title}":`, error);
-                return { error: 'প্রক্রিয়াকরণে ত্রুটি' };
-            }
-        }
-
-        function copyToClipboard() {
-            const resultText = document.getElementById('result').textContent;
-            navigator.clipboard.writeText(resultText).then(() => {
-                showTemporaryMessage('আউটপুট ক্লিপবোর্ডে অনুলিপি করা হয়েছে!', 'success');
-            }).catch(err => {
-                console.error('Copy failed:', err);
-                showError('অনুলিপি করা ব্যর্থ হয়েছে');
-            });
-        }
-
-        function showError(message) {
-            const errorElement = document.createElement('div');
-            errorElement.className = 'error-message';
-            errorElement.textContent = message;
-            document.getElementById('result').prepend(errorElement);
-            setTimeout(() => errorElement.remove(), 3000);
-        }
-
-        function showTemporaryMessage(message, type = 'success') {
-            const msgElement = document.createElement('div');
-            msgElement.className = `message ${type}`;
-            msgElement.textContent = message;
-            document.body.appendChild(msgElement);
-            setTimeout(() => msgElement.remove(), 2000);
-        }
-    </script>
-
-  <!-- YTools shell + similar tools -->
-  <div style="max-width:900px;margin:0 auto;padding:0 24px 48px">
-    <link rel="stylesheet" href="../common.css">
-    <div class="similar-tools">
-      <h3>Related tools</h3>
-      <ul class="similar-tools__list">
-        <li><a href="../urldecoder/">🔗 URL Decoder</a></li>
-        <li><a href="../bndate/">📅 Bangla Date Converter</a></li>
-        <li><a href="../onthisday/">📆 On This Day</a></li>
-        <li><a href="../pulse/">📡 Edit Pulse</a></li>
-        <li><a href="../">← All YTools</a></li>
-      </ul>
+<main class="max-w-container-max mx-auto px-gutter py-stack-lg min-h-screen">
+  <!-- Breadcrumbs & Tool Header -->
+  <div class="mb-stack-lg">
+    <nav class="flex items-center text-body-sm text-text-secondary mb-base">
+      <a class="hover:text-primary no-underline" href="../">Tools</a>
+      <span class="material-symbols-outlined text-[14px] mx-base">chevron_right</span>
+      <span class="text-on-surface">Word Counter</span>
+    </nav>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-stack-md border-b border-border-subtle pb-stack-md">
+      <div>
+        <h1 class="font-headline-md text-headline-md font-bold">Wikipedia Word Counter / শব্দগণক</h1>
+        <p class="text-text-secondary mt-base font-body-md">Calculate the clean word count for any list of Wikipedia articles. Infoboxes, categories, and references are automatically excluded.</p>
+      </div>
     </div>
   </div>
-  <script src="../yt-shell.js"></script>
 
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-stack-lg">
+    <!-- Input Card -->
+    <div class="lg:col-span-5">
+      <div class="bg-surface border border-border-subtle p-stack-md rounded flex flex-col gap-stack-sm">
+        <div class="form-group flex flex-col gap-base">
+          <label class="font-label-md text-label-md text-on-surface" for="siteInput">Wiki Domain</label>
+          <input class="px-stack-md py-stack-sm bg-surface-subtle border border-border-subtle rounded focus:ring-1 focus:ring-primary focus:border-primary text-code font-code" id="siteInput" placeholder="e.g. bn.wikipedia.org" value="bn.wikipedia.org" type="text" autocomplete="off"/>
+        </div>
+
+        <div class="form-group flex flex-col gap-base">
+          <label class="font-label-md text-label-md text-on-surface flex justify-between" for="articleInput">
+            <span>Article Titles</span>
+            <span class="text-body-sm text-text-secondary font-normal">(one per line)</span>
+          </label>
+          <textarea class="w-full h-48 bg-surface-subtle border border-border-subtle p-stack-sm font-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none resize-none rounded" id="articleInput" placeholder="নিবন্ধের নাম দিন (e.g. বাংলাদেশ)"></textarea>
+        </div>
+
+        <div class="hidden w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden mb-2" id="progress-container">
+          <div class="bg-secondary h-full transition-all duration-300" id="progress-bar" style="width: 0%"></div>
+        </div>
+
+        <button class="w-full bg-primary text-on-primary font-label-md text-label-md py-stack-sm hover:opacity-90 active:opacity-80 transition-all rounded flex items-center justify-center gap-base" id="countButton" onclick="countWordsForMultipleArticles()">
+          <span class="material-symbols-outlined text-[18px]" id="btn-icon">format_list_numbered</span>
+          <span id="btn-text">শব্দ গুনুন / Count Words</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Output Card -->
+    <div class="lg:col-span-7 flex flex-col">
+      <div class="bg-surface border border-border-subtle rounded flex-grow flex flex-col overflow-hidden min-h-[350px]">
+        <div class="bg-surface-subtle border-b border-border-subtle px-stack-md py-stack-sm flex justify-between items-center">
+          <h2 class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Wikitext Output</h2>
+          <button class="bg-white hover:bg-surface-container border border-border-subtle text-primary font-bold px-3 py-1.5 rounded text-body-sm transition-all hidden flex items-center gap-base" id="copyButton" onclick="copyToClipboard()">
+            <span class="material-symbols-outlined text-[16px]">content_copy</span> ক্লিপবোর্ডে অনুলিপি / Copy
+          </button>
+        </div>
+
+        <div class="p-stack-md flex-grow overflow-auto bg-surface-container-lowest font-code text-code break-all whitespace-pre-wrap text-on-surface-variant leading-relaxed" id="result">
+          <div class="flex flex-col items-center justify-center h-full text-text-secondary opacity-50 py-12">
+            <span class="material-symbols-outlined text-[48px] mb-base">table_chart</span>
+            <p>Results will be displayed here in Wikitable format.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="../yt-shell.js"></script>
+<script>
+  async function countWordsForMultipleArticles() {
+    const site = document.getElementById('siteInput').value.trim();
+    const articleInput = document.getElementById('articleInput');
+    const articleNames = articleInput.value
+      .split('\n')
+      .map(name => name.trim())
+      .filter(name => name !== '');
+
+    if (articleNames.length === 0) {
+      alert('অনুগ্রহ করে কমপক্ষে একটি নিবন্ধের নাম লিখুন / Please enter at least one article title.');
+      return;
+    }
+
+    const countButton = document.getElementById('countButton');
+    const btnIcon = document.getElementById('btn-icon');
+    const btnText = document.getElementById('btn-text');
+    const progressContainer = document.getElementById('progress-container');
+    const progressBar = document.getElementById('progress-bar');
+    const copyButton = document.getElementById('copyButton');
+    const resultDiv = document.getElementById('result');
+
+    countButton.disabled = true;
+    btnIcon.textContent = 'sync';
+    btnIcon.classList.add('animate-spin');
+    btnText.textContent = 'গণনা করা হচ্ছে...';
+    progressContainer.classList.remove('hidden');
+    progressBar.style.width = '0%';
+    copyButton.classList.add('hidden');
+
+    const totalArticles = articleNames.length;
+    let processed = 0;
+
+    try {
+      const results = await Promise.all(articleNames.map(async (articleName) => {
+        const result = await getWordCount(site, articleName);
+        processed++;
+        progressBar.style.width = `${(processed / totalArticles) * 100}%`;
+        return { articleName, result };
+      }));
+
+      const isBengali = site.startsWith('bn.');
+      let wikitext = `{| class="wikitable sortable"\n! ${isBengali ? 'নিবন্ধের নাম' : 'Article Title'} !! ${isBengali ? 'শব্দসংখ্যা' : 'Word Count'}\n|-\n`;
+      let totalWords = 0;
+
+      results.forEach(({ articleName, result }) => {
+        if (typeof result.count === 'number') {
+          totalWords += result.count;
+          const displayCount = isBengali ? result.count.toLocaleString('bn') : result.count.toLocaleString();
+          wikitext += `| [[${articleName}]] || ${displayCount}\n|-\n`;
+        } else {
+          wikitext += `| ${articleName} || ${isBengali ? result.error : 'Not found/Error'}\n|-\n`;
+        }
+      });
+
+      const displayTotal = isBengali ? totalWords.toLocaleString('bn') : totalWords.toLocaleString();
+      wikitext += `| '''${isBengali ? 'মোট শব্দ' : 'Total Words'}''' || '''${displayTotal}'''\n|}`;
+      
+      resultDiv.textContent = wikitext;
+      resultDiv.classList.remove('text-error');
+      copyButton.classList.remove('hidden');
+    } catch (error) {
+      console.error(error);
+      resultDiv.textContent = '⚠ কিছু ত্রুটি হয়েছে। অনুগ্রহপূর্বক আবার চেষ্টা করুন। / An error occurred. Please try again.';
+      resultDiv.classList.add('text-error');
+    } finally {
+      countButton.disabled = false;
+      btnIcon.textContent = 'format_list_numbered';
+      btnIcon.classList.remove('animate-spin');
+      btnText.textContent = 'শব্দ গুনুন / Count Words';
+      progressContainer.classList.add('hidden');
+      progressBar.style.width = '0%';
+    }
+  }
+
+  async function getWordCount(site, title) {
+    try {
+      const apiUrl = `https://${site}/w/api.php?action=parse&page=${encodeURIComponent(title)}&format=json&prop=text&origin=*`;
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error();
+      const data = await response.json();
+
+      if (data.error) {
+        return { error: 'নিবন্ধ পাওয়া যায়নি' };
+      }
+
+      const htmlContent = data.parse.text['*'];
+      const cleanHtml = htmlContent.replace(/<style[\s\S]*?<\/style>|<script[\s\S]*?<\/script>|<noscript[\s\S]*?<\/noscript>/gi, '');
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = cleanHtml;
+
+      const unwantedSelectors = [
+        '.mw-empty-elt', '.mw-editsection', '.reference', '.references',
+        '.reflist', '.mbox-small', '.ambox', '.navbox', '.catlinks',
+        '.noprint', '.metadata', '.portal',
+        'style', 'script', '.thumbinner', '.listing-lastedit'
+      ].join(',');
+
+      tempDiv.querySelectorAll(unwantedSelectors).forEach(el => el.remove());
+      const content = tempDiv.textContent || "";
+
+      const wordCount = site.startsWith('bn.')
+        ? (content.match(/[\u0980-\u09FF]+/g) || []).length
+        : content.split(/\s+/).filter(word => word.length > 0).length;
+
+      return { count: wordCount };
+    } catch (error) {
+      console.error(error);
+      return { error: 'প্রক্রিয়াকরণে ত্রুটি' };
+    }
+  }
+
+  function copyToClipboard() {
+    const resultText = document.getElementById('result').textContent;
+    navigator.clipboard.writeText(resultText).then(() => {
+      const copyButton = document.getElementById('copyButton');
+      const origText = copyButton.innerHTML;
+      copyButton.innerHTML = '<span class="material-symbols-outlined text-[16px]">check</span> কপিড / Copied';
+      setTimeout(() => {
+        copyButton.innerHTML = origText;
+      }, 1500);
+    }).catch(err => {
+      console.error(err);
+      alert('Copy failed.');
+    });
+  }
+</script>
 </body>
-
 </html>

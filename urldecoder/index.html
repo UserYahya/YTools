@@ -1,107 +1,315 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>URL Decoder — YTools</title>
-  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/URL_decoder_VE_icon.svg/240px-URL_decoder_VE_icon.svg.png" sizes="192x192">
-  <link rel="stylesheet" href="../common.css">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <!-- Tailwind CSS & Google Fonts (Static Injection) -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    window.tailwind = {
+      config: {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-subtle': '#F8F9FA',
+              'error-container': '#ffdad6',
+              'tertiary-container': '#a65400',
+              'tertiary-fixed': '#ffdcc5',
+              'surface-tint': '#2259bf',
+              'surface-container-low': '#f5f3f4',
+              'secondary-fixed-dim': '#54ddb4',
+              'surface-container-highest': '#e3e2e3',
+              'surface-variant': '#e3e2e3',
+              'secondary': '#006c53',
+              'surface-container-lowest': '#ffffff',
+              'inverse-primary': '#b1c5ff',
+              'on-primary': '#ffffff',
+              'on-secondary': '#ffffff',
+              'on-secondary-container': '#007258',
+              'outline-variant': '#c3c6d5',
+              'on-background': '#1b1c1d',
+              'surface-bright': '#faf9fa',
+              'on-primary-container': '#e7ebff',
+              'outline': '#737784',
+              'surface-container': '#efedee',
+              'tertiary': '#824000',
+              'on-error': '#ffffff',
+              'on-primary-fixed-variant': '#00419d',
+              'on-secondary-fixed-variant': '#00513e',
+              'primary-container': '#3366cc',
+              'on-surface': '#1b1c1d',
+              'error': '#ba1a1a',
+              'on-tertiary-fixed': '#301400',
+              'on-tertiary-fixed-variant': '#713700',
+              'inverse-on-surface': '#f2f0f1',
+              'surface': '#faf9fa',
+              'background': '#faf9fa',
+              'primary-fixed': '#d9e2ff',
+              'on-surface-variant': '#434653',
+              'chrono-event': '#E67E22',
+              'secondary-container': '#74facf',
+              'on-tertiary-container': '#ffe7d9',
+              'on-tertiary': '#ffffff',
+              'on-secondary-fixed': '#002117',
+              'surface-dim': '#dbdadb',
+              'primary': '#094cb2',
+              'primary-fixed-dim': '#b1c5ff',
+              'border-subtle': '#A2A9B1',
+              'ip-network': '#3366CC',
+              'surface-container-high': '#e9e8e9',
+              'on-error-container': '#93000a',
+              'on-primary-fixed': '#001946',
+              'text-secondary': '#72777D',
+              'inverse-surface': '#303031',
+              'secondary-fixed': '#74facf',
+              'wiki-project': '#00AF89',
+              'tertiary-fixed-dim': '#ffb783'
+            },
+            borderRadius: {
+              'DEFAULT': '0.125rem',
+              'lg': '0.25rem',
+              'xl': '0.5rem',
+              'full': '0.75rem'
+            },
+            spacing: {
+              'stack-lg': '24px',
+              'gutter': '16px',
+              'base': '4px',
+              'stack-sm': '8px',
+              'margin-mobile': '12px',
+              'container-max': '1200px',
+              'stack-md': '16px'
+            },
+            fontFamily: {
+              'body-lg': ['Inter', 'sans-serif'],
+              'label-md': ['Inter', 'sans-serif'],
+              'display-lg': ['Source Serif 4', 'serif'],
+              'headline-sm': ['Source Serif 4', 'serif'],
+              'code': ['JetBrains Mono', 'monospace'],
+              'body-md': ['Inter', 'sans-serif'],
+              'body-sm': ['Inter', 'sans-serif'],
+              'headline-md': ['Source Serif 4', 'serif']
+            },
+            fontSize: {
+              'body-lg': ['16px', {lineHeight: '24px', fontWeight: '400'}],
+              'label-md': ['13px', {lineHeight: '16px', fontWeight: '600'}],
+              'display-lg': ['32px', {lineHeight: '40px', fontWeight: '400'}],
+              'headline-sm': ['20px', {lineHeight: '28px', fontWeight: '400'}],
+              'code': ['13px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-md': ['14px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-sm': ['12px', {lineHeight: '18px', fontWeight: '400'}],
+              'headline-md': ['24px', {lineHeight: '32px', fontWeight: '400'}]
+            }
+          }
+        }
+      }
+    };
+  </script>
   <style>
-    .decoded-out {
-      font-family: var(--font-mono);
-      font-size: .9375rem;
-      word-break: break-all;
-      background: var(--wmf-gray-10);
-      border: 1px solid var(--wmf-gray-20);
-      border-radius: var(--radius-sm);
-      padding: 12px;
-      min-height: 44px;
-      color: var(--wmf-gray-90);
-      margin-top: 4px;
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
     }
-    .decoded-out a { color: var(--wmf-blue); }
+    .quiet-shadow {
+      box-shadow: 0 2px 2px 0 rgba(0,0,0,0.1);
+    }
+    body {
+      font-family: 'Inter', sans-serif !important;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Source Serif 4', serif !important;
+    }
+    code, pre, .font-code {
+      font-family: 'JetBrains Mono', monospace !important;
+    }
+  </style>
+
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>URL Decoder - YTools</title>
+  <style>
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #F8F9FA;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #C8CCD1;
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #72777D;
+    }
   </style>
 </head>
-<body>
-  <div class="page-content page-content--narrow">
-    <div class="breadcrumb"><a href="../">YTools</a><span>›</span> URL Decoder</div>
-    <div class="tool-page-header">
-      <h1>🔗 URL Decoder</h1>
-      <p>Decode percent-encoded and UTF-encoded URLs into readable text. Especially useful for non-Latin Wikipedia links.</p>
-    </div>
-    <div class="card">
-      <div class="form-group">
-        <label class="wm-label" for="encodedInput">Encoded URL</label>
-        <input class="wm-input" type="text" id="encodedInput" placeholder="https://en.wikipedia.org/wiki/%E0%A6%AC%E0%A6%BE%E0%A6%82%E0%A6%B2%E0%A6%BE%E0%A6%A6%E0%A7%87%E0%A6%B6" autocomplete="off" spellcheck="false">
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+
+<main class="max-w-container-max mx-auto px-gutter pt-stack-lg min-h-[calc(100vh-200px)]">
+  <!-- Breadcrumbs & Tool Header -->
+  <div class="mb-stack-lg">
+    <nav class="flex items-center text-body-sm text-text-secondary mb-base">
+      <a class="hover:text-primary no-underline" href="../">Tools</a>
+      <span class="material-symbols-outlined text-[14px] mx-base">chevron_right</span>
+      <span class="text-on-surface">URL Decoder</span>
+    </nav>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-stack-md border-b border-border-subtle pb-stack-md">
+      <div>
+        <h1 class="font-headline-md text-headline-md font-bold">URL Decoder</h1>
+        <p class="text-text-secondary mt-base font-body-md">Convert percent-encoded and UTF-encoded Wikipedia URLs into readable text. Useful for cleaning up shared links.</p>
       </div>
-      <div class="form-group">
-        <label class="wm-label">Decoded URL</label>
-        <div class="decoded-out" id="decodedOut">—</div>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="wm-btn wm-btn--primary" onclick="decode()">🔗 Decode</button>
-        <button class="wm-btn wm-btn--secondary" id="copyBtn" onclick="copyDecoded()" style="display:none">📋 Copy</button>
-        <button class="wm-btn wm-btn--secondary" id="openBtn" onclick="openUrl()" style="display:none">↗ Open URL</button>
-        <button class="wm-btn wm-btn--secondary" onclick="clearAll()">✕ Clear</button>
-      </div>
-    </div>
-    <div class="notice" style="margin-top:0">
-      Non-Latin Wikipedians often have problems with long encoded links. Paste any encoded URL above to get a readable version.
-    </div>
-    <div class="similar-tools">
-      <h3>Related tools</h3>
-      <ul class="similar-tools__list">
-        <li><a href="../wc/">📝 Word Counter</a></li>
-        <li><a href="../ip/">🌐 IP Information</a></li>
-        <li><a href="../bndate/">📅 Bangla Date Converter</a></li>
-      </ul>
     </div>
   </div>
-  <script src="../yt-shell.js"></script>
-  <script>
-    const input = document.getElementById('encodedInput');
-    const out = document.getElementById('decodedOut');
-    let lastDecoded = '';
 
-    input.addEventListener('input', decode);
-    input.addEventListener('keydown', e => { if(e.key==='Enter') decode(); });
+  <!-- Bento Layout Tool Workspace -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-stack-md">
+    <!-- Left Column: Input -->
+    <div class="lg:col-span-6 space-y-stack-md">
+      <div class="bg-surface-container-lowest border border-border-subtle rounded p-stack-md flex flex-col gap-stack-sm">
+        <div class="flex items-center justify-between">
+          <label class="font-label-md text-label-md text-on-surface flex items-center gap-base">
+            <span class="material-symbols-outlined text-primary scale-90">link</span>
+            Encoded URL Input
+          </label>
+          <button class="text-body-sm font-body-sm text-text-secondary hover:text-error transition-colors flex items-center gap-1 border-none bg-transparent cursor-pointer" id="clearBtn" onclick="clearAll()">
+            <span class="material-symbols-outlined scale-75">delete</span> Clear
+          </button>
+        </div>
+        <textarea class="w-full h-48 p-stack-md bg-surface-subtle border border-border-subtle rounded focus:ring-1 focus:ring-primary focus:border-primary outline-none font-code text-code custom-scrollbar resize-none transition-all" id="urlInput" placeholder="Paste your encoded URL here... (e.g., https://en.wikipedia.org/wiki/%E0%A6%AC%E0%A6%BE%E0%A6%82%E0%A6%B2%E0%A6%BE%E0%A6%A6%E0%A7%87%E0%A6%B6)"></textarea>
+      </div>
+    </div>
 
-    function decode() {
-      const raw = input.value.trim();
-      if (!raw) { out.textContent = '—'; document.getElementById('copyBtn').style.display='none'; document.getElementById('openBtn').style.display='none'; return; }
-      try {
-        lastDecoded = decodeURIComponent(raw);
-        const isUrl = /^https?:\/\//i.test(lastDecoded);
-        out.innerHTML = isUrl
-          ? `<a href="${lastDecoded}" target="_blank" rel="noopener">${lastDecoded}</a>`
-          : lastDecoded;
-        document.getElementById('copyBtn').style.display = '';
-        document.getElementById('openBtn').style.display = isUrl ? '' : 'none';
-      } catch(e) {
-        out.textContent = '⚠ Invalid encoding — could not decode.';
-        out.style.color = 'var(--wmf-red)';
-        return;
+    <!-- Right Column: Result -->
+    <div class="lg:col-span-6 space-y-stack-md">
+      <div class="bg-surface-container-lowest border border-border-subtle rounded p-stack-md flex flex-col gap-stack-sm h-full">
+        <div class="flex items-center justify-between">
+          <label class="font-label-md text-label-md text-on-surface flex items-center gap-base">
+            <span class="material-symbols-outlined text-wiki-project scale-90">visibility</span>
+            Decoded Result
+          </label>
+          <div class="flex items-center gap-stack-sm">
+            <button class="text-body-sm font-body-sm text-primary hover:underline flex items-center gap-1 active:scale-95 transition-transform border-none bg-transparent cursor-pointer hidden" id="copyBtn" onclick="copyDecoded()">
+              <span class="material-symbols-outlined scale-75">content_copy</span> Copy
+            </button>
+            <button class="text-body-sm font-body-sm text-primary hover:underline flex items-center gap-1 active:scale-95 transition-transform border-none bg-transparent cursor-pointer hidden" id="openBtn" onclick="openUrl()">
+              <span class="material-symbols-outlined scale-75">open_in_new</span> Open
+            </button>
+          </div>
+        </div>
+        <div class="w-full h-48 p-stack-md bg-surface border border-border-subtle rounded font-code text-code custom-scrollbar overflow-auto break-all whitespace-pre-wrap text-on-surface-variant leading-relaxed" id="urlOutput">Waiting for input...</div>
+      </div>
+    </div>
+
+    <!-- Info Section -->
+    <div class="lg:col-span-4 bg-surface-subtle border border-border-subtle rounded p-stack-md">
+      <h3 class="font-label-md text-label-md text-on-surface mb-stack-sm flex items-center gap-base">
+        <span class="material-symbols-outlined scale-75 text-primary">info</span> Tool Information
+      </h3>
+      <ul class="space-y-base p-0 m-0 list-none">
+        <li class="font-body-sm text-body-sm text-text-secondary flex gap-base">
+          <span class="text-primary">•</span> Supports UTF-8 and standard URL percent-encoding.
+        </li>
+        <li class="font-body-sm text-body-sm text-text-secondary flex gap-base">
+          <span class="text-primary">•</span> Real-time processing via browser decodeURIComponent.
+        </li>
+        <li class="font-body-sm text-body-sm text-text-secondary flex gap-base">
+          <span class="text-primary">•</span> Privacy-first: All decoding is done locally.
+        </li>
+      </ul>
+    </div>
+
+    <div class="lg:col-span-8 bg-surface-container-lowest border border-border-subtle rounded p-stack-md flex items-center justify-between gap-stack-md">
+      <div class="flex-1">
+        <h3 class="font-label-md text-label-md text-on-surface mb-base">Wikimedia Context</h3>
+        <p class="font-body-sm text-body-sm text-text-secondary">
+          Non-Latin script editors (e.g. Bangla, Arabic, Cyrillic) deal with extremely long percent-encoded links when sharing articles. Decoded URLs are clean and readable.
+        </p>
+      </div>
+      <div class="h-16 w-16 bg-surface-subtle rounded flex items-center justify-center border border-border-subtle">
+        <span class="material-symbols-outlined text-primary text-[32px]">volunteer_activism</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Visual Asset Tip -->
+  <div class="mt-stack-lg rounded overflow-hidden relative h-24 border border-border-subtle bg-surface-subtle flex items-center px-gutter">
+    <div>
+      <span class="font-label-md text-label-md text-primary bg-ip-network/10 px-2 py-0.5 rounded">Quick Tip</span>
+      <p class="font-body-sm text-body-sm text-on-surface mt-1 italic">
+        "Percent-encoding is often used in Wikipedia to represent non-ASCII characters in article titles like 'Jérôme_Lalande' or 'বাংলাদেশ'."
+      </p>
+    </div>
+  </div>
+</main>
+
+<script src="../yt-shell.js"></script>
+<script>
+  const urlInput = document.getElementById('urlInput');
+  const urlOutput = document.getElementById('urlOutput');
+  const copyBtn = document.getElementById('copyBtn');
+  const openBtn = document.getElementById('openBtn');
+  let lastDecoded = '';
+
+  urlInput.addEventListener('input', decode);
+
+  function decode() {
+    const raw = urlInput.value.trim();
+    if (!raw) {
+      urlOutput.textContent = 'Waiting for input...';
+      urlOutput.classList.remove('text-error');
+      copyBtn.classList.add('hidden');
+      openBtn.classList.add('hidden');
+      lastDecoded = '';
+      return;
+    }
+    
+    try {
+      lastDecoded = decodeURIComponent(raw);
+      const isUrl = /^https?:\/\//i.test(lastDecoded);
+      
+      if (isUrl) {
+        urlOutput.innerHTML = `<a href="${lastDecoded}" target="_blank" rel="noopener" class="text-primary hover:underline">${lastDecoded}</a>`;
+        openBtn.classList.remove('hidden');
+      } else {
+        urlOutput.textContent = lastDecoded;
+        openBtn.classList.add('hidden');
       }
-      out.style.color = '';
-    }
-
-    function copyDecoded() {
-      navigator.clipboard.writeText(lastDecoded).then(() => {
-        const btn = document.getElementById('copyBtn');
-        btn.textContent = '✓ Copied';
-        setTimeout(() => { btn.textContent = '📋 Copy'; }, 1500);
-      });
-    }
-
-    function openUrl() { if (lastDecoded) window.open(lastDecoded, '_blank', 'noopener'); }
-
-    function clearAll() {
-      input.value = '';
-      out.textContent = '—';
-      document.getElementById('copyBtn').style.display='none';
-      document.getElementById('openBtn').style.display='none';
+      
+      urlOutput.classList.remove('text-error');
+      copyBtn.classList.remove('hidden');
+    } catch(e) {
+      urlOutput.textContent = '⚠ Invalid encoding — could not decode.';
+      urlOutput.classList.add('text-error');
+      copyBtn.classList.add('hidden');
+      openBtn.classList.add('hidden');
       lastDecoded = '';
     }
-  </script>
+  }
+
+  function copyDecoded() {
+    if (!lastDecoded) return;
+    navigator.clipboard.writeText(lastDecoded).then(() => {
+      const origText = copyBtn.innerHTML;
+      copyBtn.innerHTML = '<span class="material-symbols-outlined scale-75">check</span> Copied';
+      setTimeout(() => {
+        copyBtn.innerHTML = origText;
+      }, 1500);
+    });
+  }
+
+  function openUrl() {
+    if (lastDecoded) {
+      window.open(lastDecoded, '_blank', 'noopener');
+    }
+  }
+
+  function clearAll() {
+    urlInput.value = '';
+    decode();
+  }
+</script>
 </body>
 </html>

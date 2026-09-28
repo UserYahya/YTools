@@ -1,88 +1,293 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple IP Tool — YTools</title>
-  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/0/09/IP_address_icon.png" sizes="32x32">
-  <link rel="stylesheet" href="../common.css">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <!-- Tailwind CSS & Google Fonts (Static Injection) -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    window.tailwind = {
+      config: {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-subtle': '#F8F9FA',
+              'error-container': '#ffdad6',
+              'tertiary-container': '#a65400',
+              'tertiary-fixed': '#ffdcc5',
+              'surface-tint': '#2259bf',
+              'surface-container-low': '#f5f3f4',
+              'secondary-fixed-dim': '#54ddb4',
+              'surface-container-highest': '#e3e2e3',
+              'surface-variant': '#e3e2e3',
+              'secondary': '#006c53',
+              'surface-container-lowest': '#ffffff',
+              'inverse-primary': '#b1c5ff',
+              'on-primary': '#ffffff',
+              'on-secondary': '#ffffff',
+              'on-secondary-container': '#007258',
+              'outline-variant': '#c3c6d5',
+              'on-background': '#1b1c1d',
+              'surface-bright': '#faf9fa',
+              'on-primary-container': '#e7ebff',
+              'outline': '#737784',
+              'surface-container': '#efedee',
+              'tertiary': '#824000',
+              'on-error': '#ffffff',
+              'on-primary-fixed-variant': '#00419d',
+              'on-secondary-fixed-variant': '#00513e',
+              'primary-container': '#3366cc',
+              'on-surface': '#1b1c1d',
+              'error': '#ba1a1a',
+              'on-tertiary-fixed': '#301400',
+              'on-tertiary-fixed-variant': '#713700',
+              'inverse-on-surface': '#f2f0f1',
+              'surface': '#faf9fa',
+              'background': '#faf9fa',
+              'primary-fixed': '#d9e2ff',
+              'on-surface-variant': '#434653',
+              'chrono-event': '#E67E22',
+              'secondary-container': '#74facf',
+              'on-tertiary-container': '#ffe7d9',
+              'on-tertiary': '#ffffff',
+              'on-secondary-fixed': '#002117',
+              'surface-dim': '#dbdadb',
+              'primary': '#094cb2',
+              'primary-fixed-dim': '#b1c5ff',
+              'border-subtle': '#A2A9B1',
+              'ip-network': '#3366CC',
+              'surface-container-high': '#e9e8e9',
+              'on-error-container': '#93000a',
+              'on-primary-fixed': '#001946',
+              'text-secondary': '#72777D',
+              'inverse-surface': '#303031',
+              'secondary-fixed': '#74facf',
+              'wiki-project': '#00AF89',
+              'tertiary-fixed-dim': '#ffb783'
+            },
+            borderRadius: {
+              'DEFAULT': '0.125rem',
+              'lg': '0.25rem',
+              'xl': '0.5rem',
+              'full': '0.75rem'
+            },
+            spacing: {
+              'stack-lg': '24px',
+              'gutter': '16px',
+              'base': '4px',
+              'stack-sm': '8px',
+              'margin-mobile': '12px',
+              'container-max': '1200px',
+              'stack-md': '16px'
+            },
+            fontFamily: {
+              'body-lg': ['Inter', 'sans-serif'],
+              'label-md': ['Inter', 'sans-serif'],
+              'display-lg': ['Source Serif 4', 'serif'],
+              'headline-sm': ['Source Serif 4', 'serif'],
+              'code': ['JetBrains Mono', 'monospace'],
+              'body-md': ['Inter', 'sans-serif'],
+              'body-sm': ['Inter', 'sans-serif'],
+              'headline-md': ['Source Serif 4', 'serif']
+            },
+            fontSize: {
+              'body-lg': ['16px', {lineHeight: '24px', fontWeight: '400'}],
+              'label-md': ['13px', {lineHeight: '16px', fontWeight: '600'}],
+              'display-lg': ['32px', {lineHeight: '40px', fontWeight: '400'}],
+              'headline-sm': ['20px', {lineHeight: '28px', fontWeight: '400'}],
+              'code': ['13px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-md': ['14px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-sm': ['12px', {lineHeight: '18px', fontWeight: '400'}],
+              'headline-md': ['24px', {lineHeight: '32px', fontWeight: '400'}]
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+    .quiet-shadow {
+      box-shadow: 0 2px 2px 0 rgba(0,0,0,0.1);
+    }
+    body {
+      font-family: 'Inter', sans-serif !important;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Source Serif 4', serif !important;
+    }
+    code, pre, .font-code {
+      font-family: 'JetBrains Mono', monospace !important;
+    }
+  </style>
+
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Simple IP Tool - YTools</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    #map { height: 260px; width: 100%; z-index: 1; border-radius: 6px; border: 1px solid #A2A9B1; margin-top: 16px; }
+  </style>
 </head>
-<body>
-  <div class="page-content page-content--narrow">
-    <div class="breadcrumb"><a href="../">YTools</a><span>›</span> Simple IP Tool</div>
-    <div class="tool-page-header">
-      <h1>🌐 Simple IP Tool</h1>
-      <p>Basic IP information and location map using the ipinfo.io API (free tier, 50k lookups/month).</p>
-    </div>
-    <div class="card">
-      <div class="form-group">
-        <label class="wm-label" for="ipInput">IP address</label>
-        <div class="input-row">
-          <input class="wm-input" type="text" id="ipInput" placeholder="Auto-filled with your IP" autocomplete="off" spellcheck="false">
-          <button class="wm-btn wm-btn--primary" onclick="doLookup()">🔍 Lookup</button>
-        </div>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+
+<main class="max-w-container-max mx-auto px-gutter py-stack-lg min-h-screen">
+  <!-- Breadcrumbs & Tool Header -->
+  <div class="mb-stack-lg">
+    <nav class="flex items-center text-body-sm text-text-secondary mb-base">
+      <a class="hover:text-primary no-underline" href="../">Tools</a>
+      <span class="material-symbols-outlined text-[14px] mx-base">chevron_right</span>
+      <span class="text-on-surface">Simple IP Tool</span>
+    </nav>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-stack-md border-b border-border-subtle pb-stack-md">
+      <div>
+        <h1 class="font-headline-md text-headline-md font-bold">Simple IP Tool</h1>
+        <p class="text-text-secondary mt-base font-body-md">Basic IP information and location map using the free ipinfo.io API tier.</p>
       </div>
-      <div class="notice">Auto-filled with your own public IP. Change it and click Lookup.</div>
-    </div>
-    <div id="result"></div>
-    <div id="map" style="display:none"></div>
-    <div class="similar-tools">
-      <h3>Related tools</h3>
-      <ul class="similar-tools__list">
-        <li><a href="../ip/">🌐 Full IP Information Viewer</a></li>
-        <li><a href="../ipmulti/">📋 Multi-IP Checker</a></li>
-        <li><a href="../ip-whois/">🔍 IP WHOIS Lookup</a></li>
-        <li><a href="../ip-cidr/">🗂️ CIDR Subnet Tool</a></li>
-      </ul>
     </div>
   </div>
-  <script src="../yt-shell.js"></script>
-  <script>
-    let map = null;
 
-    fetch('https://api.ipify.org?format=json')
-      .then(r=>r.json())
-      .then(d=>{ document.getElementById('ipInput').value=d.ip; })
-      .catch(()=>{});
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-stack-lg">
+    <!-- Input Card -->
+    <div class="lg:col-span-5">
+      <div class="bg-surface border border-border-subtle p-stack-md rounded flex flex-col gap-stack-sm">
+        <label class="font-label-md text-label-md text-on-surface block" for="ipInput">IP Address</label>
+        <div class="flex flex-col sm:flex-row gap-stack-sm">
+          <input class="flex-grow px-stack-md py-stack-sm bg-surface-subtle border border-border-subtle rounded focus:ring-1 focus:ring-primary focus:border-primary text-code font-code" id="ipInput" placeholder="Auto-filled with your IP" type="text" autocomplete="off"/>
+          <button class="bg-primary text-on-primary px-stack-lg py-stack-sm rounded font-label-md text-label-md hover:opacity-90 active:opacity-80 transition-all flex items-center justify-center gap-base" onclick="doLookup()">
+            <span class="material-symbols-outlined text-[18px]">search</span> Lookup
+          </button>
+        </div>
+        <p class="text-body-sm text-text-secondary mt-1">Leave blank to lookup your own detected IP address.</p>
+      </div>
+    </div>
 
-    document.getElementById('ipInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doLookup(); });
+    <!-- Output Card -->
+    <div class="lg:col-span-7">
+      <div id="result">
+        <div class="bg-surface border border-border-subtle p-24 text-center rounded flex flex-col items-center justify-center text-text-secondary min-h-[200px]">
+          <span class="material-symbols-outlined text-[48px] opacity-40 mb-base">map</span>
+          <p class="font-body-md">Enter an IP address above and click lookup to view location and ISP data.</p>
+        </div>
+      </div>
+      <div id="map" class="hidden"></div>
+    </div>
+  </div>
+</main>
 
-    function doLookup() {
-      const ip = document.getElementById('ipInput').value.trim();
-      if (!ip) return;
-      const res = document.getElementById('result');
-      res.innerHTML = `<div class="loading-row"><span class="spinner"></span> Looking up…</div>`;
-      fetch(`get_ip_info.php?ip=${encodeURIComponent(ip)}`)
-        .then(r=>r.json())
-        .then(data => {
-          if (!data || data.error) { res.innerHTML='<div class="error-msg">Lookup failed.</div>'; return; }
-          res.innerHTML = `<div class="card">
-            <table class="info-table">
-              <tr><th>IP</th><td style="font-family:var(--font-mono)">${data.ip||ip}</td></tr>
-              <tr><th>Hostname</th><td>${data.hostname||'N/A'}</td></tr>
-              <tr><th>City</th><td>${data.city||'N/A'}</td></tr>
-              <tr><th>Region</th><td>${data.region||'N/A'}</td></tr>
-              <tr><th>Country</th><td>${data.country||'N/A'}</td></tr>
-              <tr><th>Location</th><td>${data.loc||'N/A'}</td></tr>
-              <tr><th>Organisation</th><td>${data.org||'N/A'}</td></tr>
-              <tr><th>Postal</th><td>${data.postal||'N/A'}</td></tr>
-              <tr><th>Timezone</th><td>${data.timezone||'N/A'}</td></tr>
-            </table>
+<script src="../yt-shell.js"></script>
+<script>
+  let map = null;
+
+  // Auto-fetch user public IP on load
+  fetch('https://api.ipify.org?format=json')
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('ipInput').value = d.ip;
+    })
+    .catch(() => {});
+
+  document.getElementById('ipInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLookup();
+  });
+
+  function doLookup() {
+    const ip = document.getElementById('ipInput').value.trim();
+    if (!ip) return;
+    const res = document.getElementById('result');
+    const mapEl = document.getElementById('map');
+    
+    res.innerHTML = `
+      <div class="flex items-center justify-center py-12 gap-3 text-text-secondary bg-surface-container-lowest border border-border-subtle rounded">
+        <span class="material-symbols-outlined animate-spin">sync</span>
+        <span>Looking up IP details...</span>
+      </div>`;
+    mapEl.classList.add('hidden');
+    if (map) { map.remove(); map = null; }
+
+    fetch(`get_ip_info.php?ip=${encodeURIComponent(ip)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (!data || data.error) {
+          res.innerHTML = `
+            <div class="p-stack-md bg-error-container text-error rounded border border-error/20 font-semibold">
+              Lookup failed. Please check the IP format.
+            </div>`;
+          return;
+        }
+        
+        res.innerHTML = `
+          <div class="bg-surface-container-lowest border border-border-subtle rounded p-stack-md flex flex-col gap-stack-sm">
+            <div class="flex items-center justify-between border-b border-border-subtle pb-base mb-base">
+              <h3 class="font-label-md text-label-md text-text-secondary uppercase tracking-wider">IP Details (Simple)</h3>
+              <span class="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded font-bold uppercase">${data.ip || ip}</span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-body-md border-collapse">
+                <tbody>
+                  <tr class="border-b border-surface-container hover:bg-surface-subtle transition-colors">
+                    <td class="py-stack-sm px-stack-md bg-surface-subtle/50 font-label-md w-1/3">Hostname</td>
+                    <td class="py-stack-sm px-stack-md font-code">${data.hostname || 'N/A'}</td>
+                  </tr>
+                  <tr class="border-b border-surface-container hover:bg-surface-subtle transition-colors">
+                    <td class="py-stack-sm px-stack-md bg-surface-subtle/50 font-label-md">City</td>
+                    <td class="py-stack-sm px-stack-md font-body-md">${data.city || 'N/A'}</td>
+                  </tr>
+                  <tr class="border-b border-surface-container hover:bg-surface-subtle transition-colors">
+                    <td class="py-stack-sm px-stack-md bg-surface-subtle/50 font-label-md">Region</td>
+                    <td class="py-stack-sm px-stack-md font-body-md">${data.region || 'N/A'}</td>
+                  </tr>
+                  <tr class="border-b border-surface-container hover:bg-surface-subtle transition-colors">
+                    <td class="py-stack-sm px-stack-md bg-surface-subtle/50 font-label-md">Country</td>
+                    <td class="py-stack-sm px-stack-md font-body-md">${data.country || 'N/A'}</td>
+                  </tr>
+                  <tr class="border-b border-surface-container hover:bg-surface-subtle transition-colors">
+                    <td class="py-stack-sm px-stack-md bg-surface-subtle/50 font-label-md">Location Coordinates</td>
+                    <td class="py-stack-sm px-stack-md font-code">${data.loc || 'N/A'}</td>
+                  </tr>
+                  <tr class="border-b border-surface-container hover:bg-surface-subtle transition-colors">
+                    <td class="py-stack-sm px-stack-md bg-surface-subtle/50 font-label-md">Organisation</td>
+                    <td class="py-stack-sm px-stack-md font-body-md font-semibold">${data.org || 'N/A'}</td>
+                  </tr>
+                  <tr class="border-b border-surface-container hover:bg-surface-subtle transition-colors">
+                    <td class="py-stack-sm px-stack-md bg-surface-subtle/50 font-label-md">Postal Code</td>
+                    <td class="py-stack-sm px-stack-md font-body-md">${data.postal || 'N/A'}</td>
+                  </tr>
+                  <tr class="hover:bg-surface-subtle transition-colors">
+                    <td class="py-stack-sm px-stack-md bg-surface-subtle/50 font-label-md">Timezone</td>
+                    <td class="py-stack-sm px-stack-md font-body-md">${data.timezone || 'N/A'}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>`;
-          if (data.loc) {
-            const [lat,lng] = data.loc.split(',').map(Number);
-            const mapEl = document.getElementById('map');
-            mapEl.style.display='block';
-            if (map) { map.remove(); }
-            map = L.map('map').setView([lat,lng],10);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
-            L.marker([lat,lng]).addTo(map).bindPopup(`${data.city||''}, ${data.country||''}`).openPopup();
-          }
-        })
-        .catch(()=>{ res.innerHTML='<div class="error-msg">Lookup failed.</div>'; });
-    }
-  </script>
+
+        if (data.loc) {
+          const [lat, lng] = data.loc.split(',').map(Number);
+          mapEl.classList.remove('hidden');
+          setTimeout(() => {
+            map = L.map('map').setView([lat, lng], 10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '© OpenStreetMap'
+            }).addTo(map);
+            L.marker([lat, lng]).addTo(map).bindPopup(`${data.city || ''}, ${data.country || ''}`).openPopup();
+          }, 50);
+        }
+      })
+      .catch(() => {
+        res.innerHTML = `
+          <div class="p-stack-md bg-error-container text-error rounded border border-error/20 font-semibold">
+            Lookup failed. Please verify connection and try again.
+          </div>`;
+      });
+  }
+</script>
 </body>
 </html>

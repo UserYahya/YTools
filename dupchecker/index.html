@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <!-- Tailwind CSS & Google Fonts (Static Injection) -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    window.tailwind = {
+      config: {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-subtle': '#F8F9FA',
+              'error-container': '#ffdad6',
+              'tertiary-container': '#a65400',
+              'tertiary-fixed': '#ffdcc5',
+              'surface-tint': '#2259bf',
+              'surface-container-low': '#f5f3f4',
+              'secondary-fixed-dim': '#54ddb4',
+              'surface-container-highest': '#e3e2e3',
+              'surface-variant': '#e3e2e3',
+              'secondary': '#006c53',
+              'surface-container-lowest': '#ffffff',
+              'inverse-primary': '#b1c5ff',
+              'on-primary': '#ffffff',
+              'on-secondary': '#ffffff',
+              'on-secondary-container': '#007258',
+              'outline-variant': '#c3c6d5',
+              'on-background': '#1b1c1d',
+              'surface-bright': '#faf9fa',
+              'on-primary-container': '#e7ebff',
+              'outline': '#737784',
+              'surface-container': '#efedee',
+              'tertiary': '#824000',
+              'on-error': '#ffffff',
+              'on-primary-fixed-variant': '#00419d',
+              'on-secondary-fixed-variant': '#00513e',
+              'primary-container': '#3366cc',
+              'on-surface': '#1b1c1d',
+              'error': '#ba1a1a',
+              'on-tertiary-fixed': '#301400',
+              'on-tertiary-fixed-variant': '#713700',
+              'inverse-on-surface': '#f2f0f1',
+              'surface': '#faf9fa',
+              'background': '#faf9fa',
+              'primary-fixed': '#d9e2ff',
+              'on-surface-variant': '#434653',
+              'chrono-event': '#E67E22',
+              'secondary-container': '#74facf',
+              'on-tertiary-container': '#ffe7d9',
+              'on-tertiary': '#ffffff',
+              'on-secondary-fixed': '#002117',
+              'surface-dim': '#dbdadb',
+              'primary': '#094cb2',
+              'primary-fixed-dim': '#b1c5ff',
+              'border-subtle': '#A2A9B1',
+              'ip-network': '#3366CC',
+              'surface-container-high': '#e9e8e9',
+              'on-error-container': '#93000a',
+              'on-primary-fixed': '#001946',
+              'text-secondary': '#72777D',
+              'inverse-surface': '#303031',
+              'secondary-fixed': '#74facf',
+              'wiki-project': '#00AF89',
+              'tertiary-fixed-dim': '#ffb783'
+            },
+            borderRadius: {
+              'DEFAULT': '0.125rem',
+              'lg': '0.25rem',
+              'xl': '0.5rem',
+              'full': '0.75rem'
+            },
+            spacing: {
+              'stack-lg': '24px',
+              'gutter': '16px',
+              'base': '4px',
+              'stack-sm': '8px',
+              'margin-mobile': '12px',
+              'container-max': '1200px',
+              'stack-md': '16px'
+            },
+            fontFamily: {
+              'body-lg': ['Inter', 'sans-serif'],
+              'label-md': ['Inter', 'sans-serif'],
+              'display-lg': ['Source Serif 4', 'serif'],
+              'headline-sm': ['Source Serif 4', 'serif'],
+              'code': ['JetBrains Mono', 'monospace'],
+              'body-md': ['Inter', 'sans-serif'],
+              'body-sm': ['Inter', 'sans-serif'],
+              'headline-md': ['Source Serif 4', 'serif']
+            },
+            fontSize: {
+              'body-lg': ['16px', {lineHeight: '24px', fontWeight: '400'}],
+              'label-md': ['13px', {lineHeight: '16px', fontWeight: '600'}],
+              'display-lg': ['32px', {lineHeight: '40px', fontWeight: '400'}],
+              'headline-sm': ['20px', {lineHeight: '28px', fontWeight: '400'}],
+              'code': ['13px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-md': ['14px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-sm': ['12px', {lineHeight: '18px', fontWeight: '400'}],
+              'headline-md': ['24px', {lineHeight: '32px', fontWeight: '400'}]
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+    .quiet-shadow {
+      box-shadow: 0 2px 2px 0 rgba(0,0,0,0.1);
+    }
+    body {
+      font-family: 'Inter', sans-serif !important;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Source Serif 4', serif !important;
+    }
+    code, pre, .font-code {
+      font-family: 'JetBrains Mono', monospace !important;
+    }
+  </style>
+
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Wikimedia Duplicate Line Detector - YTools</title>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+
+<main class="max-w-container-max mx-auto px-gutter py-stack-lg min-h-screen">
+  <!-- Breadcrumbs & Tool Header -->
+  <div class="mb-stack-lg">
+    <nav class="flex items-center text-body-sm text-text-secondary mb-base">
+      <a class="hover:text-primary no-underline" href="../">Tools</a>
+      <span class="material-symbols-outlined text-[14px] mx-base">chevron_right</span>
+      <span class="text-on-surface">Duplicate Line Detector</span>
+    </nav>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-stack-md border-b border-border-subtle pb-stack-md">
+      <div>
+        <h1 class="font-headline-md text-headline-md font-bold">Wikimedia Duplicate Line Detector</h1>
+        <p class="text-text-secondary mt-base font-body-md">Find duplicate lines of text in any Wikimedia project page. Helps identify copy-paste vandalism or formatting errors.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-stack-lg">
+    <!-- Input Form Card -->
+    <div class="lg:col-span-5">
+      <form id="checkForm" class="bg-surface border border-border-subtle p-stack-md rounded flex flex-col gap-stack-sm shadow-sm" onsubmit="event.preventDefault(); checkArticle();">
+        <div class="form-group flex flex-col gap-base">
+          <label class="font-label-md text-label-md text-on-surface" for="project">Project Domain</label>
+          <input class="px-stack-md py-stack-sm bg-surface-subtle border border-border-subtle rounded focus:ring-1 focus:ring-primary focus:border-primary text-code font-code" id="project" placeholder="e.g., en.wikipedia.org" value="en.wikipedia.org" type="text" autocomplete="off" required/>
+        </div>
+
+        <div class="form-group flex flex-col gap-base">
+          <label class="font-label-md text-label-md text-on-surface" for="articleTitle">Article / Page Title</label>
+          <input class="px-stack-md py-stack-sm bg-surface-subtle border border-border-subtle rounded focus:ring-1 focus:ring-primary focus:border-primary text-body-md" id="articleTitle" placeholder="e.g., Cat" type="text" autocomplete="off" required/>
+        </div>
+
+        <button class="w-full bg-primary text-on-primary font-label-md text-label-md py-stack-sm hover:opacity-90 active:opacity-80 transition-all rounded flex items-center justify-center gap-base mt-2" id="submitBtn" type="submit">
+          <span class="material-symbols-outlined text-[18px]">find_in_page</span> Check for Duplicates
+        </button>
+      </form>
+    </div>
+
+    <!-- Output Card -->
+    <div class="lg:col-span-7 flex flex-col">
+      <div class="bg-surface border border-border-subtle rounded flex-grow flex flex-col overflow-hidden min-h-[350px]">
+        <div class="bg-surface-subtle border-b border-border-subtle px-stack-md py-stack-sm flex justify-between items-center">
+          <h2 class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold">Detection Results</h2>
+          <button class="bg-white hover:bg-surface-container border border-border-subtle text-primary font-bold px-3 py-1.5 rounded text-body-sm transition-all hidden flex items-center gap-base" id="copyBtn" onclick="copyResults()">
+            <span class="material-symbols-outlined text-[16px]">content_copy</span> Copy Duplicate List
+          </button>
+        </div>
+
+        <div class="p-stack-md flex-grow overflow-auto bg-surface-container-lowest text-body-md" id="output">
+          <div class="flex flex-col items-center justify-center h-full text-text-secondary opacity-50 py-12">
+            <span class="material-symbols-outlined text-[48px] mb-base">find_replace</span>
+            <p>Duplicates check output will be displayed here.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="../yt-shell.js"></script>
+<script>
+  let duplicateListText = '';
+
+  async function checkArticle() {
+    const title = document.getElementById("articleTitle").value.trim();
+    let project = document.getElementById("project").value.trim();
+    const output = document.getElementById("output");
+    const submitBtn = document.getElementById("submitBtn");
+    const copyBtn = document.getElementById("copyBtn");
+
+    if (!title || !project) {
+      alert("Please enter both a project domain and an article title.");
+      return;
+    }
+
+    submitBtn.disabled = true;
+    const origHTML = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[18px]">sync</span> Checking...';
+    copyBtn.classList.add('hidden');
+    duplicateListText = '';
+
+    output.innerHTML = `
+      <div class="flex flex-col items-center justify-center py-12 gap-3 text-text-secondary h-full">
+        <span class="material-symbols-outlined animate-spin text-[36px] text-primary">sync</span>
+        <p class="font-semibold">Fetching article content from ${project}...</p>
+      </div>`;
+
+    project = project.replace(/^https?:\/\//, "").replace(/\/$/, "");
+
+    try {
+      const url = `https://${project}/w/api.php?action=query&prop=extracts&explaintext&titles=${encodeURIComponent(title)}&format=json&origin=*`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('API fetch error');
+      const data = await response.json();
+
+      const pages = data.query?.pages;
+      if (!pages) throw new Error('Page not found.');
+
+      const pageId = Object.keys(pages)[0];
+      if (pageId === "-1") {
+        output.innerHTML = `
+          <div class="p-stack-md bg-error-container text-error rounded border border-error/20 font-semibold">
+            ⚠ Page "${title}" not found on ${project}.
+          </div>`;
+        return;
+      }
+
+      const text = pages[pageId].extract;
+      if (!text) {
+        output.innerHTML = `
+          <div class="p-stack-md bg-surface-subtle border border-border-subtle text-text-secondary rounded text-center py-8">
+            The page has no extractable plain text.
+          </div>`;
+        return;
+      }
+
+      // Detect duplicates
+      const lines = text.split('\n');
+      const counts = {};
+      const linePositions = {};
+
+      lines.forEach((line, index) => {
+        const cleanLine = line.trim();
+        if (cleanLine.length < 10) return; // Skip headers, empty lines, and short fragments
+        
+        counts[cleanLine] = (counts[cleanLine] || 0) + 1;
+        if (!linePositions[cleanLine]) {
+          linePositions[cleanLine] = [];
+        }
+        linePositions[cleanLine].push(index + 1);
+      });
+
+      // Filter duplicate lines
+      const duplicates = Object.keys(counts)
+        .filter(line => counts[line] > 1)
+        .map(line => ({
+          line,
+          count: counts[line],
+          lines: linePositions[line]
+        }))
+        .sort((a, b) => b.count - a.count);
+
+      if (duplicates.length === 0) {
+        output.innerHTML = `
+          <div class="flex flex-col items-center justify-center py-12 text-secondary bg-secondary/5 rounded border border-secondary/20">
+            <span class="material-symbols-outlined text-[48px] mb-2">check_circle</span>
+            <p class="font-semibold text-body-lg">Clean! No duplicate lines found.</p>
+            <p class="text-body-sm text-text-secondary mt-1">(Ignored lines shorter than 10 characters)</p>
+          </div>`;
+        return;
+      }
+
+      // Build copy text
+      duplicateListText = duplicates.map(d => `Line duplicated ${d.count} times (Lines ${d.lines.join(', ')}):\n"${d.line}"`).join('\n\n');
+
+      // Build output HTML
+      let html = `
+        <div class="flex items-center gap-base text-chrono-event bg-chrono-event/5 border border-chrono-event/20 p-stack-sm rounded mb-stack-md">
+          <span class="material-symbols-outlined text-[18px]">warning</span>
+          <span class="text-body-sm font-semibold">Found ${duplicates.length} duplicate line patterns.</span>
+        </div>
+        <div class="space-y-stack-md">`;
+
+      duplicates.forEach(d => {
+        html += `
+          <div class="bg-surface border border-border-subtle p-stack-sm rounded flex flex-col gap-base">
+            <div class="flex justify-between items-center text-body-sm font-semibold text-text-secondary">
+              <span class="bg-chrono-event/10 text-chrono-event px-2 py-0.5 rounded font-bold uppercase text-[10px]">Duplicated ${d.count} times</span>
+              <span class="font-code text-[11px]">Source Lines: ${d.lines.join(', ')}</span>
+            </div>
+            <div class="font-code text-code bg-surface-subtle p-stack-sm rounded border border-border-subtle break-all leading-relaxed whitespace-pre-wrap select-all">"${d.line}"</div>
+          </div>`;
+      });
+
+      html += '</div>';
+      output.innerHTML = html;
+      copyBtn.classList.remove('hidden');
+
+    } catch (error) {
+      console.error(error);
+      output.innerHTML = `
+        <div class="p-stack-md bg-error-container text-error rounded border border-error/20 font-semibold">
+          ⚠ Error querying page. Please check project domain spelling and connection.
+        </div>`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = origHTML;
+    }
+  }
+
+  function copyResults() {
+    if (!duplicateListText) return;
+    navigator.clipboard.writeText(duplicateListText).then(() => {
+      const copyBtn = document.getElementById('copyBtn');
+      const origText = copyBtn.innerHTML;
+      copyBtn.innerHTML = '<span class="material-symbols-outlined text-[16px]">check</span> Copied!';
+      setTimeout(() => {
+        copyBtn.innerHTML = origText;
+      }, 1500);
+    });
+  }
+</script>
+</body>
+</html>

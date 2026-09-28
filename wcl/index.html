@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <!-- Tailwind CSS & Google Fonts (Static Injection) -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    window.tailwind = {
+      config: {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-subtle': '#F8F9FA',
+              'error-container': '#ffdad6',
+              'tertiary-container': '#a65400',
+              'tertiary-fixed': '#ffdcc5',
+              'surface-tint': '#2259bf',
+              'surface-container-low': '#f5f3f4',
+              'secondary-fixed-dim': '#54ddb4',
+              'surface-container-highest': '#e3e2e3',
+              'surface-variant': '#e3e2e3',
+              'secondary': '#006c53',
+              'surface-container-lowest': '#ffffff',
+              'inverse-primary': '#b1c5ff',
+              'on-primary': '#ffffff',
+              'on-secondary': '#ffffff',
+              'on-secondary-container': '#007258',
+              'outline-variant': '#c3c6d5',
+              'on-background': '#1b1c1d',
+              'surface-bright': '#faf9fa',
+              'on-primary-container': '#e7ebff',
+              'outline': '#737784',
+              'surface-container': '#efedee',
+              'tertiary': '#824000',
+              'on-error': '#ffffff',
+              'on-primary-fixed-variant': '#00419d',
+              'on-secondary-fixed-variant': '#00513e',
+              'primary-container': '#3366cc',
+              'on-surface': '#1b1c1d',
+              'error': '#ba1a1a',
+              'on-tertiary-fixed': '#301400',
+              'on-tertiary-fixed-variant': '#713700',
+              'inverse-on-surface': '#f2f0f1',
+              'surface': '#faf9fa',
+              'background': '#faf9fa',
+              'primary-fixed': '#d9e2ff',
+              'on-surface-variant': '#434653',
+              'chrono-event': '#E67E22',
+              'secondary-container': '#74facf',
+              'on-tertiary-container': '#ffe7d9',
+              'on-tertiary': '#ffffff',
+              'on-secondary-fixed': '#002117',
+              'surface-dim': '#dbdadb',
+              'primary': '#094cb2',
+              'primary-fixed-dim': '#b1c5ff',
+              'border-subtle': '#A2A9B1',
+              'ip-network': '#3366CC',
+              'surface-container-high': '#e9e8e9',
+              'on-error-container': '#93000a',
+              'on-primary-fixed': '#001946',
+              'text-secondary': '#72777D',
+              'inverse-surface': '#303031',
+              'secondary-fixed': '#74facf',
+              'wiki-project': '#00AF89',
+              'tertiary-fixed-dim': '#ffb783'
+            },
+            borderRadius: {
+              'DEFAULT': '0.125rem',
+              'lg': '0.25rem',
+              'xl': '0.5rem',
+              'full': '0.75rem'
+            },
+            spacing: {
+              'stack-lg': '24px',
+              'gutter': '16px',
+              'base': '4px',
+              'stack-sm': '8px',
+              'margin-mobile': '12px',
+              'container-max': '1200px',
+              'stack-md': '16px'
+            },
+            fontFamily: {
+              'body-lg': ['Inter', 'sans-serif'],
+              'label-md': ['Inter', 'sans-serif'],
+              'display-lg': ['Source Serif 4', 'serif'],
+              'headline-sm': ['Source Serif 4', 'serif'],
+              'code': ['JetBrains Mono', 'monospace'],
+              'body-md': ['Inter', 'sans-serif'],
+              'body-sm': ['Inter', 'sans-serif'],
+              'headline-md': ['Source Serif 4', 'serif']
+            },
+            fontSize: {
+              'body-lg': ['16px', {lineHeight: '24px', fontWeight: '400'}],
+              'label-md': ['13px', {lineHeight: '16px', fontWeight: '600'}],
+              'display-lg': ['32px', {lineHeight: '40px', fontWeight: '400'}],
+              'headline-sm': ['20px', {lineHeight: '28px', fontWeight: '400'}],
+              'code': ['13px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-md': ['14px', {lineHeight: '20px', fontWeight: '400'}],
+              'body-sm': ['12px', {lineHeight: '18px', fontWeight: '400'}],
+              'headline-md': ['24px', {lineHeight: '32px', fontWeight: '400'}]
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+    .quiet-shadow {
+      box-shadow: 0 2px 2px 0 rgba(0,0,0,0.1);
+    }
+    body {
+      font-family: 'Inter', sans-serif !important;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Source Serif 4', serif !important;
+    }
+    code, pre, .font-code {
+      font-family: 'JetBrains Mono', monospace !important;
+    }
+  </style>
+
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Grouped Word Counter - YTools</title>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+
+<main class="max-w-container-max mx-auto px-gutter py-stack-lg min-h-screen">
+  <!-- Breadcrumbs & Tool Header -->
+  <div class="mb-stack-lg">
+    <nav class="flex items-center text-body-sm text-text-secondary mb-base">
+      <a class="hover:text-primary no-underline" href="../">Tools</a>
+      <span class="material-symbols-outlined text-[14px] mx-base">chevron_right</span>
+      <span class="text-on-surface">Grouped Word Counter</span>
+    </nav>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-stack-md border-b border-border-subtle pb-stack-md">
+      <div>
+        <h1 class="font-headline-md text-headline-md font-bold">Grouped Word Counter / গ্রুপড শব্দগণক</h1>
+        <p class="text-text-secondary mt-base font-body-md">Scan a list of articles from an editathon page (like Fountain), group by user, and calculate the word counts for all articles automatically.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-stack-lg">
+    <!-- Input Card -->
+    <div class="lg:col-span-5">
+      <div class="bg-surface border border-border-subtle p-stack-md rounded flex flex-col gap-stack-sm shadow-sm">
+        
+        <div class="form-group flex flex-col gap-base">
+          <label class="font-label-md text-label-md text-on-surface" for="pageUrl">Scan URL</label>
+          <input class="px-stack-md py-stack-sm bg-surface-subtle border border-border-subtle rounded focus:ring-1 focus:ring-primary focus:border-primary text-code font-code" id="pageUrl" placeholder="https://..." value="https://fountain.toolforge.org/editathons/imd-2025-bn" type="text" autocomplete="off"/>
+          <p class="text-[11px] text-text-secondary">E.g., a Fountain editathon page. The tool extracts user pages and articles to group them.</p>
+        </div>
+
+        <div class="form-group flex flex-col gap-base">
+          <label class="font-label-md text-label-md text-on-surface" for="wikiDomain">Wiki Domain</label>
+          <input class="px-stack-md py-stack-sm bg-surface-subtle border border-border-subtle rounded focus:ring-1 focus:ring-primary focus:border-primary text-code font-code" id="wikiDomain" value="bn.wikipedia.org" type="text" autocomplete="off"/>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-stack-sm mt-2">
+          <div class="form-group flex items-center h-full">
+            <label class="flex items-center gap-stack-sm cursor-pointer text-body-sm group select-none">
+              <input type="checkbox" id="useProxy" checked class="text-primary rounded-sm border-border-subtle focus:ring-0 focus:ring-offset-0">
+              <span class="group-hover:text-primary transition-colors">Use CORS Proxy</span>
+            </label>
+          </div>
+          
+          <div class="form-group flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="concurrency">Concurrency</label>
+            <select class="px-stack-md py-1 bg-surface-subtle border border-border-subtle rounded focus:ring-1 focus:ring-primary focus:border-primary text-body-sm cursor-pointer" id="concurrency">
+              <option value="3">3 tasks</option>
+              <option value="5" selected>5 tasks</option>
+              <option value="10">10 tasks</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden mt-4 hidden" id="progress-container">
+          <div class="bg-secondary h-full transition-all duration-300" id="progress-bar" style="width: 0%"></div>
+        </div>
+        <div class="text-body-sm text-text-secondary mt-1 hidden text-center" id="status"></div>
+
+        <button class="w-full bg-primary text-on-primary font-label-md text-label-md py-stack-sm hover:opacity-90 active:opacity-80 transition-all rounded flex items-center justify-center gap-base mt-2" id="scanButton">
+          <span class="material-symbols-outlined text-[18px]" id="btn-icon">rule</span>
+          <span id="btn-label">Scan &amp; Count</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Output Card -->
+    <div class="lg:col-span-7 flex flex-col">
+      <div class="bg-surface border border-border-subtle rounded flex-grow flex flex-col overflow-hidden min-h-[400px]">
+        <div class="bg-surface-subtle border-b border-border-subtle px-stack-md py-stack-sm flex justify-between items-center">
+          <h2 class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold">Wikitext Output</h2>
+          <div class="flex gap-2">
+            <button class="bg-white hover:bg-surface-container border border-border-subtle text-primary font-bold px-3 py-1.5 rounded text-body-sm transition-all hidden flex items-center gap-base" id="copyButton">
+              <span class="material-symbols-outlined text-[16px]">content_copy</span> ক্লিপবোর্ডে অনুলিপি / Copy
+            </button>
+            <button class="bg-white hover:bg-surface-container border border-border-subtle text-primary font-bold px-3 py-1.5 rounded text-body-sm transition-all hidden flex items-center gap-base" id="downloadButton">
+              <span class="material-symbols-outlined text-[16px]">download</span> Download .wikitext
+            </button>
+          </div>
+        </div>
+
+        <div class="p-stack-md flex-grow overflow-auto bg-surface-container-lowest font-code text-code break-all whitespace-pre-wrap text-on-surface-variant leading-relaxed" id="result">
+          <div class="flex flex-col items-center justify-center h-full text-text-secondary opacity-50 py-12">
+            <span class="material-symbols-outlined text-[48px] mb-base">dns</span>
+            <p>Click Scan & Count to check editathon list contents.</p>
+          </div>
+        </div>
+        
+        <div id="error" class="hidden p-stack-md bg-error-container text-error border-t border-error/10 font-semibold text-body-sm"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="../yt-shell.js"></script>
+<script>
+  /* ======= Utility helpers ======= */
+  function showStatus(text) { 
+    const status = document.getElementById('status');
+    if (text) {
+      status.classList.remove('hidden');
+      status.textContent = text;
+    } else {
+      status.classList.add('hidden');
+    }
+  }
+
+  function showError(text) { 
+    const e = document.getElementById('error'); 
+    if (text) {
+      e.classList.remove('hidden');
+      e.textContent = text; 
+    } else {
+      e.classList.add('hidden');
+    }
+  }
+
+  function clearError() { 
+    showError('');
+  }
+
+  /* Decode wiki title */
+  function titleFromPath(path, domain) {
+    try {
+      const u = new URL(path, 'https://' + domain);
+      let p = u.pathname;
+      if (!p.startsWith('/wiki/')) return null;
+      let title = decodeURIComponent(p.replace('/wiki/',''));
+      return title.replace(/_/g,' ');
+    } catch(e) {
+      return null;
+    }
+  }
+
+  /* Identify user talk/user page */
+  function isUserTalkPath(path, domain) {
+    try {
+      const u = new URL(path, 'https://' + domain);
+      const p = u.pathname;
+      return p.startsWith('/wiki/ব্যবহারকারী_আলাপ:') || p.startsWith('/wiki/User_talk:') || p.startsWith('/wiki/ব্যবহারকারী:') || p.startsWith('/wiki/User:');
+    } catch(e) { return false; }
+  }
+
+  /* Identify article namespace */
+  function isArticlePath(path, domain) {
+    try {
+      const u = new URL(path, 'https://' + domain);
+      const p = u.pathname;
+      if (!p.startsWith('/wiki/')) return false;
+      const title = decodeURIComponent(p.replace('/wiki/',''));
+      return title.indexOf(':') === -1; // no namespace colon => main namespace
+    } catch(e) { return false; }
+  }
+
+  /* Extract article word count from API */
+  async function countWords(title, domain) {
+    try {
+      const url = `https://${domain}/w/api.php?action=parse&page=${encodeURIComponent(title)}&prop=text&format=json&origin=*`;
+      const r = await fetch(url);
+      if (!r.ok) throw new Error('API request failed');
+      const d = await r.json();
+      if (d.error) return { error: d.error.info || 'Not found' };
+
+      const html = d.parse.text['*'];
+      const cleanHtml = html.replace(/<style[\s\S]*?<\/style>|<script[\s\S]*?<\/script>|<noscript[\s\S]*?<\/noscript>/gi, '');
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = cleanHtml;
+
+      const unwanted = [
+        '.mw-empty-elt', '.mw-editsection', '.reference', '.references',
+        '.reflist', '.mbox-small', '.ambox', '.navbox', '.catlinks',
+        '.noprint', '.metadata', '.portal', 'style', 'script', '.thumbinner', '.listing-lastedit'
+      ].join(',');
+      tempDiv.querySelectorAll(unwanted).forEach(el => el.remove());
+
+      const text = tempDiv.textContent || '';
+      const isBn = domain.startsWith('bn.');
+      const count = isBn
+        ? (text.match(/[\u0980-\u09FF]+/g) || []).length
+        : text.split(/\s+/).filter(w => w.length > 0).length;
+
+      return { count };
+    } catch(e) {
+      return { error: 'Error fetching' };
+    }
+  }
+
+  /* Main scan controller */
+  let wikitextOutput = '';
+
+  document.getElementById('scanButton').addEventListener('click', async () => {
+    const pageUrl = document.getElementById('pageUrl').value.trim();
+    const wikiDomain = document.getElementById('wikiDomain').value.trim();
+    const useProxy = document.getElementById('useProxy').checked;
+    const concurrency = parseInt(document.getElementById('concurrency').value);
+    
+    const scanButton = document.getElementById('scanButton');
+    const btnIcon = document.getElementById('btn-icon');
+    const btnLabel = document.getElementById('btn-label');
+    const progressContainer = document.getElementById('progress-container');
+    const progressBar = document.getElementById('progress-bar');
+    const result = document.getElementById('result');
+    const copyButton = document.getElementById('copyButton');
+    const downloadButton = document.getElementById('downloadButton');
+
+    if (!pageUrl) {
+      alert('অনুগ্রহ করে URL দিন / Please enter a valid URL.');
+      return;
+    }
+
+    clearError();
+    scanButton.disabled = true;
+    btnIcon.textContent = 'sync';
+    btnIcon.classList.add('animate-spin');
+    btnLabel.textContent = 'Scanning...';
+    progressContainer.classList.remove('hidden');
+    progressBar.style.width = '0%';
+    showStatus('Fetching index page...');
+    
+    result.textContent = 'Scanning links... Please wait.';
+    copyButton.classList.add('hidden');
+    downloadButton.classList.add('hidden');
+    wikitextOutput = '';
+
+    try {
+      // Fetch URL via proxy or directly
+      let url = pageUrl;
+      if (useProxy) {
+        url = `../p/prx.php?url=${encodeURIComponent(pageUrl)}`;
+      }
+      
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Fetch failed with status ${response.status}`);
+      const html = await response.text();
+
+      // Parse HTML
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const links = Array.from(doc.querySelectorAll('a')).map(a => a.getAttribute('href')).filter(Boolean);
+
+      // Grouping articles under users
+      const groups = {}; // user_name -> [article_names]
+      let currentUser = null;
+
+      links.forEach(href => {
+        if (isUserTalkPath(href, wikiDomain)) {
+          const uTitle = titleFromPath(href, wikiDomain);
+          if (uTitle) {
+            // strip prefix
+            const cleanUser = uTitle.replace(/^(ব্যবহারকারী|ব্যবহারকারী আলাপ|User|User talk):/i, '').trim();
+            if (cleanUser && cleanUser !== currentUser) {
+              currentUser = cleanUser;
+              if (!groups[currentUser]) groups[currentUser] = [];
+            }
+          }
+        } else if (isArticlePath(href, wikiDomain)) {
+          const aTitle = titleFromPath(href, wikiDomain);
+          if (aTitle && currentUser) {
+            if (!groups[currentUser].includes(aTitle)) {
+              groups[currentUser].push(aTitle);
+            }
+          }
+        }
+      });
+
+      // Flatten tasks
+      const tasks = [];
+      for (const user in groups) {
+        groups[user].forEach(article => {
+          tasks.push({ user, article });
+        });
+      }
+
+      if (tasks.length === 0) {
+        throw new Error('No user/article matches found. Check the URL and domain configuration.');
+      }
+
+      showStatus(`Found ${tasks.length} articles to scan...`);
+
+      // Run concurrent checking
+      let active = 0;
+      let index = 0;
+      let completed = 0;
+      const countResults = {}; // article_title -> count
+
+      await new Promise((resolve) => {
+        function next() {
+          if (completed === tasks.length) {
+            resolve();
+            return;
+          }
+          while (active < concurrency && index < tasks.length) {
+            const task = tasks[index++];
+            active++;
+            
+            showStatus(`Scanning [${completed}/${tasks.length}] (${active} concurrent)...`);
+            
+            countWords(task.article, wikiDomain).then(res => {
+              countResults[task.article] = res;
+              active--;
+              completed++;
+              progressBar.style.width = `${(completed / tasks.length) * 100}%`;
+              next();
+            });
+          }
+        }
+        next();
+      });
+
+      // Build wikitext table
+      const isBn = wikiDomain.startsWith('bn.');
+      let outputText = `{| class="wikitable sortable"\n! ${isBn ? 'ব্যবহারকারী' : 'User'} !! ${isBn ? 'নিবন্ধের নাম' : 'Article'} !! ${isBn ? 'শব্দসংখ্যা' : 'Word Count'}\n|-\n`;
+      let grandTotal = 0;
+
+      for (const user in groups) {
+        const userArticles = groups[user];
+        if (userArticles.length === 0) continue;
+
+        let userTotal = 0;
+        let isFirstRow = true;
+
+        userArticles.forEach(article => {
+          const res = countResults[article] || { error: 'Unknown error' };
+          let countStr = 'N/A';
+          if (typeof res.count === 'number') {
+            userTotal += res.count;
+            grandTotal += res.count;
+            countStr = isBn ? res.count.toLocaleString('bn') : res.count.toLocaleString();
+          } else {
+            countStr = isBn ? res.error : 'Error';
+          }
+
+          if (isFirstRow) {
+            outputText += `| rowspan="${userArticles.length}" | [[User:${user}|${user}]]\n| [[${article}]] || ${countStr}\n|-\n`;
+            isFirstRow = false;
+          } else {
+            outputText += `| [[${article}]] || ${countStr}\n|-\n`;
+          }
+        });
+      }
+
+      outputText += `| '''${isBn ? 'সর্বমোট' : 'Grand Total'}''' || || '''${isBn ? grandTotal.toLocaleString('bn') : grandTotal.toLocaleString()}'''\n|}`;
+      wikitextOutput = outputText;
+
+      result.textContent = outputText;
+      copyButton.classList.remove('hidden');
+      downloadButton.classList.remove('hidden');
+      showStatus('');
+      
+    } catch(e) {
+      console.error(e);
+      showError(e.message || 'Error occurred while scanning.');
+      result.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full text-error opacity-75 py-12">
+          <span class="material-symbols-outlined text-[48px] mb-base">error</span>
+          <p>Scan failed. Please verify the URL, internet connection, and domain configuration.</p>
+        </div>`;
+    } finally {
+      scanButton.disabled = false;
+      btnIcon.textContent = 'rule';
+      btnIcon.classList.remove('animate-spin');
+      btnLabel.textContent = 'Scan & Count';
+      progressContainer.classList.add('hidden');
+      progressBar.style.width = '0%';
+    }
+  });
+
+  // Copy to clipboard
+  document.getElementById('copyButton').addEventListener('click', () => {
+    if (!wikitextOutput) return;
+    navigator.clipboard.writeText(wikitextOutput).then(() => {
+      const copyBtn = document.getElementById('copyButton');
+      const orig = copyBtn.innerHTML;
+      copyBtn.innerHTML = '<span class="material-symbols-outlined text-[16px]">check</span> কপিড / Copied';
+      setTimeout(() => { copyBtn.innerHTML = orig; }, 1500);
+    });
+  });
+
+  // Download .wikitext file
+  document.getElementById('downloadButton').addEventListener('click', () => {
+    if (!wikitextOutput) return;
+    const blob = new Blob([wikitextOutput], { type: 'text/plain;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', 'editathon_grouped_wordcounts.wikitext');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+</script>
+</body>
+</html>
